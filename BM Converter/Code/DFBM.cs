@@ -19,7 +19,7 @@ namespace BM_Converter
         public int DataSize { get; set; }
         public byte[] pad { get; set; }
 
-        public byte[] CompressedData { get; set; }      // data for single BM
+        //public byte[] CompressedData { get; set; }      // data for single BM
         public byte[,] PixelData { get; set; }
 
         public byte FrameRate { get; set; }     // fields for multi BMs
@@ -27,7 +27,7 @@ namespace BM_Converter
         public int[] Offsets { get; set; }
         public List<SubBM> SubBMs { get; set; }
 
-        public bool multiBM { get; set; }       // custom fields for convenience
+        public bool multiBM { get; set; }       // custom fields for convenience, not used in an actual BM file
         public int fileLength { get; set; }    
         public int numImages { get; set; }     
 
@@ -35,12 +35,7 @@ namespace BM_Converter
         // Constructor        
         public DFBM()
         {
-            FileId = new byte[4];
-            this.FileId[0] = 0x42;
-            this.FileId[1] = 0x4d;
-            this.FileId[2] = 0x20;
-            this.FileId[3] = 0x1e;
-
+            FileId = new byte[4] { 0x42, 0x4d, 0x20, 0x1e };
             pad = new byte[12];
         }
 
@@ -169,8 +164,78 @@ namespace BM_Converter
                 }
             }
 
-            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);  // need to flip because BMs are defined bottom-up
             return bitmap;
+        }
+
+        // Static method to convert a Bitmap object into a BM image
+        public static byte[,] BitmaptoBM(Bitmap bitmap, DFPal pal, bool IncludeIlluminated)
+        {
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            Byte[,] PixelArray = new byte[bitmap.Width, bitmap.Height];
+            
+            for (int x = 0; x < bitmap.Width; x++)
+            {
+                for (int y = 0; y < bitmap.Height; y++)
+                {
+                    Color pixelColour = bitmap.GetPixel(x, y);
+                    byte palIndex;
+
+                    if (pixelColour.R == 0 && pixelColour.G == 0 && pixelColour.B == 0)    // black = PAL index 0, will be set to transparent if transparent or weapon texture
+                    {
+                        palIndex = 0;
+                    }
+                    else
+                    {
+                        palIndex = MiscFunctions.matchPixeltoPal(pixelColour, pal, IncludeIlluminated);
+                    }
+
+                    PixelArray[x, y] = palIndex;
+                }
+
+            }
+
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY); 
+            return PixelArray;
+        }
+
+        public bool SaveToFile(string filename)
+        {
+            bool success = false;
+
+            try
+            {
+                BinaryWriter writer = new BinaryWriter(File.Open(filename, FileMode.Create));
+                foreach (byte b in this.FileId) writer.Write(b);
+                writer.Write(this.SizeX);
+                writer.Write(this.SizeY);
+                writer.Write(this.idemX);
+                writer.Write(this.idemY);
+                writer.Write(this.transparent);
+                writer.Write(this.logSizeY);
+                writer.Write(this.compressed);
+                writer.Write(this.DataSize);
+                foreach (byte b in this.pad) writer.Write(b);
+
+                for (int x = 0; x < this.SizeX; x++)
+                {
+                    for (int y = 0; y < this.SizeY; y++)
+                    {
+                        writer.Write(this.PixelData[x, y]);
+                    }
+                }
+
+                writer.Close();
+                writer.Dispose();
+                success = true;
+            }
+            catch (IOException)
+            {
+                success = false;
+            }
+
+            return success;
         }
 
     }
