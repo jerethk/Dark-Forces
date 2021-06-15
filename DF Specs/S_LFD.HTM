@@ -1,0 +1,53 @@
+<HTML>
+<HEAD><TITLE>DF Specs - LFD FILES</TITLE>
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_gob.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_lvl.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG> LFD FILES</STRONG></FONT>
+<HR SIZE=2>
+<P>
+
+LFD files contain various resources, mostly sound and graphics.<BR>
+You don't need them to create a new level, but for things like cutscenes and briefings.<BR>
+The Dark Forces LFD format seems to be completely compatible with X-Wing and Tie Fighter LFD files.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+LFD_Ix_Entry IS
+{
+ TYPE             char[4]          // type of the resource
+ NAME             char[8]          // name of the resource
+ LENGTH           long             // length of the resource
+}
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Then LENGTH bytes follow the header.
+<P>
+
+The first index entry is of type RMAP, and contains the list of all the sections in the .LFD file.<BR>
+This is similar to the GOB Master Index.
+<P>
+
+The other sections can be:
+<P>
+
+<TABLE BORDER=1>
+<TR><TD WIDTH=80><STRONG>Section </STRONG></TD><TD WIDTH=300><STRONG>Description </STRONG></TR></TD>
+<TR><TD>ANIM</TD><TD>animation, this is a collection of DELT</TR></TD>
+<TR><TD>DELT</TD><TD>static image in delta format</TR></TD>
+<TR><TD>FILM</TD><TD>'script' referencing the other resources in the lfd</TR></TD>
+<TR><TD>FONT</TD><TD>font</TR></TD>
+<TR><TD>GMID</TD><TD>General Midi music</TR></TD>
+<TR><TD>PLTT</TD><TD>palette used for ANIM and DELT</TR></TD>
+<TR><TD>VOIC</TD><TD>VOC (standard Creative Labs format)</TR></TD>
+</TABLE>
+
+
+
+</BODY>
+</HTML>

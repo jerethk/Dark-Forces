@@ -1,0 +1,41 @@
+<HTML>
+<HEAD><TITLE>DF Specs - CMP Files</TITLE>
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_palplt.htm#PAL Files"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_fntfon.htm#FNT Files"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG> CMP Files</STRONG></FONT>
+<P>
+
+CMP files store palette mappings (like DOOM COLORMAP), which are the way the colors behave under different light levels.
+<P>
+
+Each byte is an index into the palette, and the CMP file is in fact an array that can be used for shading.
+<P>
+
+Given a color value [C] and a light value [L] the correct color to draw can be determined with the following formula:
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+DrawColor = [start_of_CMP_file]+(256*L)+C
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+There are 128 added bytes at the end of the file, generally forming a slow gradient from 0x00 to 0x1F.
+<P>
+
+Those serve to modify light values when you use the headlight (or when firing a weapon lights the area).<BR>
+The first of the 128 bytes controls the area right next to you and each one after that control an area progressively further away.<BR>
+0x00 is the maximum illumination while 0x1f is minimum for the headlight.<BR>
+Values above 0x1f and up to 0x27 serve to suppress the weapon lighting effect too.
+<P>
+
+The only use I see for those is to set them all to 0x1f to suppress the headlight altogether.<BR>
+It doesn't seem logical to suppress the weapon lighting, although it can be done too...
+<P>
+
+</BODY>
+</HTML>

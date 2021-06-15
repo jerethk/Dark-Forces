@@ -1,0 +1,607 @@
+<HTML>
+<HEAD>
+<TITLE> DF Specs - LEV FILES </TITLE>
+<!--Version 3.00-->
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_lvl.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_gol.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG> LEV FILES</STRONG></FONT>
+<P>
+
+LEV files contain a complete level geometry. They are in a quite complex text format.<BR>
+They are also huge (generally > 600K), but this isn't a problem, as you really cannot edit them as a text file, because of the many dependencies between the geometry elements.
+<P>
+
+<UL>
+<LI><A HREF="#Geometry Elements"> Geometry Elements</A>
+<LI><A HREF="#The Adjoin/Mirror/Walk mechanism"> The Adjoin/Mirror/Walk mechanism</A>
+<LI><A HREF="#A Quick Note on Texturing"> A Quick Note on Texturing </A>
+<LI><A HREF="#File Format"> File Format</A>
+ <UL>
+ <LI><A HREF="#Magic, Version number and general level info">Magic, Version number and general level info</A>
+ <LI><A HREF="#Texture Table">Texture Table</A>
+ <LI><A HREF="#Geometry Description">Geometry Description</A> 
+  <UL>
+   <LI><A HREF="#Sectors">Sectors</A> 
+    <UL>
+    <LI><A HREF="#Sector Flags">Sector Flags</A> 
+    </UL> 
+   <LI><A HREF="#Vertices">Vertices</A> 
+   <LI><A HREF="#Walls">Walls</A> 
+    <UL>
+    <LI><A HREF="#Wall Flags">Wall Flags</A> 
+    </UL> 
+  </UL>
+ </UL>
+</UL>
+
+<HR SIZE=2>
+
+<A NAME="Geometry Elements"></A>
+<FONT SIZE=+1><STRONG>Geometry Elements </STRONG></FONT>
+<A HREF="s_doom.htm#Geometry Elements">
+<IMG SRC="../images/gotodoom.gif" ALIGN=ABSMIDDLE ALT="Doom Note"></A><P>
+
+The basic geometry elements of a DF level are :
+<P>
+
+<TABLE BORDER=1>
+<TR><TD>VERTEX </TD><TD>a point in a 2 dimensions projection (X and Z)</TD></TR>
+<TR><TD>WALLS </TD><TD>a line joining 2 vertices </TD></TR>
+<TR><TD>SECTOR </TD><TD>a collection of walls generally closed, can contain "gaps" or other sectors </TD></TR>
+</TABLE>
+<P>
+
+As the game works with a two dimensions projection, the third (Y) dimension is coded at the sector level by a floor altitude and a ceiling altitude.<BR>
+Note that this implies that floors and ceilings of a sector are always FLAT.
+<P>
+
+Sectors can however be layered on top of one another to give a "full 3D" feeling. 
+<P>
+
+Each sector is coded with its walls and vertices, and is completely self contained 
+<P>
+
+The relation between sectors is done at the wall level by <A HREF="#The Adjoin/Mirror/Walk mechanism">the adjoin/mirror/walk mechanism</A>.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="The Adjoin/Mirror/Walk mechanism"></A>
+<FONT SIZE=+1><STRONG>The Adjoin/Mirror/Walk mechanism </STRONG></FONT>
+<A HREF="s_doom.htm#The Adjoin/Mirror/Walk mechanism">
+<IMG SRC="../images/gotodoom.gif" ALIGN=ABSMIDDLE ALT="Doom Note"></A><P>
+<PRE>
+
+
+1--------2    Sector 1 has 5 vertices (0 to 4) marked 0 1 2 A B
+|        |                 5 walls    including AB (wall 3)
+|   S1   |
+|        |    Sector 2 has 4 vertices (0 to 3) marked 0 1 B A
+0---B====A                 4 walls    including BA (wall 2)
+    | S2 |
+    1----0
+</PRE>
+
+It is VERY important to note that there are 2 vertices at point A, two vertices at point B and 2 walls marked<TT> ==== </TT>. <BR>As I said earlier, sectors are self contained.
+<P>
+ So, to come back to the adjoin/mirror/walk mechanism, if S1 and S2 must be connected, an adjoin/mirror relation must be established.
+<P>
+
+<PRE>
++----1---+
+|        |
+0        2
+| 4    3 |
++---+====+
+    1  2 3
+    +--0-+
+</PRE>
+<P>
+This is quite simple : 
+<UL>
+<LI>the <STRONG>adjoin</STRONG> is the number of the connected sector 
+<LI>the <STRONG>mirror</STRONG> is the number of the connection wall
+</UL>
+<P>
+
+So we would need to set:
+<P>
+in S1 : W3.adjoin = S2 and W3.mirror = 2<BR>in S2 : W2.adjoin = S1 and W2.mirror = 3<BR><P>
+
+If there is no adjoin/mirror relationship, the values for adjoin and mirror will be -1.<BR>
+
+Walk values seem to have no effect at all in a level, but they are mostly set to the same value as adjoin.
+
+<P>
+<HR SIZE=2>
+
+<A NAME="A Quick Note on Texturing"></A>
+<FONT SIZE=+1><STRONG>A Quick Note on Texturing </STRONG></FONT>
+<A HREF="s_doom.htm#A Quick Note on Texturing">
+<IMG SRC="../images/gotodoom.gif" ALIGN=ABSMIDDLE ALT="Doom Note"></A><P>
+
+
+When you have adjacent sectors:
+<P>
+
+<TABLE BORDER=1>
+<TR><TD>TOP </TD><TD>is ABOVE the ceiling of the other SC </TD></TR>
+<TR><TD>BOT </TD><TD>is BELOW the floor of the other SC </TD></TR>
+<TR><TD>MID </TD><TD>is everywhere you can see through to the other SC </TD></TR>
+</TABLE>
+<P>
+
+Of course, the MID texture is not shown when walls are adjoined, so that you can see through! <BR>
+(Note: WL flag 1, bit 1 forces it back in place. See Wall Flags)
+<P>
+
+<HR SIZE=2>
+
+<A NAME="File Format"></A>
+<FONT SIZE=+1><STRONG>File Format </STRONG></FONT><P>
+
+The LEV file is composed of 3 parts:
+<UL>
+<LI><A HREF="#Magic, Version number and general level info">Magic, Version number and general level info</A>
+<LI><A HREF="#Texture Table">Texture Table</A>
+<LI><A HREF="#Geometry Description">Geometry Description</A> 
+</UL>
+<P>
+
+The following comments are accepted:<BR>
+<TT>
+# comment<BR>
+DATA # comment<BR>
+</TT>
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Magic, Version number and general level info"></A>
+<FONT SIZE=+1><STRONG>Magic, Version number and general level info </STRONG></FONT><P>
+
+<STRONG><EM>Magic and version number</EM></STRONG>
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| LEV 2.1
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+This is trivial.
+<P>
+
+<STRONG><EM>General Level Info</EM></STRONG>
+<P>
+
+This part contains the following data (sample from secbase.lev):
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| LEVELNAME SECBASE
+| PALETTE   SECBASE.PAL
+| MUSIC     AVENGE.GMD
+| PARALLAX  1024.0000 1024.0000
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+It seems that LEVELNAME isn't used at all by DF.<BR>
+MUSIC is also unused, because musics are hardcoded in dark.exe.<BR>
+(AVENGE.GMD doesn't even exist in DF, I think it is a Tie Fighter music !)
+<P>
+
+PALETTE determines the palette (PAL) used in the level, you may change it.
+<P>
+
+PARALLAX determines how much the "exterior" backgrounds scroll as you turn.<BR>
+1024 1024 means as you turn around 360 degrees, you will see 1024 pixel columns of background sky.<BR>
+Vertical PARALLAX is similar, although of course you can't pitch 360 degrees in DF.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Texture Table"></A>
+<FONT SIZE=+1><STRONG>Texture Table </STRONG></FONT><P>
+
+As there is a lot of TX information in a level, a texture table is created to avoid storing TX names in full at each occurrence.
+<P>
+
+Coding sample :
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| TEXTURES 85        # number of textures
+| TEXTURE: TEX00.BM  # texture 0
+| TEXTURE: TEX01.BM  # texture 1
+| ...
+| TEXTURE: TEX84.BM  # texture 84
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Afterwards, all the textures are referred to by their 0 based index in this texture table.
+<P>
+
+Note that changing TX names in the TX table may be an ultra fast way to relook a level !
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Geometry Description"></A>
+<FONT SIZE=+1><STRONG>Geometry Description </STRONG></FONT><P>
+
+<UL>
+ <LI><A HREF="#Sectors">Sectors</A> 
+  <UL>
+  <LI><A HREF="#Sector Flags">Sector Flags</A> 
+  </UL> 
+ <LI><A HREF="#Vertices">Vertices</A> 
+ <LI><A HREF="#Walls">Walls</A> 
+  <UL>
+  <LI><A HREF="#Wall Flags">Wall Flags</A> 
+  </UL> 
+</UL>
+
+The first data is the total number of sectors in the level :
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| NUMSECTORS <EM>numsectors</EM>
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+
+<P>
+
+Then each sector is described, with its vertices and walls.<BR>
+Please note that the wall data is on ONE line, but has been split here for visual convenience.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| <A HREF="#Sectors">SECTOR</A> <EM>scnum</EM>
+|  NAME             <EM>sectorname</EM>
+|  AMBIENT          20
+|  FLOOR TEXTURE    80 -0.38 -0.06 2
+|  FLOOR ALTITUDE    0.00
+|  CEILING TEXTURE  0  0.00  0.00 2
+|  CEILING ALTITUDE -12.00
+|  SECOND ALTITUDE   0.00
+|  <A HREF="#Sector Flags">FLAGS</A> 0 0 0
+|  LAYER            1
+|
+| <A HREF="#Vertices">VERTICES</A> <EM>numvertices</EM>
+|  X: 252.00 Z: 224.00 # a vx
+|  ...
+|
+| <A HREF="#Walls">WALLS</A> <EM>numwalls</EM>
+|  WALL LEFT:  0 RIGHT:  1 
+\       MID:   0  0.00  0.00 0
+\       TOP:   1  0.00  0.00 0
+\       BOT:   2  0.17  0.00 0
+\       SIGN: -1  0.00  0.00
+\       ADJOIN: 57 MIRROR: 0 WALK: 57
+\       <A HREF="#Wall Flags">FLAGS</A>: 0 0 0
+\       LIGHT: 5
+|  ...
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Hmmm... heavy information!<BR>
+Click a section to take it apart, it's not too difficult.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Sectors"></A>
+<FONT SIZE=+1><STRONG>Sectors </STRONG></FONT><P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| SECTOR <EM>scnum</EM>
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+This is the sector number, it is zero based.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  NAME             <EM>sectorname</EM>
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+This is both a link to the .INF file and a useful reminder.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  AMBIENT          20
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Ambient light level in this sector.<BR>
+Note that this value is used in GROMAS to indicate an amount of red fog, not a light level.<BR>
+This is a good demonstration of the use of the CMP files.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  FLOOR TEXTURE    80 -0.38 -0.06 2
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+The TX to apply to the floor of the SC as an index in the TX table.<BR>
+The following two floats are the X and Z offsets by which the TX must be moved before being mapped.<BR>
+The third (int) value is unused.<BR>
+It seems that floor textures must be 64x64, or the game engine does strange things.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  FLOOR ALTITUDE    0.00
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+The altitude of the floor of this SC. Note that the Y axis goes "down", so higher altitudes have lower values.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  CEILING TEXTURE  0  0.00  0.00 2
+|  CEILING ALTITUDE -12.00
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+ Same as floor.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  SECOND ALTITUDE   0.00
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+This is used to indicate a second "floor" altitude in a sector. For instance, a second altitude of 4 will make you "enter into the floor" 4 deep. It will in addition make the sector water like and generate a splashing sound. If you set a negative second altitude, you will be able to walk higher on the sector, provided you also enter the sector higher. This is the way platforms are created (the platform object is only a visual clue).
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  FLAGS            0 0 0
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Three flags, the second of which is never used in the 14 original levels.<BR>
+Change various things in the sector. See <A HREF="#Sector Flags">Sector Flags</A>.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  LAYER            1
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+The layer on which the SC is (positive, 0 or negative).<BR>
+This value is used in the game to make different maps corresponding to zones of altitude.<BR>
+Note that this is only a logical grouping, but is also used by the map in the game.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Sector Flags"></A>
+<FONT SIZE=+1><STRONG>Sectors Flags</STRONG></FONT><P>
+
+<STRONG><EM>FLAG 1</EM></STRONG>
+<P>
+
+<TABLE BORDER=1>
+<TR>
+ <TD><STRONG>Bit Value</STRONG></TD>
+ <TD><STRONG>Description</STRONG></TD>
+ <TD><STRONG>Comment</STRONG></TD>
+</TR>
+<TR><TD>1</TD><TD>EXTERIOR - NO CEIL.  (SKY) </TD><TD>Note: actual ceiling limit will be the ceiling altitude + 100
+</TD></TR>
+<TR><TD>2</TD><TD>DOOR</TD><TD>instant door</TD></TR>
+<TR><TD>4</TD><TD>SHOT REFLECTION / MAG.SEAL </TD><TD>walls, floor and ceiling reflect weapon shots </TD></TR>
+<TR><TD>8</TD><TD>EXTERIOR ADJOIN</TD><TD>	will adjoin adjacent skies.</TD></TR>
+<TR><TD>16</TD><TD>ICE FLOOR        (SKATING)</TD><TD></TD></TR>
+<TR><TD>32</TD><TD>SNOW FLOOR</TD><TD>no apparent effects</TD></TR>
+<TR><TD>64</TD><TD>EXPLODING WALL/DOOR</TD><TD>instant exploding door</TD></TR>
+<TR><TD>128</TD><TD>EXTERIOR - NO FLOOR  (PIT)</TD><TD>Note: actual floor limit will be the floor altitude - 100</TD></TR>
+<TR><TD>256</TD><TD>EXTERIOR FLOOR ADJOIN</TD><TD>will adjoin adjacent pits</TD></TR>
+<TR><TD>512</TD><TD>CRUSHING SECTOR</TD><TD>vertically moving elevators will crush the player</TD></TR>
+<TR><TD>1024</TD><TD>NO WALL DRAW / "HORIZON"</TD><TD>removes walls of a sector(sector must be sky and pit to work properly)</TD></TR>
+<TR><TD>2048</TD><TD>LOW  DAMAGE</TD><TD></TD></TR>
+<TR><TD>4096</TD><TD>HIGH DAMAGE (both = GAS)</TD><TD>both can be combined for GAS</TD></TR>
+<TR><TD>8192</TD><TD>NO SMART OBJECT REACTION</TD><TD></TD></TR>
+<TR><TD>16384</TD><TD>SMART OBJECT REACTION</TD><TD></TD></TR>
+<TR><TD>32768</TD><TD>SUBSECTOR</TD><TD>no apparent effects</TD></TR>
+<TR><TD>65536</TD><TD>SAFE SECTOR</TD><TD></TD></TR>
+<TR><TD>131072</TD><TD>RENDERED</TD><TD></TD></TR>
+<TR><TD>262144</TD><TD>PLAYER</TD><TD></TD></TR>
+<TR><TD>524288</TD><TD>SECRET SECTOR</TD><TD>increments the %secret when entered</TD></TR>
+</TABLE>
+<P>
+
+<STRONG>Note on the Smart Objects: </STRONG><BR><PRE>
+Smart Object Reactions will cause doors and CERTAIN elevator classes to react to enemies.<BR> There are two values, not a toggle, because Flag doors by default react to smart objects, and<BR> INF elevators by default don't react.
+
+These are the elevators that can react to smart objects:
+basic
+inv
+basic_auto
+morph_move1
+morph_move2
+morph_spin1
+morph_spin2
+move_wall
+rotate_wall
+door
+door_mid
+door_inv
+</PRE>
+<P>
+
+<STRONG><EM>FLAG 2</EM></STRONG>
+<P>
+
+is unused.
+<P>
+
+<STRONG><EM>FLAG 3</EM></STRONG> 
+<P>
+
+When "message: system lights" is sent (eg. in TALAY when you turn on the generator), the engine copies the value here to the Ambient of the sector.
+
+
+<HR SIZE=2>
+
+<A NAME="Vertices"></A>
+<FONT SIZE=+1><STRONG>Vertices </STRONG></FONT><P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| VERTICES <EM>numvertices</EM>
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+This is the number of vertices that this SC has.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  X: 252.00 Z: 224.00 # a vx
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+List of the VXs. X and Z are trivial.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Walls"></A>
+<FONT SIZE=+1><STRONG>Walls </STRONG></FONT><P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| WALLS <EM>numwalls</EM>
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+This is the number of walls that this SC has.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+|  WALL LEFT:  0 RIGHT:  1
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+These are the origin and destination vertices for this wall.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+\       MID:   0  0.00  0.00 0
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+The TX to apply to the middle of the WL as an index in the TX table.<BR>
+The following two floats are the X and Y offsets by which the TX must be moved before being mapped (remember Y goes down).<BR>
+The third (int) value is unused.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+\       TOP:   1  0.00  0.00 0
+\       BOT:   2  0.17  0.00 0
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Same as MID
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+\       SIGN: -1  0.00  0.00
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+A sign is a second TX on the same WL, its main use is to place switches.<BR>
+First is the TX to apply to a sign on the WL as an index in the TX table.<BR>
+The following two floats are the X and Y offsets by which the TX must be moved before being mapped (remember Y goes down). Also note that this is relative to the texturing of the wall. So if you offset the WALL, you have to add this offset to that of the SIGN.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+\       ADJOIN: 57 MIRROR: 0 WALK: 57
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+See The Adjoin/Mirror/Walk mechanism.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+\       FLAGS: 0 0 0
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Three flags.<BR>
+Change various things in the wall. See <A HREF="#Wall Flags">Wall Flags</A>.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+\       LIGHT: 5
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Relative modification of the luminosity on this specific WL.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Wall Flags"></A>
+<FONT SIZE=+1><STRONG>Walls Flags</STRONG></FONT><P>
+
+<STRONG><EM>FLAG 1</EM></STRONG>
+<P>
+
+<TABLE BORDER=1>
+<TR>
+ <TD><STRONG>Bit Value </STRONG></TD>
+ <TD><STRONG>Description</STRONG></TD>
+ <TD><STRONG>Comment</STRONG></TD>
+</TR>
+<TR><TD>1</TD><TD>ADJOINING MID TX</TD><TD>the MID TX is NOT removed </TD></TR>
+<TR><TD>2</TD><TD>ILLUMINATED SIGN</TD><TD></TD></TR>
+<TR><TD>4</TD><TD>FLIP TEXTURE HORIZONTALLY</TD><TD></TD></TR>
+<TR><TD>8</TD><TD>ELEV CAN CHANGE WALL LIGHT </TD><TD></TD></TR>
+<TR><TD>16</TD><TD>WALL TX ANCHORED</TD><TD></TD></TR>
+<TR><TD>32</TD><TD>WALL MORPHS WITH ELEV</TD><TD></TD></TR>
+<TR><TD>64</TD><TD>ELEV CAN SCROLL TOP  TX</TD><TD></TD></TR>
+<TR><TD>128</TD><TD>ELEV CAN SCROLL MID  TX</TD><TD></TD></TR>
+<TR><TD>256</TD><TD>ELEV CAN SCROLL BOT  TX</TD><TD></TD></TR>
+<TR><TD>512</TD><TD>ELEV CAN SCROLL SIGN TX</TD><TD></TD></TR>
+<TR><TD>1024</TD><TD>HIDE ON MAP</TD><TD></TD></TR>
+<TR><TD>2048</TD><TD>SHOW AS NORMAL ON MAP</TD><TD>i.e. light green</TD></TR>
+<TR><TD>4096</TD><TD>SIGN ANCHORED</TD><TD></TD></TR>
+<TR><TD>8192</TD><TD>WALL DAMAGES PLAYER</TD><TD></TD></TR>
+<TR><TD>16384</TD><TD>SHOW AS LEDGE ON MAP</TD><TD>i.e. dark green</TD></TR>
+<TR><TD>32768</TD><TD>SHOW AS DOOR  ON MAP</TD><TD>i.e. yellow</TD></TR>
+</TABLE>
+<P>	
+	
+<STRONG><EM>FLAG 2</EM></STRONG>
+<P>
+
+is unused.
+<P>
+
+<STRONG><EM>FLAG 3</EM></STRONG>
+<P>
+
+<TABLE BORDER=1>
+<TR>
+ <TD><STRONG>Bit Value </STRONG></TD>
+ <TD><STRONG>Description</STRONG></TD>
+ <TD><STRONG>Comment </STRONG></TD>
+</TR>
+<TR><TD>1</TD><TD>CAN ALWAYS WALK</TD><TD>Player will climb any height</TD></TR>
+<TR><TD>2</TD><TD>	PLAYER & ENEMIES CANNOT WALK THROUGH WALL</TD><TD></TD></TR>
+<TR><TD>4</TD><TD>	ENEMIES ONLY CANNOT WALK THROUGH WALL</TD><TD></TD></TR>
+<TR><TD>8</TD><TD>CANNOT FIRE THROUGH WALL </TD><TD></TD></TR>
+</TABLE>
+<P>
+
+
+
+
+
+
+</BODY>
+</HTML>

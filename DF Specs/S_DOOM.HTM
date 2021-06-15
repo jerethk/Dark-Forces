@@ -1,0 +1,109 @@
+<HTML>
+<HEAD><TITLE>DF Specs - All Doom Notes</TITLE>
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+
+<FONT SIZE=+2><STRONG>Doom Notes</STRONG></FONT>
+
+<UL>
+<LI><A HREF="#Containers & Patching">Containers & Patching</A>
+<LI><A HREF="#General File Description">General File Description </A>
+<LI><A HREF="#GOB Files">GOB Files</A>
+<LI><A HREF="#Geometry Elements"> Geometry Elements</A>
+<LI><A HREF="#The Adjoin/Mirror/Walk mechanism"> The Adjoin/Mirror/Walk mechanism</A>
+<LI><A HREF="#A Quick Note on Texturing"> A Quick Note on Texturing </A>
+</UL>
+
+<HR SIZE=2>
+
+<A NAME="Containers & Patching"></A>
+<FONT SIZE=+1><STRONG>Containers & Patching </STRONG></FONT>
+<A HREF="s_gendsc.htm#Containers & Patching"><IMG SRC="../images/gotoprev.gif"ALIGN=ABSMIDDLE ALT="[Back]"></A>
+<P>
+
+GOBS are quite similar in principle to DOOM WAD files, but at a higher level.<BR>
+In fact, WADS directly contain the information or resources, but GOBS also contain complex files, themselves still containing multiple resources.
+<P>
+<STRONG>dark -u</STRONG><EM>mygob.gob</EM> is nearly equivalent to <STRONG>doom -file</STRONG> <EM>mywad.wad</EM><BR>
+You cannot however load multiple gobs in DF as you can load multiple wads in DOOM.
+<P>
+
+
+<HR SIZE=2>
+
+<A NAME="General File Description"></A>
+<FONT SIZE=+1><STRONG>General File Description </STRONG></FONT>
+<A HREF="s_gendsc.htm#General File Description"><IMG SRC="../images/gotoprev.gif"ALIGN=ABSMIDDLE ALT="[Back]"></A>
+<P>
+
+Here is the correspondence between DARK FORCES and DOOM level components: <P>
+
+<TABLE BORDER=1>
+<TR>
+<TD><STRONG>DF FILE</STRONG></TD>
+<TD><STRONG>USE</STRONG></TD>
+<TD><STRONG>DOOM EQUIVALENT</STRONG></TD>
+</TR>
+<TR><TD>name.LEV </TD><TD>geometry (static) </TD><TD>SECTORS, LINEDEFS/SIDEDEFS, VERTEXES </TD></TR>
+<TR><TD>name.INF </TD><TD>workings (dynamic) </TD><TD>none, except the TAG concept </TD></TR>
+<TR><TD>name.GOL </TD><TD>goals </TD><TD>none </TD></TR>
+<TR><TD>name.O </TD><TD>objects </TD><TD>THINGS </TD></TR>
+<TR><TD>name.PAL </TD><TD>palette </TD><TD>PLAYPAL 0 (not the 'hit' palettes) </TD></TR>
+<TR><TD>name.CMP </TD><TD>palette mappings </TD><TD>COLORMAP </TD></TR>
+</TABLE>
+<P>
+
+<HR SIZE=2>
+
+<A NAME="GOB Files"></A>
+<FONT SIZE=+1><STRONG>GOB Files </STRONG></FONT>
+<A HREF="s_gob.htm"><IMG SRC="../images/gotoprev.gif"ALIGN=ABSMIDDLE ALT="[Back]"></A>
+<P>
+
+The GOB structure is quite similar to that of a WAD file, the small difference is that in wads the MASTERN field is at the beginning of the file, between WAD_MAGIC and MASTERX.<BR>
+Of course, the WAD_MAGIC is 'PWAD' or 'IWAD', not 'GOB' followed by 0x0A.<BR>
+This distinction between master (IWAD) and patches (PWAD) doesn't exist in DF.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="Geometry Elements"></A>
+<FONT SIZE=+1><STRONG>Geometry Elements </STRONG></FONT>
+<A HREF="s_lev.htm#Geometry Elements"><IMG SRC="../images/gotoprev.gif" ALIGN=ABSMIDDLE ALT="[Back]"></A><P>
+
+Layers are a whole new concept for DOOM levels designers.<BR>
+It is possible in DF to have many sectors one above the others.<BR>
+This is completely impossible in DOOM.<BR>
+<P>
+
+The DF sectors are self-contained, by opposition to DOOM vertex and linedef sharing.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="The Adjoin/Mirror/Walk mechanism"></A>
+<FONT SIZE=+1><STRONG>The Adjoin/Mirror/Walk mechanism </STRONG></FONT>
+<A HREF="s_lev.htm#The Adjoin/Mirror/Walk mechanism"><IMG SRC="../images/gotoprev.gif" ALIGN=ABSMIDDLE ALT="[Back]"></A><P>
+
+In Doom, the equivalent to an Adjoin/Mirror is the sharing of two vertices and a linedef between two sectors.<BR>
+Contrary to a DF Wall, the linedef doesn't contain texturing information, this one being coded at the sidedef level.<BR>
+<P>
+
+There is no node building (BSP) to do on these levels.<BR>
+There certainly are checks at level loading time, but a few tests on complicated sectors seem to show 'errors' in texturing or HOM problems.
+In fact, it seems that big non-convex sectors are problematic.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="A Quick Note on Texturing"></A>
+<FONT SIZE=+1><STRONG>A Quick Note on Texturing </STRONG></FONT>
+<A HREF="s_lev.htm#A Quick Note on Texturing"><IMG SRC="../images/gotoprev.gif" ALIGN=ABSMIDDLE ALT="[Back]"></A><P>
+
+This is exactly the same as DOOM texturing, just note that there are two different walls, not one linedef with two sidedefs.
+<P>
+
+</BODY>
+</HTML>

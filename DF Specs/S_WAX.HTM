@@ -1,0 +1,195 @@
+
+<HTML>
+<HEAD>
+   <TITLE>DF Specs - WAX FILES</TITLE>
+   
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#C0C0C0" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000">
+
+<P><A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]" HEIGHT=16 WIDTH=16></A><FONT SIZE=+0>
+<A HREF="s_fme.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]" HEIGHT=16 WIDTH=16></A>
+<A HREF="s_3do.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]" HEIGHT=16 WIDTH=16></A>
+</FONT><B><FONT SIZE=+2>WAX FILES</FONT></B><FONT SIZE=+0> </FONT></P>
+
+<P> They contain the sprites. (samples : STORMTROOPERS, BONUS
+LIVES ...)
+</P>
+
+<P> 
+They are a collection of embedded CELLS (FME files stripped
+of their FME_Header1).
+</P>
+
+<P><B> WAX file structure:</B></P>
+
+<TABLE BORDER=1 CELLPADDING=5 ><TR><TD><Table>
+<TR >
+<TH> WAX_Header IS</TH><TD ></TD><TD></TD></TR>
+<TR><TD>{</TD><TD></TD><TD></TD></TR>
+<TR><TD> Version </TD><TD> long </TD><TD> // constant = 0x00100100 </TD></TR>
+<TR><TD> Nseqs</TD><TD> long </TD><TD> // number of SEQUENCES</TD></TR>
+<TR><TD> Nframes </TD><TD> long </TD><TD> // number of FRAMES</TD></TR>
+<TR><TD> Ncells </TD><TD> long </TD><TD> // number of CELLS</TD></TR>
+<TR><TD> Xscale </TD><TD> long </TD><TD> // unused </TD></TR>
+<TR><TD> Yscale </TD><TD> long </TD><TD> // unused </TD></TR>
+<TR><TD> XtraLight </TD><TD> long </TD><TD> // unused</TD></TR>
+<TR><TD> pad4</TD><TD> long </TD><TD> // unused </TD></TR>
+<TR><TD> WAXES </TD><TD> long[32]</TD><TD> // pointers to WAXES // = different actions</TD></TR>
+<TR><TD> }</TD><TD></TD><TD></TD></TR>
+</TABLE></TD></TR></TABLE>
+ 
+<P>
+<BR>
+ 
+<TABLE BORDER=1 CELLPADDING=5 ><TR><TD><TABLE>
+<TR><TH> WAX IS </TH><TD></TD><TD></TD></TR>
+<TR><TD>{</TD><TD></TD><TD></TD></TR>
+<TR><TD> Wwidth </TD><TD> long</TD><TD> // World Width </TD></TR>
+<TR><TD> Wheight</TD><TD>  long </TD><TD> // World Height</TD></TR>
+<TR><TD> FrameRate </TD><TD> long </TD><TD> // Frames per second </TD></TR>
+<TR><TD> Nframes</TD><TD>  long</TD><TD>  // unused = 0 </TD></TR>
+<TR><TD> pad2 </TD><TD> long </TD><TD> // unused = 0 </TD></TR>
+<TR><TD> pad3 </TD><TD> long </TD><TD> // unused = 0 </TD></TR>
+<TR><TD> pad4 </TD><TD> long</TD><TD>  // unused = 0 </TD></TR>
+<TR><TD> SEQS </TD><TD> long[32] </TD><TD> // pointers to SEQUENCES // = views from different angles</TD></TR>
+<TR><TD> }</TD><TD></TD><TD></TD></TR>
+</TABLE></TD></TR></TABLE>
+ 
+<P> <B>Note: </B>World Width and World Height are values which
+define how big the sprite actually appears in-game.</P>
+ 
+<TABLE BORDER=1 CELLPADDING=5 ><TR><TD><TABLE>
+<TR><TH> SEQUENCE IS </TH><TD></TD><TD></TD></TR>
+<TR><TD> {</TD><TD></TD><TD></TD></TR>
+<TR><TD> pad1 </TD><TD> long</TD><TD>  // unused = 0</TD></TR>
+<TR><TD> pad2 </TD><TD>long</TD><TD> // unused = 0 </TD></TR>
+<TR><TD> pad3 </TD><TD> long </TD><TD> // unused = 0</TD></TR>
+<TR><TD> pad4 </TD><TD> long</TD><TD>  // unused = 0 </TD></TR>
+<TR><TD> FRAMES</TD><TD>  long[32] </TD><TD> // pointers to FRAMES // = the animation frames</TD></TR>
+<TR><TD> }</TD><TD></TD><TD></TD></TR>
+</TABLE></TD></TR></TABLE>
+
+<P><BR CLEAR=BOTH>
+</P>
+  
+<TABLE BORDER=1 CELLPADDING=5 ><TR><TD><TABLE>
+<TR><TH> FRAME IS </TH><TD></TD><TD></TD></TR>
+<TR><TD> {</TD><TD></TD><TD></TD></TR>
+<TR><TD> InsertX</TD><TD> long </TD><TD> // Insertion point, X coordinate // Negative values shift
+the cell left// Positive values shift the cell right </TD></TR>
+<TR><TD> InsertY</TD><TD> long</TD><TD> // Insertion point, Y coordinate // Negative values shift
+the cell up// Positive values shift the cell down </TD></TR>
+<TR><TD> Flip</TD><TD>  long</TD><TD> // 0 = not flipped // 1 = flipped horizontally </TD></TR>
+<TR><TD> Cell </TD><TD> long </TD><TD> // pointer to CELL// = single picture </TD></TR>
+<TR><TD> UnitWidth </TD><TD> long</TD><TD>  // Unused</TD></TR>
+<TR><TD> UnitHeight</TD><TD>  long</TD><TD>  // Unused</TD></TR>
+<TR><TD> pad3 </TD><TD> long</TD><TD>  // Unused </TD></TR>
+<TR><TD> pad4</TD><TD>  long </TD><TD> // Unused</TD></TR>
+<TR><TD> }</TD><TD></TD><TD></TD></TR>
+</TABLE></TD></TR></TABLE>
+<P><BR CLEAR=BOTH>
+</P>
+
+<TABLE BORDER=1 CELLPADDING=5 ><TR><TD><TABLE>
+<TR><TH> CELL_Header IS</TH><TD></TD><TD></TD></TR>
+<TR><TD> {</TD><TD></TD><TD></TD></TR>
+<TR><TD> SizeX </TD><TD> long</TD><TD> // Size of the CELL, X value </TD></TR>
+<TR><TD> SizeY </TD><TD> long </TD><TD> // Size of the CELL, Y value</TD></TR>
+<TR><TD> Compressed</TD><TD>  long </TD><TD> // 0 = not compressed // 1 = compressed</TD></TR>
+<TR><TD> DataSize </TD><TD> long </TD><TD> // Datasize for compressed CELL,// equals length of the
+CELL// If not compressed, DataSize = 0</TD></TR>
+<TR><TD> ColOffs</TD><TD>  long </TD><TD> // Always 0, because columns table // follows just after</TD></TR>
+<TR><TD> pad1 </TD><TD> long </TD><TD> // Unused </TD></TR>
+<TR><TD> }</TD><TD></TD><TD></TD></TR>
+</TABLE></TD></TR><TABLE>
+
+<P><BR CLEAR=BOTH>
+</P>
+
+<P><B> An explanation of how it all works:</B></P>
+
+<P> The 32 WAXes pointed to by the .WAX file header are 32
+possible states that the sprite can be in (usually only up to 14 are used).
+The logic controls what WAX is shown when, so that the sprite appears to
+be doing what the logic actually is doing.</P>
+
+<P> All enemies apart from the REMOTE follow this general
+pattern:</P>
+
+<TABLE BORDER=1 CELLPADDING=5 >
+<TR><TH> WAX #</TH><TH> state </TH></TR>
+<TR><TD>0</TD><TD> moving -- eg. walking, floating </TD></TR>
+<TR><TD>1</TD><TD> attacking (primary) </TD></TR>
+<TR><TD>2</TD><TD> dying (from punch) </TD></TR>
+<TR><TD>3</TD><TD> dying (from shot or explosion) </TD></TR>
+<TR><TD>4</TD><TD> lying dead </TD></TR>
+<TR><TD>5</TD><TD> staying still (i.e. not sited player yet) </TD></TR>
+<TR><TD>6</TD><TD> follow through of primary attack -- eg. kick from gun</TD></TR>
+<TR><TD>7</TD><TD> secondary attack -- eg. TD for reeyees, green junk for int. droid, ..</TD></TR>
+<TR><TD>8</TD><TD> follow through of secondary attack </TD></TR>
+<TR><TD>9</TD><TD> jump (Kell Dragon) </TD></TR>
+<TR><TD>10</TD><TD></TD></TR>
+<TR><TD>11</TD><TD></TD></TR>
+<TR><TD>12</TD><TD> getting injured (dianoga looking around) </TD></TR>
+<TR><TD>13</TD><TD> special action 
+<P> Using shield for D_TROOP1, flying for D_TROOP2 and D_TROOP3,
+submerging for dianoga, ... </P>
+</TD>
+</TR>
+</TABLE>
+ 
+<P> <B>Note: </B><BR>The Phase 3 varies from this pattern quite
+a bit.<BR>
+Where a state doesn't apply for a particular enemy logic, the WAX will
+usually just be the enemy walking or moving towards you. It won't be called
+for by the logic.</P>
+
+<P> The remote has 4 states:</P>
+
+<TABLE BORDER=1 CELLPADDING=5 >
+<TR><TH> WAX #</TH><TH> state </TH></TR>
+<TR><TD> 0</TD><TD> moving </TD></TR>
+<TR><TD> 1 </TD><TD> staying still -- before siting player </TD></TR>
+<TR><TD> 2</TD><TD> dying </TD></TR>
+<TR><TD> 3 </TD><TD> dying </TD></TR>
+</TABLE>
+
+<P> LOGIC: SCENERY has 2 simple states:</P>
+
+<TABLE BORDER=1 CELLPADDING=5 >
+<TR><TH> WAX #</TH><TH> state </TH></TR>
+<TR><TD>0 </TD><TD>normal</TD></TR>
+<TR><TD>1</TD><TD>attacked</TD></TR>
+</TABLE>
+
+<P> LOGIC: BARREL has 2 states:</P>
+
+<TABLE BORDER=1 CELLPADDING=5 >
+<TR><TH>WAX#</TH><TH>state</TH></TR>
+<TR><TD>0</TD><TD>normal</TD></TR>
+<TR><TD>1</TD><TD>exploding</TD></TR>
+</TABLE>
+
+<P> LOGIC: ANIM, as well as weapon projectiles, explosions,
+splashing water etc. have 1 continuous state.</P>
+
+<P> The 32 pointers to SEQUENCES in each WAX structure point
+to the view of the WAX (state) from 32 different angles as you move around
+it (0, 11.25, 22.50....348.75). The first pointer (angle 0) is when the
+logic is facing you. </P>
+
+<P> The pointers to FRAMEs in each SEQUENCE structure point
+to the FRAMEs that make up an animation sequence for each point of view.
+FRAMEs are the header 1 of FME files.<BR>
+The SEQUENCE consists of 32 FRAME entries. Usually no more than 5 are used,
+but the dianoga has 27 frames of animation for one of its states (WAX 12,
+when it looks around for you) !<BR>
+The entries = 0 are unused. </P>
+
+<P> Each FRAME points to a CELL, which is a picture with the
+same format as .FME files with header 2 of FME files.<BR CLEAR=BOTH>
+
+<HR SIZE=2>
+
+</BODY>
+</HTML>

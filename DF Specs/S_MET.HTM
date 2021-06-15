@@ -1,0 +1,156 @@
+<HTML>
+<HEAD>
+<TITLE> DF Specs - FILES </TITLE>
+<!--Version 3.00-->
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_daron2.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_refer.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG>Metrics</STRONG></FONT>
+<HR SIZE=2>
+<P>
+This collection of numerical data should be a useful reference for level designers asking themselves questions like:
+<UL><LI>	will the player be able to climb this stairs smoothly ?
+
+<LI>	will the player be able to jump this ?
+<LI>	will the player die from this fall ?
+<LI>	will the player pass through this gap ?
+<LI>	etc.</UL>
+
+<P>
+<STRONG>MAXIMUM WALKABLE HEIGHT : 3.50</STRONG>
+<P>
+<STRONG>Note</STRONG><BR>
+	Don't forget that any height can be made walkable by setting Wall Flag 3 bit 1.
+<P>			
+
+
+<STRONG>MAXIMUM JUMPABLE HEIGHT : 9.65</STRONG>
+<P>
+<STRONG>Notes</STRONG><UL>
+<LI>	It doesn't matter if you're running or not
+<LI>	It doesn't matter if you're crouching or not
+<LI>	Don't forget that any height can be made walkable by setting Wall Flag 3 bit 1.
+</UL>
+<P>
+<STRONG>DAMAGE FROM FALLING :</STRONG><P>
+
+<TABLE BORDER=1 Cellpadding =1>
+<TR><TH>HEIGHT</TH><TH>MIN</TH><TH>MAX</TH><TH>MEAN</TH><TH>Notes</TH></TR>
+<TR><TD>36</TD><TD>0</TD><TD>	0</TD><TD>	0</TD><TD>	(1) </TD></TR>
+<TR><TD>37</TD><TD>0</TD><TD>	1</TD><TD>	0</TD><TD>	(2) </TD></TR>
+<TR><TD>40</TD><TD>4</TD><TD>	9</TD><TD>	6</TD><TD></TD></TR>	
+<TR><TD>45</TD><TD>19</TD><TD>	23</TD><TD>	21</TD><TD></TD></TR>	
+<TR><TD>50</TD><TD>31</TD><TD>	35</TD><TD>	33</TD><TD></TD></TR>	
+<TR><TD>55</TD><TD>43</TD><TD>	48</TD><TD>	44</TD><TD></TD></TR>	
+<TR><TD>60</TD><TD>54</TD><TD>	58</TD><TD>	56</TD><TD></TD></TR>	
+<TR><TD>65</TD><TD>67</TD><TD>	71</TD><TD>	69</TD><TD></TD></TR>	
+<TR><TD>70</TD><TD>77</TD><TD>	78</TD><TD>	77</TD><TD></TD></TR>	
+<TR><TD>75</TD><TD>87</TD><TD>	91</TD><TD>	89</TD><TD></TD></TR>	
+<TR><TD>79</TD><TD>93</TD><TD>	98</TD><TD>	95</TD><TD>	(3)</TD></TR>
+<TR><TD>80</TD><TD>95</TD><TD>	++</TD><TD>	98</TD><TD>	(4)</TD></TR>
+<TR><TD>81</TD><TD>98</TD><TD>	++</TD><TD>	++</TD><TD>	(5)</TD></TR>
+<TR><TD>82</TD><TD>++</TD><TD>	++</TD><TD>	++</TD><TD>	(6)</TD></TR>
+</TABLE><P>
+<STRONG>Notes</STRONG>
+<P><OL>
+<LI> Maximum "no damage" fall
+<LI> 1 point of damage happened twice in 30 falls.
+<LI> Maximum "no death" fall
+<LI> % death :	3/11 	= 27%
+<LI>% death :	12/19 	= 63%
+<LI>Minimum "sure kill"
+</OL><UL>
+<LI>	Shields or Supershield are of no help
+<LI>	LAIMLAME totally protects you (at least up to 3000).
+<LI>	Crouching doesn't affect the damage taken.
+<LI>	Jumping up before the fall does of course add to it.
+<LI>	Sprinting when hitting the ground doesn't change anything.
+<LI>	The current health doesn't affect damage.
+</UL>
+<P>
+<STRONG>Effects of second altitude:</STRONG>
+<P>
+<OL>
+<LI> A positive second altitude (water) must be added to the height of the fall.
+<BR>
+I.e. the water doesn't break the fall at all, it increases the damage :-)
+<LI> A negative second altitude (platform) must be subtracted from the height of the fall.
+<LI> In both cases the results are consistent with the equivalent fall from the sum or difference of heights.
+</OL>
+<P>
+[All falls tested between 10 and 30 times.]
+<P>
+
+<STRONG>MINIMUM WALKABLE WIDTH : 4.90</STRONG>
+<P>
+<STRONG>Notes</STRONG>
+<P><DT>
+This is a width between two angles of columns in a room.
+<DD>
+Passing between those two isn't exactly the same as walking in a 4.9 wide corridor !
+</DT><P><DT>
+	When running you may sometimes pass through a gap as little as 4.6
+<DD>
+I strongly believe this is a problem in the engine collision detection.
+</DT>
+<P>
+<STRONG>MINIMUM WALKABLE HEIGHT : 6.80</STRONG>
+<P>
+<STRONG>Note</STRONG>
+<P>
+The generally adopted rule of thumb of 1 DF unit = 1 foot would make Kyle very big (207 cm).<BR>
+I believe we should use 1DF unit = 25 cm instead.
+<P>
+<STRONG>MINIMUM CROUCH HEIGHT : 3.00</STRONG>
+<P>
+
+<STRONG>LONGJUMPS</STRONG>
+<P>
+
+
+<TABLE BORDER=1 CELLPADDING=5>
+<TR><TD>Standing</TD><TD>~14</TD></TR>
+<TR><TD>Walking</TD><TD>~20</TD></TR>
+<TR><TD>Running</TD><TD>~40</TD></TR>
+</TABLE>
+
+<P>	
+	
+	
+<STRONG>Notes</STRONG>
+<UL>
+<LI>	These values assume that the start and end altitudes of the jump are the same.
+
+<LI>	DF levels must be set on low gravity worlds :-)
+
+</UL>
+<P>
+<HR SIZE=2>
+<P>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</BODY>
+</HTML>

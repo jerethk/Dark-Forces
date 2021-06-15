@@ -1,0 +1,94 @@
+<HTML>
+<HEAD><TITLE>DF Specs - PALETTES</TITLE>
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_o.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_cmp.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG> PALETTE FILES</STRONG></FONT>
+
+<UL>
+<LI><A HREF="#PAL Files"> PAL Files</A>
+<LI><A HREF="#PLTT Res"> PLTT Resources (PLT Files)</A>
+</UL>
+
+<HR SIZE=2>
+
+<A NAME="PAL Files"></A>
+<FONT SIZE=+1><STRONG>PAL Files </STRONG></FONT><P>
+
+PAL files are 768 bytes long, and store a single 256 colors palette as 256 x 3 RGB bytes.
+<P>
+
+Each level in Dark Forces can have its own palette, specified in the LEV header.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+PAL_File IS
+{
+ Colors           RGB_Color[256]   // 256 colors from 0 to 255
+}
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Where:
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+RGB_Color Is
+{
+ R                byte             // Red   intensity
+ G                byte             // Green intensity
+ B                byte             // Blue  intensity
+}
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+<STRONG>Note</STRONG><BR>
+The intensities range from 0 to 63 (limit of VGA mode 0x13) in the PAL files.
+<P>
+
+<HR SIZE=2>
+
+<A NAME="PLTT Res"></A>
+<FONT SIZE=+1><STRONG>PLTT Resources (PLT Files)</STRONG></FONT><P>
+
+PLTT LFD resources are of variable size, and store a (possibly incomplete) palette used by ANIM and DELT resources.
+<P>
+
+<STRONG>Note</STRONG><BR>
+The .plt extension is a convention adopted by add-on developers when writing conversion programs, there are no real PLT files in DARK FORCES.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+PLTT_File IS
+{
+ First            byte             // first color in the palette
+ Last             byte             // last color in the palette
+ colors           RGB_Color[n]     // n = Last - First + 1
+ pad1             byte             // unused = 0
+}
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Where:
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+RGB_Color Is
+{
+ R                byte             // Red   intensity
+ G                byte             // Green intensity
+ B                byte             // Blue  intensity
+}
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+<STRONG>Note</STRONG><BR>
+Contrary to the PAL files, the intensities range from 0 to 255 in the PLTT resources.
+<P>
+
+</BODY>
+</HTML>

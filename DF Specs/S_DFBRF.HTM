@@ -1,0 +1,47 @@
+<HTML>
+<HEAD><TITLE>DF Specs - Dfbrief.lfd</TITLE></HEAD>
+
+<BODY
+BGCOLOR="#CFCFCF" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000">
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_cutsc.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_jdsfx.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG>Dfbrief.lfd</STRONG></FONT>
+<HR SIZE=2>
+<P>
+The following files must always be present in <STRONG>DFBRIEF.LFD:</STRONG>
+<P>
+<TABLE BORDER=1 CELLPADDING=5><TR><TD><PRE>
+PLTTbrf-jan	Palette to use for briefings
+DELTcursor	Cursor for briefings and PDA
+ANIMguns	Weapons screen in PDA
+ANIMitems	Items screen in PDA
+</PRE></TD></TR></TABLE><P>
+There must also be one or more briefing backgrounds as necessary:
+<P>
+<TABLE BORDER=1 CELLPADDING=5><TR><TD><PRE>
+ANIMbrf-jan	Jan
+ANIMbrf-mon	Mon Mothma
+ANIMbrf-nil	Jabba
+</PRE></TD></TR>
+</TABLE>
+<P>
+Briefings are stored in DELT sections of dfbrief.lfd, named after the level.
+<P>
+
+The width of the scrollable region seems to be hardcoded in the game, so the only field we'll want to change is SizeY.
+<P>
+
+Objective screens are stored in ANIM sections of dfbrief.lfd, also named after the level.
+The first DELT in the ANIM has all the goals in green text. The following DELTs have one goal each in yellow text. They are overlaid on the first DELT when the goal has been completed. See <A HREF="s_gol.htm"> GOL </A>file
+<P>
+See also <A HREF="s_brflst.htm">BRIEFING.LST</A>
+
+
+<P>
+<HR SIZE=2>
+<P>
+</BODY>
+</HTML>

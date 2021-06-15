@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE> DF Specs - JEDI.LVL</TITLE>
+</HEAD>
+<!--Version 3.00-->
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_lfd.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_lev.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG> JEDI.LVL</STRONG></FONT>
+<HR SIZE=2>
+<P>
+
+Contains a list of the levels in DF.
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+ | LEVELS 14
+<PRE></TD></TR></TABLE>
+<P>
+
+This is the number of entries in JEDI.LVL
+<P>
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| Secret Base,        SECBASE,   
+\ L:\LEVELS\SECBASE\;L:\LEVELS\;L:\LEVELS\BM-GEN\;
+\ L:\LEVELS\PALETTES\;L:\LEVELS\BM-IMPER\;
+\ L:\LEVELS\HOLDER\
+| ...
+<PRE></TD></TR></TABLE>
+<P>
+<PRE>
+This is the definition for a level. The first entry is the description (eg. "Secret Base")<BR> to be shown in the mission menu in DF.
+
+The second entry is the name of the level (e.g. SECBASE).<BR> It will be applied in the following areas:
+
+	levname.LEV
+	levname.O
+	levname.INF
+	levname.GOL
+	levname.PAL
+	levname.CMP
+
+	DELTlevname
+	ANIMlevname
+
+	
+LEV entry in BRIEFING.LST
+
+To successfully change the name of a level, <BR>its name must be changed in all of these as well as in JEDI.LVL.
+
+
+The paths stored are unused, and were most probably referring to the LucasArts file server at development time.
+
+The remainder of this file contains the names of all the levels in Dark Forces.
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,77 @@
+<HTML>
+<HEAD><TITLE>DF Specs - GOL Files</TITLE>
+</HEAD>
+<BODY BGCOLOR="#C0C0C0" TEXT="#000000" LINK="#00A000" VLINK="#0000FF" ALINK="#FF0000"><BASEFONT SIZE=3>
+
+<A HREF="df_specs.htm" TARGET="_top"><IMG SRC="../images/gototoc.gif" ALT="[TOC]"></A>
+<A HREF="s_inf.htm"><IMG SRC="../images/gotoprev.gif" ALT="[Prev]"></A>
+<A HREF="s_o.htm"><IMG SRC="../images/gotonext.gif" ALT="[Next]"></A>
+
+<FONT SIZE=+2><STRONG> GOL Files</STRONG></FONT>
+<P>
+
+<HR SIZE=2>
+
+<A NAME="ge"></A><FONT SIZE=+1><STRONG>General Description </STRONG></FONT><P>
+
+GOL files control the functioning of the objective screen in the PDA. They contain a list of mission goals which are shown to be completed in the objective screen when they are fired. Note that the objective screen is an <A HREF="s_anim.htm">ANIM</A> in DFBRIEF.LFD. It is composed of a number of DELTs (with yellow text) which are overlaid on the first embedded DELT (which has green text) as goals are completed.
+<P>
+
+<TABLE BORDER=1 WIDTH=600><TR><TD><PRE>
+| GOL 1.0
+| GOAL: 0       ITEM:   5       # DT weapon
+| GOAL: 1       TRIG:   1
+<PRE></TD></TR></TABLE>   <!-- PRE missing slash is voluntary -->
+<P>
+
+Each GOAL: can be a TRIG: -- a goal trigger, or an ITEM: -- a goal item.
+<P>
+
+<STRONG>Goal triggers</STRONG>
+<P>
+These are goals that are fired by the .INF file when a "<A HREF="s_inf.htm#msg_cmplt">complete</A>" message is sent. The message will fire the appropriate goal in the GOL file.
+<P>
+
+For instance,  "message: [stop] [recipient] complete 1" will say that "TRIG: 1" is complete!
+<P>
+
+<STRONG>Goal Items </STRONG>
+<P>
+These are goals which are fired when you pick up a goal item. The logics of the goal items fire an internal message to the GOL when the item is picked up.
+
+<P>
+Each goal item has a num of its own:
+<P>
+<TABLE BORDER=1 CELLPADDING=5>
+<TR><TH>Goal item</TH><TH>Description</TH><TH>Num</TH></TR>
+<TR><TD>LOGIC: PLANS</TD><TD>Death Star plans</TD><TD>0</TD></TR>
+<TR><TD>LOGIC: PHRIK</TD><TD>Phrik metal</TD><TD>1</TD></TR>
+<TR><TD>LOGIC: NAVA</TD><TD>Nava Card</TD><TD>2</TD></TR>
+<TR><TD>LOGIC: DATATAPE</TD><TD>data tapes</TD><TD>4</TD></TR>
+<TR><TD>LOGIC: DT_WEAPON</TD><TD>broken DT weapon</TD><TD>5</TD></TR>
+<TR><TD>LOGIC: PILE</TD><TD>Your Gear</TD><TD>6</TD></TR>
+</TABLE>
+<P>
+For instance, picking up a broken DT weapon will say that "ITEM: 5" is complete!
+Notice this implies that you can only use one of each goal item in each level.
+<P>
+
+<STRONG>Note: </STRONG><BR>the goal items will also move an elevator called "complete" to its next stop when picked up.
+<P>
+<STRONG>Managing Goals</STRONG>
+
+<P>
+
+The best way to handle goals is to use elevator "complete" only for mission goal/completion handling. It should have a number of "hold" stops and a final "complete" stop. Each goal you accomplish will move elevator "complete" one stop forward, until accomplishing the final goal moves it onto its "complete" stop, completing the level. Goal triggers will move elevator "complete" if the "complete" message is sent to elevator "complete" (because the "complete" message also moves its recipient to its next stop). Goal items automatically move elevator "complete" when they are picked up, as mentioned above.
+
+<P>
+Don't get confused with the 3 different "completes" ! One is a message, one is the name of an elevator, and one is a stop option just like "hold".
+
+<P>
+Final note: don't assume the goals will happen in the .GOL order ! Ordering completion of goals is something you need to do yourself as part of your level design !<P>
+
+<HR SIZE=2>
+<P>
+
+</BODY>
+</HTML>
