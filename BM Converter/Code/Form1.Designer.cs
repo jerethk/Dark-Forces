@@ -282,7 +282,7 @@ namespace BM_Converter
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(680, 600);
             this.Name = "Form1";
-            this.Text = "BM Converter (version 0.5)";
+            this.Text = "BM Converter (version 0.7)";
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();

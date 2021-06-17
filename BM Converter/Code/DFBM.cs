@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace BM_Converter
 {
@@ -19,7 +20,7 @@ namespace BM_Converter
         public int DataSize { get; set; }
         public byte[] pad { get; set; }
 
-        //public byte[] CompressedData { get; set; }      // data for single BM
+        public byte[] CompressedData { get; set; }      // data for single BM
         public byte[,] PixelData { get; set; }
 
         public byte FrameRate { get; set; }     // fields for multi BMs
@@ -117,11 +118,11 @@ namespace BM_Converter
                     else
                     {
                         // single BM
+                        this.PixelData = new byte[this.SizeX, this.SizeY];
+
                         if (this.compressed == 0)
                         {
                             // Uncompressed BM
-                            this.PixelData = new byte[this.SizeX, this.SizeY];
-
                             for (int x = 0; x < this.SizeX; x++)
                             {
                                 for (int y= 0; y < this.SizeY; y++)
@@ -130,6 +131,22 @@ namespace BM_Converter
                                 }
                             }
                         }
+                        else
+                        {
+                            // read compressed data
+                            this.CompressedData = new byte[this.DataSize];
+                            this.CompressedData = reader.ReadBytes(this.DataSize);
+                        }
+
+                        if (this.compressed == 1)
+                        {
+                            uncompressRLE();
+                        }
+                        else if (this.compressed == 2)
+                        {
+                            uncompressRLE0();
+                        }
+
                     }
 
                     result = true;
@@ -238,6 +255,92 @@ namespace BM_Converter
             return success;
         }
 
+        // Uncompresses image encoded with RLE method (header.compressed == 1)
+        private void uncompressRLE()
+        {
+            int dataPosition = 0;
+            
+            for (int x = 0; x < this.SizeX; x++)
+            {
+                int y = 0;
+                int numPixels;
+
+                while (y < this.SizeY)
+                {
+                    byte b = this.CompressedData[dataPosition];
+
+                    if (b <= 128)
+                    {
+                        numPixels = b;
+                        dataPosition++;
+
+                        for (int i = 0; i < numPixels; i++)
+                        {
+                            this.PixelData[x, y] = this.CompressedData[dataPosition];
+                            y++;
+                            dataPosition++;
+                        }
+                    }
+                    else
+                    {
+                        // run of same coloured pixels
+                        numPixels = b - 128;
+                        dataPosition++;
+                        byte colour = this.CompressedData[dataPosition];
+
+                        for (int i = 0; i < numPixels; i++)
+                        {
+                            this.PixelData[x, y] = colour;
+                            y++;
+                        }
+
+                        dataPosition++;
+                    }
+
+                }
+
+            }
+        }
+
+        // Uncompresses image encoded with RLE0 method (header.compressed == 2)
+        private void uncompressRLE0()
+        {
+            int dataPosition = 0;
+            
+            for (int x = 0; x < this.SizeX; x++)
+            {
+                int y = 0;
+                int numPixels;
+
+                while (y < this.SizeY)
+                {
+                    byte b = this.CompressedData[dataPosition];
+                    if (b > 128)    // transparent section
+                    {
+                        numPixels = b - 128;
+                        for (int i = 0; i < numPixels; i++)
+                        {
+                            this.PixelData[x, y] = 0;  // transparency = palette index 0
+                            y++;
+                        }
+
+                        dataPosition++;
+                    }
+                    else            // non-transparent section
+                    {
+                        numPixels = b;
+                        dataPosition++;
+                        for (int i = 0; i < numPixels; i++)
+                        {
+                            this.PixelData[x, y] = CompressedData[dataPosition];
+                            y++;
+                            dataPosition++;
+                        }
+                    }
+                }
+
+            }
+        }
     }
 
     class SubBM
