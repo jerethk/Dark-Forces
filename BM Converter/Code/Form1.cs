@@ -29,7 +29,7 @@ namespace BM_Converter
 
         private void buttonHelp_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("This app is Copyright 2021 Jereth K.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("This app is © 2021 Jereth K.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // Load PAL  -------------------------------------------------------------------------

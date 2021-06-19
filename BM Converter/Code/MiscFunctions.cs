@@ -24,6 +24,23 @@ namespace BM_Converter
         {
             DFBM newBM = new DFBM();
 
+            byte trn;
+            switch (transparency)
+            {
+                case 'o':
+                    trn = 0x36;
+                    break;
+                case 't':
+                    trn = 0x3E;
+                    break;
+                case 'w':
+                    trn = 0x08;
+                    break;
+                default:
+                    trn = 0x36;
+                    break;
+            }
+
             if (!multiBM)
             {
                 // Single BM
@@ -35,21 +52,7 @@ namespace BM_Converter
                 newBM.SizeY = (short)source.Height;
                 newBM.idemX = newBM.SizeX;
                 newBM.idemY = newBM.SizeY;
-
-                switch (transparency) {
-                    case 'o':
-                        newBM.transparent = 0x36;
-                        break;
-                    case 't':
-                        newBM.transparent = 0x3E;
-                        break;
-                    case 'w':
-                        newBM.transparent = 0x08;
-                        break;
-                    default:
-                        newBM.transparent = 0x36;
-                        break;
-                }
+                newBM.transparent = trn;                
 
                 if (isPowerOfTwo(newBM.SizeY))
                 {
@@ -70,7 +73,55 @@ namespace BM_Converter
             else
             {
                 // Multi BM
+                newBM.multiBM = true;
+                newBM.numImages = SourceImages.Count;
+                
+                newBM.SizeX = 1;
+                newBM.idemX = -2;
+                newBM.idemY = (short)newBM.numImages;
+                newBM.transparent = trn;
+                newBM.compressed = 0;
+                newBM.DataSize = 0;
+                newBM.FrameRate = FRate;
+                newBM.SecondByte = 2;
 
+                newBM.Offsets = new int[newBM.numImages];
+                newBM.SubBMs = new List<SubBM>();
+
+                for (int i = 0; i < newBM.numImages; i++)
+                {
+                    SubBM newSubBM = new SubBM();
+                    newSubBM.SizeX = (short)SourceImages[i].Width;
+                    newSubBM.SizeY = (short)SourceImages[i].Height;
+                    newSubBM.idemX = newSubBM.SizeX;
+                    newSubBM.idemY = newSubBM.SizeY;
+                    newSubBM.DataSize = newSubBM.SizeX * newSubBM.SizeY;
+                    newSubBM.transparent = trn;
+
+                    if (isPowerOfTwo (newSubBM.SizeY))
+                    {
+                        newSubBM.logSizeY = (byte)Math.Log2(newSubBM.SizeY);
+                    }
+                    else
+                    {
+                        newSubBM.logSizeY = 0;
+                    }
+
+                    newSubBM.PixelData = DFBM.BitmaptoBM(SourceImages[i], pal, IncludeIlluminated);
+                    newBM.SubBMs.Add(newSubBM);
+                }
+
+                newBM.logSizeY = newBM.SubBMs[0].logSizeY;  // sub BMs should all be the same size
+
+                // calculate the "sizeY" value, which in a multi BM is the length of the entire file minus the header (32 bytes). Also work out the sub BM offsets.
+                int counter = (2 + 4 * newBM.numImages);    // the 2 bytes following the header + the table of offsets
+                for (int i=0; i < newBM.numImages; i++)
+                {
+                    newBM.Offsets[i] = counter - 2;
+                    counter += 28;  // len of sub BM header = 28
+                    counter += newBM.SubBMs[i].DataSize;
+                }
+                newBM.SizeY = (short)counter;
             }
 
             return newBM;

@@ -149,11 +149,11 @@ namespace BM_Converter
 
                     }
 
-                    result = true;
                 }
 
                 reader.Close();
                 reader.Dispose();
+                result = true;
             }
             catch (IOException)
             {
@@ -224,6 +224,8 @@ namespace BM_Converter
             try
             {
                 BinaryWriter writer = new BinaryWriter(File.Open(filename, FileMode.Create));
+                
+                // write BM header
                 foreach (byte b in this.FileId) writer.Write(b);
                 writer.Write(this.SizeX);
                 writer.Write(this.SizeY);
@@ -235,11 +237,47 @@ namespace BM_Converter
                 writer.Write(this.DataSize);
                 foreach (byte b in this.pad) writer.Write(b);
 
-                for (int x = 0; x < this.SizeX; x++)
+                if (!this.multiBM)
                 {
-                    for (int y = 0; y < this.SizeY; y++)
+                    // single BM image
+                    for (int x = 0; x < this.SizeX; x++)
                     {
-                        writer.Write(this.PixelData[x, y]);
+                        for (int y = 0; y < this.SizeY; y++)
+                        {
+                            writer.Write(this.PixelData[x, y]);
+                        }
+                    }
+                }
+                else
+                {
+                    // multi BM
+                    writer.Write(this.FrameRate);
+                    writer.Write(this.SecondByte);
+                    foreach (int i in this.Offsets) writer.Write(i);
+
+                    foreach (SubBM sub in this.SubBMs) 
+                    {
+                        //Sub BM header
+                        writer.Write(sub.SizeX);
+                        writer.Write(sub.SizeY);
+                        writer.Write(sub.idemX);
+                        writer.Write(sub.idemY);
+                        writer.Write(sub.DataSize);
+                        writer.Write(sub.logSizeY);
+                        foreach (byte b in sub.pad1) writer.Write(b);
+                        foreach (byte b in sub.u1) writer.Write(b);
+                        foreach (byte b in sub.pad2) writer.Write(b);
+                        writer.Write(sub.transparent);
+                        foreach (byte b in sub.pad3) writer.Write(b);
+
+                        //Sub BM image
+                        for (int x = 0; x < sub.SizeX; x++)
+                        {
+                            for (int y = 0; y < sub.SizeY; y++)
+                            {
+                                writer.Write(sub.PixelData[x, y]);
+                            }
+                        }
                     }
                 }
 
