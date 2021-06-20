@@ -138,14 +138,15 @@ namespace BM_Converter
 
         private void btnRemoveImage_Click(object sender, EventArgs e)
         {
-            if (SourceImages.Count > 0)
+            int idx = listBoxImages.SelectedIndex;
+
+            if (SourceImages.Count > 0 && idx >= 0)
             {
-                int idx = listBoxImages.SelectedIndex;
                 SourceImages.RemoveAt(idx);
                 listBoxImages.Items.RemoveAt(idx);
                 displayBox.Image = null;
 
-                if (SourceImages.Count > 0)
+                if (SourceImages.Count > 0 && idx > 0)
                 {
                     listBoxImages.SelectedIndex = idx - 1;
                 }
