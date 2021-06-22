@@ -43,7 +43,7 @@ namespace BM_Converter
             if (this.palette.LoadfromFile(OpenPALDialog.FileName))
             {
                 MessageBox.Show("PAL Loaded.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                labelPal.Text = $"PAL: {OpenPALDialog.FileName}";
+                labelPal.Text = $"PAL: {Path.GetFileName(OpenPALDialog.FileName)}";
                 BtnLoadBM.Enabled = true;
                 btnBulkConvert.Enabled = true;
             } 
@@ -85,7 +85,7 @@ namespace BM_Converter
                 }
 
                 string[] s = new string[18];
-                s[0] = OpenBMDialog.FileName;
+                s[0] = Path.GetFileName(OpenBMDialog.FileName);
                 s[2] = $"SizeX: {BM.SizeX}";
                 s[3] = $"SizeY: {BM.SizeY}";
                 s[4] = $"Compressed: {BM.compressed}";

@@ -227,6 +227,9 @@ namespace BM_Converter
             // 
             // displayBox
             // 
+            this.displayBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.displayBox.BackColor = System.Drawing.Color.Black;
             this.displayBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.displayBox.Location = new System.Drawing.Point(247, 66);
@@ -282,7 +285,7 @@ namespace BM_Converter
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(680, 600);
             this.Name = "Form1";
-            this.Text = "BM Converter (version 1.0)";
+            this.Text = "BM Converter (version 1.1)";
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();

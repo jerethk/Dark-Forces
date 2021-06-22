@@ -21,6 +21,7 @@ namespace BM_Converter
         public byte[] pad { get; set; }
 
         public byte[] CompressedData { get; set; }      // data for single BM
+        public int [] ColumnOffsets { get; set; }
         public byte[,] PixelData { get; set; }
 
         public byte FrameRate { get; set; }     // fields for multi BMs
@@ -133,9 +134,15 @@ namespace BM_Converter
                         }
                         else
                         {
-                            // read compressed data
+                            // read Compressed data
                             this.CompressedData = new byte[this.DataSize];
                             this.CompressedData = reader.ReadBytes(this.DataSize);
+
+                            this.ColumnOffsets = new int[this.SizeX];
+                            for (int x = 0; x < this.SizeX; x++)
+                            {
+                                this.ColumnOffsets[x] = reader.ReadInt32();
+                            }
                         }
 
                         if (this.compressed == 1)
@@ -148,7 +155,6 @@ namespace BM_Converter
                         }
 
                     }
-
                 }
 
                 reader.Close();
@@ -297,17 +303,16 @@ namespace BM_Converter
         private void uncompressRLE()
         {
             int dataPosition = 0;
-            
+
             for (int x = 0; x < this.SizeX; x++)
             {
                 int y = 0;
-                int numPixels;
-
                 while (y < this.SizeY)
                 {
+                    int numPixels;
                     byte b = this.CompressedData[dataPosition];
 
-                    if (b <= 128)
+                    if (b < 128)
                     {
                         numPixels = b;
                         dataPosition++;
@@ -321,6 +326,7 @@ namespace BM_Converter
                     }
                     else
                     {
+                        // if (b == 128) MessageBox.Show($"128, {x} {dataPosition}");      // for debugging
                         // run of same coloured pixels
                         numPixels = b - 128;
                         dataPosition++;
@@ -334,9 +340,7 @@ namespace BM_Converter
 
                         dataPosition++;
                     }
-
                 }
-
             }
         }
 
@@ -344,16 +348,16 @@ namespace BM_Converter
         private void uncompressRLE0()
         {
             int dataPosition = 0;
-            
+
             for (int x = 0; x < this.SizeX; x++)
             {
                 int y = 0;
-                int numPixels;
-
                 while (y < this.SizeY)
                 {
+                    int numPixels;
                     byte b = this.CompressedData[dataPosition];
-                    if (b > 128)    // transparent section
+
+                    if (b >= 128)    // transparent section
                     {
                         numPixels = b - 128;
                         for (int i = 0; i < numPixels; i++)
