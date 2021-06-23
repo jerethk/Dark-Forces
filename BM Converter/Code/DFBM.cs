@@ -21,7 +21,7 @@ namespace BM_Converter
         public byte[] pad { get; set; }
 
         public byte[] CompressedData { get; set; }      // data for single BM
-        public int [] ColumnOffsets { get; set; }
+        public int [] ColumnStarts { get; set; }
         public byte[,] PixelData { get; set; }
 
         public byte FrameRate { get; set; }     // fields for multi BMs
@@ -138,10 +138,10 @@ namespace BM_Converter
                             this.CompressedData = new byte[this.DataSize];
                             this.CompressedData = reader.ReadBytes(this.DataSize);
 
-                            this.ColumnOffsets = new int[this.SizeX];
+                            this.ColumnStarts = new int[this.SizeX];
                             for (int x = 0; x < this.SizeX; x++)
                             {
-                                this.ColumnOffsets[x] = reader.ReadInt32();
+                                this.ColumnStarts[x] = reader.ReadInt32();
                             }
                         }
 
@@ -155,11 +155,12 @@ namespace BM_Converter
                         }
 
                     }
+
+                    result = true;
                 }
 
                 reader.Close();
                 reader.Dispose();
-                result = true;
             }
             catch (IOException)
             {
@@ -246,12 +247,23 @@ namespace BM_Converter
                 if (!this.multiBM)
                 {
                     // single BM image
-                    for (int x = 0; x < this.SizeX; x++)
+                    
+                    if (this.compressed == 0)
                     {
-                        for (int y = 0; y < this.SizeY; y++)
+                        // uncompressed BM
+                        for (int x = 0; x < this.SizeX; x++)
                         {
-                            writer.Write(this.PixelData[x, y]);
+                            for (int y = 0; y < this.SizeY; y++)
+                            {
+                                writer.Write(this.PixelData[x, y]);
+                            }
                         }
+                    }
+                    else if (this.compressed == 1 || this.compressed == 2)
+                    {
+                        // compressed BM
+                        writer.Write(this.CompressedData);
+                        foreach (int i in this.ColumnStarts) writer.Write(i);
                     }
                 }
                 else
@@ -299,7 +311,7 @@ namespace BM_Converter
             return success;
         }
 
-        // Uncompresses image encoded with RLE method (header.compressed == 1)
+        // Uncompress image encoded with RLE method (header.compressed == 1)
         private void uncompressRLE()
         {
             int dataPosition = 0;
@@ -326,7 +338,6 @@ namespace BM_Converter
                     }
                     else
                     {
-                        // if (b == 128) MessageBox.Show($"128, {x} {dataPosition}");      // for debugging
                         // run of same coloured pixels
                         numPixels = b - 128;
                         dataPosition++;
@@ -344,7 +355,7 @@ namespace BM_Converter
             }
         }
 
-        // Uncompresses image encoded with RLE0 method (header.compressed == 2)
+        // Uncompress image encoded with RLE0 method (header.compressed == 2)
         private void uncompressRLE0()
         {
             int dataPosition = 0;
@@ -381,6 +392,145 @@ namespace BM_Converter
                     }
                 }
 
+            }
+        }
+
+        // compress BM image by RLE method.
+        public void compressRLE()
+        {
+            List<byte>[] compressedColumns = new List<byte>[this.SizeX];
+            
+            for (int x = 0; x < this.SizeX; x++)    // compress each column of the image
+            {
+                List<byte> thisColumn = new List<byte>();
+
+                int y = 0;
+                while (y < this.SizeY)
+                {
+                    // note: because of the way data is encoded, cannot do a run of more than 127 pixels
+                    byte counter;
+
+                    if (y <= this.SizeY - 2 && this.PixelData[x, y] == this.PixelData [x, y+1])    // same colour run
+                    {
+                        byte colour = this.PixelData[x, y]; 
+                        counter = 1;
+
+                        while (y < this.SizeY - 1 && this.PixelData[x, y+1] == colour && counter < 127)
+                        {
+                            y++;
+                            counter++;
+                        }
+
+                        // write run of same colour
+                        thisColumn.Add((byte)(128 + counter));
+                        thisColumn.Add(colour);
+
+                        y += 1;
+                    }
+                    else                        // run of different colours
+                    {
+                        int startOfRun = y;
+                        counter = 1;
+
+                        while (y < this.SizeY - 1 && this.PixelData[x, y+1] != this.PixelData[x, y] && counter < 127)
+                        {
+                            y++;
+                            counter++;
+                        }
+
+                        thisColumn.Add(counter);    // number of non-transparent pixels
+
+                        // go back to start of run and add the pixels
+                        y = startOfRun;
+                        for (int i = 0; i < counter; i++)
+                        {
+                            thisColumn.Add((byte)this.PixelData[x, y]);
+                            y++;
+                        }
+                    }
+                }
+
+                compressedColumns[x] = thisColumn;
+            }
+
+            assembleCompressedData(compressedColumns);
+        }
+
+        // compress BM image by RLE0 method (transparency)
+        public void compressRLE0()
+        {
+            List<byte>[] compressedColumns = new List<byte>[this.SizeX];
+
+            for (int x = 0; x < this.SizeX; x++)    // compress each column of the image
+            {
+                List<byte> thisColumn = new List<byte>();
+
+                int y = 0;
+                while (y < this.SizeY)
+                {
+                    // note: because of the way data is encoded, cannot do a run of more than 127 pixels
+                    byte counter;
+
+                    if (this.PixelData[x, y] == 0)    // transparent run
+                    {
+                        counter = 1;
+
+                        while (y < this.SizeY - 1 && this.PixelData[x, y + 1] == 0 && counter < 127)
+                        {
+                            y++;
+                            counter++;
+                        }
+
+                        // write run of transparent pixels
+                        thisColumn.Add((byte)(128 + counter));
+
+                        y += 1;
+                    }
+                    else                        // non-transparent run
+                    {
+                        int startOfRun = y;
+                        counter = 1;
+
+                        while (y < this.SizeY - 1 && this.PixelData[x, y + 1] != 0 && counter < 127)
+                        {
+                            y++;
+                            counter++;
+                        }
+
+                        thisColumn.Add(counter);    // number of non-transparent pixels
+
+                        // go back to start of run and add the pixels
+                        y = startOfRun;
+                        for (int i = 0; i < counter; i++)
+                        {
+                            thisColumn.Add((byte)this.PixelData[x, y]);
+                            y++;
+                        }
+                    }
+                }
+
+                compressedColumns[x] = thisColumn;
+            }
+
+            assembleCompressedData(compressedColumns);
+        }
+
+        // Assembles compressed columns into a single array of bytes (CompressedData) and creates the table of ColumnStarts
+        private void assembleCompressedData(List<byte>[] compressedColumns)
+        {
+            // Calculate DataSize
+            this.DataSize = 0;
+            foreach (List<byte> column in compressedColumns) this.DataSize += column.Count;
+
+            this.ColumnStarts = new int[this.SizeX];
+            this.CompressedData = new byte[this.DataSize];
+
+            int position = 0;
+            for (int x = 0; x < this.SizeX; x++)
+            {
+                this.ColumnStarts[x] = position;
+                compressedColumns[x].CopyTo(this.CompressedData, position);
+                position += compressedColumns[x].Count;
             }
         }
     }

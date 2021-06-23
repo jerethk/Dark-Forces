@@ -195,13 +195,12 @@ namespace BM_Converter
             // checkBoxCompressed
             // 
             this.checkBoxCompressed.AutoSize = true;
-            this.checkBoxCompressed.Location = new System.Drawing.Point(539, 119);
+            this.checkBoxCompressed.Location = new System.Drawing.Point(550, 119);
             this.checkBoxCompressed.Name = "checkBoxCompressed";
             this.checkBoxCompressed.Size = new System.Drawing.Size(92, 19);
             this.checkBoxCompressed.TabIndex = 9;
             this.checkBoxCompressed.Text = "Compressed";
             this.checkBoxCompressed.UseVisualStyleBackColor = true;
-            this.checkBoxCompressed.Visible = false;
             // 
             // groupBox1
             // 

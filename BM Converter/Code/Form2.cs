@@ -176,7 +176,7 @@ namespace BM_Converter
                 transparency = 'w';
             }
 
-            DFBM newBM = MiscFunctions.buildBM(radioBtnMultiBM.Checked, palette, SourceImages, transparency, (byte) numericFramerate.Value, checkBoxIncludeIlluminated.Checked);
+            DFBM newBM = MiscFunctions.buildBM(radioBtnMultiBM.Checked, palette, SourceImages, transparency, (byte) numericFramerate.Value, checkBoxIncludeIlluminated.Checked, checkBoxCompressed.Checked);
             
             if (newBM.SaveToFile(saveBMDialog.FileName))
             {
@@ -187,6 +187,5 @@ namespace BM_Converter
                 MessageBox.Show("Error saving BM file!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
     }
 }

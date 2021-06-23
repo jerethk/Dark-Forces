@@ -20,7 +20,7 @@ namespace BM_Converter
         }
         
         // Builds a BM object from source images
-        public static DFBM buildBM(bool multiBM, DFPal pal, List<Bitmap> SourceImages, char transparency, byte FRate, bool IncludeIlluminated)
+        public static DFBM buildBM(bool multiBM, DFPal pal, List<Bitmap> SourceImages, char transparency, byte FRate, bool IncludeIlluminated, bool compress)
         {
             DFBM newBM = new DFBM();
 
@@ -64,11 +64,28 @@ namespace BM_Converter
                     newBM.logSizeY = 0;
                 }
 
-                newBM.compressed = 0;
-                newBM.DataSize = newBM.SizeX * newBM.SizeY;
-
                 // Create BM image data
                 newBM.PixelData = DFBM.BitmaptoBM(source, pal, IncludeIlluminated);
+
+                if (compress)
+                {
+                    if (transparency == 'o')
+                    {
+                        newBM.compressed = 1;   // RLE compression for non-transparent texture
+                        newBM.compressRLE();
+                    }
+                    else
+                    {
+                        newBM.compressed = 2;   // RLE0 compression for transparent texture
+                        newBM.compressRLE0();
+                    }
+                }
+                else
+                {
+                    newBM.compressed = 0;
+                    newBM.DataSize = newBM.SizeX * newBM.SizeY;
+                }
+
             }
             else
             {
