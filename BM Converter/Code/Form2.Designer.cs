@@ -46,7 +46,7 @@ namespace BM_Converter
             // 
             this.btnLoadPal.Location = new System.Drawing.Point(11, 14);
             this.btnLoadPal.Name = "btnLoadPal";
-            this.btnLoadPal.Size = new System.Drawing.Size(75, 23);
+            this.btnLoadPal.Size = new System.Drawing.Size(93, 23);
             this.btnLoadPal.TabIndex = 0;
             this.btnLoadPal.Text = "Load PAL";
             this.btnLoadPal.UseVisualStyleBackColor = true;
@@ -67,7 +67,7 @@ namespace BM_Converter
             // checkBoxIncludeIlluminated
             // 
             this.checkBoxIncludeIlluminated.AutoSize = true;
-            this.checkBoxIncludeIlluminated.Location = new System.Drawing.Point(102, 17);
+            this.checkBoxIncludeIlluminated.Location = new System.Drawing.Point(120, 17);
             this.checkBoxIncludeIlluminated.Name = "checkBoxIncludeIlluminated";
             this.checkBoxIncludeIlluminated.Size = new System.Drawing.Size(170, 19);
             this.checkBoxIncludeIlluminated.TabIndex = 2;
@@ -77,9 +77,9 @@ namespace BM_Converter
             // 
             // btnExit
             // 
-            this.btnExit.Location = new System.Drawing.Point(643, 13);
+            this.btnExit.Location = new System.Drawing.Point(634, 13);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(54, 24);
+            this.btnExit.Size = new System.Drawing.Size(63, 24);
             this.btnExit.TabIndex = 1;
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
@@ -104,9 +104,9 @@ namespace BM_Converter
             this.labelPal.AutoSize = true;
             this.labelPal.Location = new System.Drawing.Point(11, 13);
             this.labelPal.Name = "labelPal";
-            this.labelPal.Size = new System.Drawing.Size(33, 15);
+            this.labelPal.Size = new System.Drawing.Size(98, 15);
             this.labelPal.TabIndex = 2;
-            this.labelPal.Text = "PAL: ";
+            this.labelPal.Text = "PAL: Secbase.PAL";
             // 
             // radioBtnSingleBM
             // 
@@ -165,11 +165,10 @@ namespace BM_Converter
             // 
             // btnCreateBM
             // 
-            this.btnCreateBM.Enabled = false;
             this.btnCreateBM.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnCreateBM.Location = new System.Drawing.Point(616, 42);
+            this.btnCreateBM.Location = new System.Drawing.Point(604, 42);
             this.btnCreateBM.Name = "btnCreateBM";
-            this.btnCreateBM.Size = new System.Drawing.Size(82, 40);
+            this.btnCreateBM.Size = new System.Drawing.Size(94, 40);
             this.btnCreateBM.TabIndex = 12;
             this.btnCreateBM.Text = "Create BM";
             this.btnCreateBM.UseVisualStyleBackColor = true;
@@ -187,7 +186,7 @@ namespace BM_Converter
             // numericFramerate
             // 
             this.numericFramerate.Enabled = false;
-            this.numericFramerate.Location = new System.Drawing.Point(418, 118);
+            this.numericFramerate.Location = new System.Drawing.Point(437, 116);
             this.numericFramerate.Name = "numericFramerate";
             this.numericFramerate.Size = new System.Drawing.Size(78, 23);
             this.numericFramerate.TabIndex = 10;
@@ -195,7 +194,7 @@ namespace BM_Converter
             // checkBoxCompressed
             // 
             this.checkBoxCompressed.AutoSize = true;
-            this.checkBoxCompressed.Location = new System.Drawing.Point(550, 119);
+            this.checkBoxCompressed.Location = new System.Drawing.Point(572, 122);
             this.checkBoxCompressed.Name = "checkBoxCompressed";
             this.checkBoxCompressed.Size = new System.Drawing.Size(92, 19);
             this.checkBoxCompressed.TabIndex = 9;
@@ -255,15 +254,15 @@ namespace BM_Converter
             this.displayBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.displayBox.Location = new System.Drawing.Point(280, 145);
             this.displayBox.Name = "displayBox";
-            this.displayBox.Size = new System.Drawing.Size(418, 394);
+            this.displayBox.Size = new System.Drawing.Size(418, 417);
             this.displayBox.TabIndex = 8;
             this.displayBox.TabStop = false;
             // 
             // btnRemoveImage
             // 
-            this.btnRemoveImage.Location = new System.Drawing.Point(121, 116);
+            this.btnRemoveImage.Location = new System.Drawing.Point(118, 116);
             this.btnRemoveImage.Name = "btnRemoveImage";
-            this.btnRemoveImage.Size = new System.Drawing.Size(97, 23);
+            this.btnRemoveImage.Size = new System.Drawing.Size(100, 28);
             this.btnRemoveImage.TabIndex = 7;
             this.btnRemoveImage.Text = "Remove Image";
             this.btnRemoveImage.UseVisualStyleBackColor = true;
@@ -273,7 +272,7 @@ namespace BM_Converter
             // 
             this.btnAddImage.Location = new System.Drawing.Point(12, 116);
             this.btnAddImage.Name = "btnAddImage";
-            this.btnAddImage.Size = new System.Drawing.Size(83, 23);
+            this.btnAddImage.Size = new System.Drawing.Size(95, 28);
             this.btnAddImage.TabIndex = 6;
             this.btnAddImage.Text = "Add Image";
             this.btnAddImage.UseVisualStyleBackColor = true;
@@ -283,9 +282,9 @@ namespace BM_Converter
             // 
             this.listBoxImages.FormattingEnabled = true;
             this.listBoxImages.ItemHeight = 15;
-            this.listBoxImages.Location = new System.Drawing.Point(12, 145);
+            this.listBoxImages.Location = new System.Drawing.Point(12, 160);
             this.listBoxImages.Name = "listBoxImages";
-            this.listBoxImages.Size = new System.Drawing.Size(206, 394);
+            this.listBoxImages.Size = new System.Drawing.Size(206, 379);
             this.listBoxImages.TabIndex = 5;
             this.listBoxImages.SelectedIndexChanged += new System.EventHandler(this.listBoxImages_SelectedIndexChanged);
             // 

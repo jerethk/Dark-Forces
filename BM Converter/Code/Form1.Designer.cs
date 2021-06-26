@@ -72,9 +72,10 @@ namespace BM_Converter
             // 
             // btnCreateBM
             // 
+            this.btnCreateBM.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnCreateBM.Location = new System.Drawing.Point(423, 11);
             this.btnCreateBM.Name = "btnCreateBM";
-            this.btnCreateBM.Size = new System.Drawing.Size(102, 24);
+            this.btnCreateBM.Size = new System.Drawing.Size(123, 24);
             this.btnCreateBM.TabIndex = 4;
             this.btnCreateBM.Text = "Create BM";
             this.btnCreateBM.UseVisualStyleBackColor = true;
@@ -94,9 +95,9 @@ namespace BM_Converter
             // btnBulkConvert
             // 
             this.btnBulkConvert.Enabled = false;
-            this.btnBulkConvert.Location = new System.Drawing.Point(246, 12);
+            this.btnBulkConvert.Location = new System.Drawing.Point(235, 12);
             this.btnBulkConvert.Name = "btnBulkConvert";
-            this.btnBulkConvert.Size = new System.Drawing.Size(95, 23);
+            this.btnBulkConvert.Size = new System.Drawing.Size(117, 23);
             this.btnBulkConvert.TabIndex = 2;
             this.btnBulkConvert.Text = "Bulk Convert";
             this.btnBulkConvert.UseVisualStyleBackColor = true;
@@ -104,7 +105,6 @@ namespace BM_Converter
             // 
             // BtnLoadBM
             // 
-            this.BtnLoadBM.Enabled = false;
             this.BtnLoadBM.Location = new System.Drawing.Point(93, 12);
             this.BtnLoadBM.Name = "BtnLoadBM";
             this.BtnLoadBM.Size = new System.Drawing.Size(75, 23);
@@ -177,11 +177,11 @@ namespace BM_Converter
             // checkBoxZoom
             // 
             this.checkBoxZoom.AutoSize = true;
-            this.checkBoxZoom.Location = new System.Drawing.Point(589, 44);
+            this.checkBoxZoom.Location = new System.Drawing.Point(550, 37);
             this.checkBoxZoom.Name = "checkBoxZoom";
-            this.checkBoxZoom.Size = new System.Drawing.Size(58, 19);
+            this.checkBoxZoom.Size = new System.Drawing.Size(97, 23);
             this.checkBoxZoom.TabIndex = 8;
-            this.checkBoxZoom.Text = "Zoom";
+            this.checkBoxZoom.Text = "Zoom to fit";
             this.checkBoxZoom.UseVisualStyleBackColor = true;
             this.checkBoxZoom.CheckedChanged += new System.EventHandler(this.checkBoxZoom_CheckedChanged);
             // 
@@ -212,7 +212,7 @@ namespace BM_Converter
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(13, 249);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(56, 15);
+            this.label2.Size = new System.Drawing.Size(66, 19);
             this.label2.TabIndex = 5;
             this.label2.Text = "Sub BMs:";
             // 
@@ -243,7 +243,7 @@ namespace BM_Converter
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(13, 48);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 15);
+            this.label1.Size = new System.Drawing.Size(61, 19);
             this.label1.TabIndex = 2;
             this.label1.Text = "BM Info:";
             // 
@@ -252,9 +252,9 @@ namespace BM_Converter
             this.labelPal.AutoSize = true;
             this.labelPal.Location = new System.Drawing.Point(13, 21);
             this.labelPal.Name = "labelPal";
-            this.labelPal.Size = new System.Drawing.Size(30, 15);
+            this.labelPal.Size = new System.Drawing.Size(113, 19);
             this.labelPal.TabIndex = 1;
-            this.labelPal.Text = "PAL:";
+            this.labelPal.Text = "PAL: Secbase.PAL";
             // 
             // textBoxBMInfo
             // 
@@ -285,7 +285,7 @@ namespace BM_Converter
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(680, 600);
             this.Name = "Form1";
-            this.Text = "BM Converter (version 1.2)";
+            this.Text = "BM Converter (version 1.2.1)";
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
