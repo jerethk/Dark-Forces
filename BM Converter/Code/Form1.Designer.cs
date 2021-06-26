@@ -94,7 +94,6 @@ namespace BM_Converter
             // 
             // btnBulkConvert
             // 
-            this.btnBulkConvert.Enabled = false;
             this.btnBulkConvert.Location = new System.Drawing.Point(235, 12);
             this.btnBulkConvert.Name = "btnBulkConvert";
             this.btnBulkConvert.Size = new System.Drawing.Size(117, 23);
@@ -179,7 +178,7 @@ namespace BM_Converter
             this.checkBoxZoom.AutoSize = true;
             this.checkBoxZoom.Location = new System.Drawing.Point(550, 37);
             this.checkBoxZoom.Name = "checkBoxZoom";
-            this.checkBoxZoom.Size = new System.Drawing.Size(97, 23);
+            this.checkBoxZoom.Size = new System.Drawing.Size(86, 19);
             this.checkBoxZoom.TabIndex = 8;
             this.checkBoxZoom.Text = "Zoom to fit";
             this.checkBoxZoom.UseVisualStyleBackColor = true;
@@ -212,7 +211,7 @@ namespace BM_Converter
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(13, 249);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(66, 19);
+            this.label2.Size = new System.Drawing.Size(56, 15);
             this.label2.TabIndex = 5;
             this.label2.Text = "Sub BMs:";
             // 
@@ -243,7 +242,7 @@ namespace BM_Converter
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(13, 48);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 19);
+            this.label1.Size = new System.Drawing.Size(52, 15);
             this.label1.TabIndex = 2;
             this.label1.Text = "BM Info:";
             // 
@@ -252,7 +251,7 @@ namespace BM_Converter
             this.labelPal.AutoSize = true;
             this.labelPal.Location = new System.Drawing.Point(13, 21);
             this.labelPal.Name = "labelPal";
-            this.labelPal.Size = new System.Drawing.Size(113, 19);
+            this.labelPal.Size = new System.Drawing.Size(98, 15);
             this.labelPal.TabIndex = 1;
             this.labelPal.Text = "PAL: Secbase.PAL";
             // 

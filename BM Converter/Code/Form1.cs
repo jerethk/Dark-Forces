@@ -256,7 +256,7 @@ namespace BM_Converter
 
         private void openBulkDialog_FileOk(object sender, CancelEventArgs e)
         {
-            DialogResult answer = MessageBox.Show("This will convert all selected BMs into PNG files. It will skip any multi BMs that you selected. The PNGs will be saved in the same directory as the BMs. Proceed?", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+            DialogResult answer = MessageBox.Show("This will convert all selected BMs into PNG files. It will skip any multi BMs that you selected. The PNGs will be saved in the same directory as the BMs. Proceed?", "Confirm", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
             if (answer == DialogResult.OK)
             {

@@ -160,15 +160,15 @@ namespace BM_Converter
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 47);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(744, 577);
+            this.panel2.Size = new System.Drawing.Size(744, 554);
             this.panel2.TabIndex = 5;
             // 
             // btnCreateBM
             // 
             this.btnCreateBM.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnCreateBM.Location = new System.Drawing.Point(604, 42);
+            this.btnCreateBM.Location = new System.Drawing.Point(592, 42);
             this.btnCreateBM.Name = "btnCreateBM";
-            this.btnCreateBM.Size = new System.Drawing.Size(94, 40);
+            this.btnCreateBM.Size = new System.Drawing.Size(106, 40);
             this.btnCreateBM.TabIndex = 12;
             this.btnCreateBM.Text = "Create BM";
             this.btnCreateBM.UseVisualStyleBackColor = true;
@@ -177,7 +177,7 @@ namespace BM_Converter
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(280, 120);
+            this.label1.Location = new System.Drawing.Point(280, 118);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(132, 15);
             this.label1.TabIndex = 11;
@@ -194,7 +194,7 @@ namespace BM_Converter
             // checkBoxCompressed
             // 
             this.checkBoxCompressed.AutoSize = true;
-            this.checkBoxCompressed.Location = new System.Drawing.Point(572, 122);
+            this.checkBoxCompressed.Location = new System.Drawing.Point(592, 120);
             this.checkBoxCompressed.Name = "checkBoxCompressed";
             this.checkBoxCompressed.Size = new System.Drawing.Size(92, 19);
             this.checkBoxCompressed.TabIndex = 9;
@@ -254,7 +254,7 @@ namespace BM_Converter
             this.displayBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.displayBox.Location = new System.Drawing.Point(280, 145);
             this.displayBox.Name = "displayBox";
-            this.displayBox.Size = new System.Drawing.Size(418, 417);
+            this.displayBox.Size = new System.Drawing.Size(418, 394);
             this.displayBox.TabIndex = 8;
             this.displayBox.TabStop = false;
             // 
@@ -297,7 +297,7 @@ namespace BM_Converter
             // 
             // Form2
             // 
-            this.ClientSize = new System.Drawing.Size(744, 624);
+            this.ClientSize = new System.Drawing.Size(744, 601);
             this.ControlBox = false;
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);

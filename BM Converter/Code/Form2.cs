@@ -29,7 +29,7 @@ namespace BM_Converter
         {
             if (palette.LoadfromFile(openPALDialog.FileName))
             {
-                labelPal.Text = $"PAL: {openPALDialog.FileName}";
+                labelPal.Text = $"PAL: {Path.GetFileName(openPALDialog.FileName)}";
                 btnCreateBM.Enabled = true;
             }
             else
