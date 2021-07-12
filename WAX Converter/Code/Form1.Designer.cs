@@ -78,6 +78,7 @@ namespace WAX_converter
             this.label4 = new System.Windows.Forms.Label();
             this.openPalDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveBMPDialog = new System.Windows.Forms.SaveFileDialog();
+            this.labelSeqFrame = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             this.RadioGroup.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -112,9 +113,9 @@ namespace WAX_converter
             this.label6.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label6.Location = new System.Drawing.Point(12, 30);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(43, 15);
+            this.label6.Size = new System.Drawing.Size(46, 15);
             this.label6.TabIndex = 8;
-            this.label6.Text = "Palette";
+            this.label6.Text = "Palette:";
             // 
             // RadioGroup
             // 
@@ -184,9 +185,9 @@ namespace WAX_converter
             this.LabelPal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.LabelPal.Location = new System.Drawing.Point(85, 30);
             this.LabelPal.Name = "LabelPal";
-            this.LabelPal.Size = new System.Drawing.Size(27, 15);
+            this.LabelPal.Size = new System.Drawing.Size(120, 15);
             this.LabelPal.TabIndex = 5;
-            this.LabelPal.Text = "----";
+            this.LabelPal.Text = "Secbase.PAL (default)";
             // 
             // label1
             // 
@@ -248,44 +249,43 @@ namespace WAX_converter
             // MenuLoadPal
             // 
             this.MenuLoadPal.Name = "MenuLoadPal";
-            this.MenuLoadPal.Size = new System.Drawing.Size(140, 22);
+            this.MenuLoadPal.Size = new System.Drawing.Size(149, 22);
             this.MenuLoadPal.Text = "Load PAL";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(137, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(146, 6);
             // 
             // MenuOpenWax
             // 
-            this.MenuOpenWax.Enabled = false;
             this.MenuOpenWax.Name = "MenuOpenWax";
-            this.MenuOpenWax.Size = new System.Drawing.Size(140, 22);
+            this.MenuOpenWax.Size = new System.Drawing.Size(149, 22);
             this.MenuOpenWax.Text = "Open WAX";
             // 
             // MenuCloseWax
             // 
             this.MenuCloseWax.Enabled = false;
             this.MenuCloseWax.Name = "MenuCloseWax";
-            this.MenuCloseWax.Size = new System.Drawing.Size(140, 22);
+            this.MenuCloseWax.Size = new System.Drawing.Size(149, 22);
             this.MenuCloseWax.Text = "Close WAX";
             // 
             // MenuSaveBMP
             // 
             this.MenuSaveBMP.Enabled = false;
             this.MenuSaveBMP.Name = "MenuSaveBMP";
-            this.MenuSaveBMP.Size = new System.Drawing.Size(140, 22);
-            this.MenuSaveBMP.Text = "Save as BMP";
+            this.MenuSaveBMP.Size = new System.Drawing.Size(149, 22);
+            this.MenuSaveBMP.Text = "Export to PNG";
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(137, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(146, 6);
             // 
             // MenuQuit
             // 
             this.MenuQuit.Name = "MenuQuit";
-            this.MenuQuit.Size = new System.Drawing.Size(140, 22);
+            this.MenuQuit.Size = new System.Drawing.Size(149, 22);
             this.MenuQuit.Text = "Quit";
             // 
             // MenuBuildWax
@@ -328,12 +328,13 @@ namespace WAX_converter
             // openWaxDialog
             // 
             this.openWaxDialog.DefaultExt = "wax";
-            this.openWaxDialog.Filter = "WAX files|*.wax";
+            this.openWaxDialog.Filter = "Dark Forces WAX files|*.wax";
             this.openWaxDialog.Title = "Open WAX file";
             this.openWaxDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openWaxDialog_FileOk);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.labelSeqFrame);
             this.panel1.Controls.Add(this.SeqNextFrame);
             this.panel1.Controls.Add(this.SeqPrevFrame);
             this.panel1.Controls.Add(this.SeqNumber);
@@ -352,7 +353,7 @@ namespace WAX_converter
             // 
             // SeqNextFrame
             // 
-            this.SeqNextFrame.Location = new System.Drawing.Point(92, 317);
+            this.SeqNextFrame.Location = new System.Drawing.Point(117, 317);
             this.SeqNextFrame.Name = "SeqNextFrame";
             this.SeqNextFrame.Size = new System.Drawing.Size(31, 26);
             this.SeqNextFrame.TabIndex = 10;
@@ -362,7 +363,7 @@ namespace WAX_converter
             // 
             // SeqPrevFrame
             // 
-            this.SeqPrevFrame.Location = new System.Drawing.Point(50, 317);
+            this.SeqPrevFrame.Location = new System.Drawing.Point(28, 317);
             this.SeqPrevFrame.Name = "SeqPrevFrame";
             this.SeqPrevFrame.Size = new System.Drawing.Size(31, 26);
             this.SeqPrevFrame.TabIndex = 9;
@@ -382,7 +383,6 @@ namespace WAX_converter
             this.SeqNumber.Name = "SeqNumber";
             this.SeqNumber.Size = new System.Drawing.Size(64, 23);
             this.SeqNumber.TabIndex = 8;
-            this.SeqNumber.ValueChanged += new System.EventHandler(this.SeqNumber_ValueChanged);
             // 
             // label8
             // 
@@ -416,7 +416,6 @@ namespace WAX_converter
             this.ActionNumber.ReadOnly = true;
             this.ActionNumber.Size = new System.Drawing.Size(64, 23);
             this.ActionNumber.TabIndex = 1;
-            this.ActionNumber.ValueChanged += new System.EventHandler(this.ActionNumber_ValueChanged);
             // 
             // label2
             // 
@@ -439,7 +438,6 @@ namespace WAX_converter
             this.ViewNumber.Name = "ViewNumber";
             this.ViewNumber.Size = new System.Drawing.Size(64, 23);
             this.ViewNumber.TabIndex = 1;
-            this.ViewNumber.ValueChanged += new System.EventHandler(this.ViewNumber_ValueChanged);
             // 
             // label3
             // 
@@ -478,11 +476,11 @@ namespace WAX_converter
             // checkBoxZoom
             // 
             this.checkBoxZoom.AutoSize = true;
-            this.checkBoxZoom.Location = new System.Drawing.Point(85, 392);
+            this.checkBoxZoom.Location = new System.Drawing.Point(92, 421);
             this.checkBoxZoom.Name = "checkBoxZoom";
-            this.checkBoxZoom.Size = new System.Drawing.Size(94, 19);
+            this.checkBoxZoom.Size = new System.Drawing.Size(86, 19);
             this.checkBoxZoom.TabIndex = 10;
-            this.checkBoxZoom.Text = "Zoom image";
+            this.checkBoxZoom.Text = "Zoom to fit";
             this.checkBoxZoom.UseVisualStyleBackColor = true;
             this.checkBoxZoom.CheckedChanged += new System.EventHandler(this.checkBoxZoom_CheckedChanged);
             // 
@@ -552,7 +550,6 @@ namespace WAX_converter
             this.FrameNumber.Name = "FrameNumber";
             this.FrameNumber.Size = new System.Drawing.Size(58, 23);
             this.FrameNumber.TabIndex = 4;
-            this.FrameNumber.ValueChanged += new System.EventHandler(this.FrameNumber_ValueChanged_1);
             // 
             // label4
             // 
@@ -573,9 +570,18 @@ namespace WAX_converter
             // saveBMPDialog
             // 
             this.saveBMPDialog.AddExtension = false;
-            this.saveBMPDialog.DefaultExt = "BMP";
-            this.saveBMPDialog.Filter = "BMP files|*.bmp";
+            this.saveBMPDialog.DefaultExt = "PNG";
+            this.saveBMPDialog.Filter = "PNG files|*.png";
             this.saveBMPDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveBMPDialog_FileOk);
+            // 
+            // labelSeqFrame
+            // 
+            this.labelSeqFrame.AutoSize = true;
+            this.labelSeqFrame.Location = new System.Drawing.Point(80, 323);
+            this.labelSeqFrame.Name = "labelSeqFrame";
+            this.labelSeqFrame.Size = new System.Drawing.Size(17, 15);
+            this.labelSeqFrame.TabIndex = 11;
+            this.labelSeqFrame.Text = "--";
             // 
             // MainWindow
             // 
@@ -590,7 +596,7 @@ namespace WAX_converter
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(960, 720);
             this.Name = "MainWindow";
-            this.Text = "WAX Converter";
+            this.Text = "WAX Converter (version 0.9 - beta)";
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.RadioGroup.ResumeLayout(false);
@@ -662,6 +668,7 @@ namespace WAX_converter
         private System.Windows.Forms.CheckBox checkBoxZoom;
         private System.Windows.Forms.ToolStripMenuItem MenuHelphelp;
         private System.Windows.Forms.ToolStripMenuItem MenuAbout;
+        private System.Windows.Forms.Label labelSeqFrame;
     }
 }
 

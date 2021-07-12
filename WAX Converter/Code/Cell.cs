@@ -16,22 +16,16 @@ namespace WAX_converter
         public int pad1 { get; set; }
         
         public int address { get; set; }        // address where this cell is located in WAX file
-        public short[,] Pixels { get; set; }     // the image as an array [x, y] of palette references, from the WAX file (same as FME). Use short (instead of byte) so transparent pixels can be recorded as -1
+        public short[,] Pixels { get; set; }     // the image as an array [x, y] of palette references, from the WAX file (same as FME). Uses short (instead of byte) so transparent pixels can be recorded as -1
+        public int[] columnOffsets { get; set; }    // for compressed data
+        public List<byte> compressedData { get; set; }   
         public Bitmap bitmap { get; set; }
-        public List<byte> compressedData { get; set; }   // this is used when creating a new compressed WAX
 
         // Methods
-        public void uncompressImage(byte[] compressedData)
+        public void uncompressImage()
         {
-            // get the column indexes - this comes at the start of the data
-            int[] colIndexes = new int[this.SizeX];
-            for (int col = 0; col < this.SizeX; col++)
-            {
-                colIndexes[col] = BitConverter.ToInt32(compressedData, 4 * col);
-            }
-
             // uncompress data to the pixel array, column by column
-            int dataPosition = 4 * this.SizeX;       // the starting point for the actual image data; follows the column indexes
+            int dataPosition = 0; 
             for (int x = 0; x < this.SizeX; x++)
             {
                 int y = 0;
@@ -39,13 +33,13 @@ namespace WAX_converter
 
                 while (y < this.SizeY)
                 {
-                    byte b = compressedData[dataPosition];
-                    if (b > 128)    // transparent section
+                    byte b = this.compressedData[dataPosition];
+                    if (b >= 128)    // transparent section
                     {
                         numPixels = b - 128;
                         for (int i = 0; i < numPixels; i++)
                         {
-                            this.Pixels[x, y] = 31;  // record transparency as palette index 31, which is usually not used
+                            this.Pixels[x, y] = -1;  
                             y++;
                         }
 
@@ -57,7 +51,7 @@ namespace WAX_converter
                         dataPosition++;
                         for (int i = 0; i < numPixels; i++)
                         {
-                            this.Pixels[x, y] = compressedData[dataPosition];
+                            this.Pixels[x, y] = this.compressedData[dataPosition];
                             y++;
                             dataPosition++;
                         }
@@ -99,8 +93,7 @@ namespace WAX_converter
 
         public void createCellImage(Bitmap bitmap, DFPal palette, Color transparentColour, bool includeIlluminatedColours)
         {
-            //Color transparentColour = Color.FromArgb(255, 255, 0, 255);
-
+            
             // flip upside down
             bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
             
@@ -110,7 +103,7 @@ namespace WAX_converter
                 {
                     if (bitmap.GetPixel(x, y) == transparentColour)
                     {
-                        this.Pixels[x, y] = 0;     // transparent = index 0
+                        this.Pixels[x, y] = -1;     // transparent
                     }
                     else
                     {
@@ -126,7 +119,6 @@ namespace WAX_converter
 
         public void compressCell()
         {
-            int[] columnIndexes = new int[this.SizeX];
             List<byte>[] columnData = new List<byte>[this.SizeX];   // an array of byte-lists.
 
             for (int x = 0; x < this.SizeX; x++)    // compress each column of the image
@@ -136,8 +128,7 @@ namespace WAX_converter
                 int y = 0;
                 while (y < this.SizeY)
                 {
-                    // note: because of the way data is encoded, cannot do a run of more than 128 coloured pixels or 127 transparent pixels
-                    // ... and I've discovered that trying to compress an image with height > 128 crashes the game !!!!
+                    // note: because of the way data is encoded, cannot do a run of more than 127 coloured pixels or transparent pixels
                     byte counter;
 
                     if (this.Pixels[x, y] == -1)    // transparent run
@@ -160,7 +151,7 @@ namespace WAX_converter
                         int startOfRun = y;
                         counter = 1;
 
-                        while (y < this.SizeY - 1 && this.Pixels[x, y + 1] != -1 && counter < 128)
+                        while (y < this.SizeY - 1 && this.Pixels[x, y + 1] != -1 && counter < 127)
                         {
                             y++;
                             counter++;
@@ -181,35 +172,22 @@ namespace WAX_converter
                 columnData[x] = thisColumn;
             }
 
-            // Set column indexes
-            // index of first column, always 24 + (4 * sizeX)
-            columnIndexes[0] = 24 + (4 * this.SizeX);
+            // Set column offsets
+            this.columnOffsets = new int[this.SizeX];
+            this.columnOffsets[0] = 24 + (4 * this.SizeX);      // offset of first column, always 24 + (4 * sizeX)  =  header + offsets table  
 
-            // index of remaining columns
-            for (int x = 1; x < this.SizeX; x++)
+            for (int x = 1; x < this.SizeX; x++)        // offsets of remaining columns
             {
-                columnIndexes[x] = columnIndexes[x - 1] + columnData[x - 1].Count; // add the size of the previous column (number of bytes in the list) to the index of the previous column
+                this.columnOffsets[x] = this.columnOffsets[x - 1] + columnData[x - 1].Count; // add the size of the previous column (number of bytes in the list) to the offset of the previous column
             }
 
-            // transfer the whole thing to new list of bytes
+            // transfer the compressed columns to a single list of bytes
             this.compressedData = new List<byte>();
-            
-            for (int x = 0; x < this.SizeX; x++)    // first the indexes
+            foreach (List<byte> col in columnData)
             {
-                byte[] fourBytes = new byte[4];
-                fourBytes = BitConverter.GetBytes(columnIndexes[x]);
-
-                for (int i = 0; i < 4; i++)
+                foreach (byte b in col)
                 {
-                    this.compressedData.Add(fourBytes[i]);
-                }
-            }
-
-            for (int x = 0; x < this.SizeX; x++)    // finally, the data
-            {   
-                for (int i = 0; i < columnData[x].Count; i++)
-                {
-                    this.compressedData.Add(columnData[x][i]);
+                    this.compressedData.Add(b);
                 }
             }
         }

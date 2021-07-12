@@ -61,7 +61,7 @@ namespace WAX_converter
         {
             if (e.ClickedItem == MenuAbout)
             {
-                MessageBox.Show("This utility was written by Jereth, one of the crusty old members of the Code Alliance. Find me on the DF-21 Discord.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("This utility was written by Jereth K. Find me on the DF-21 Discord.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else if (e.ClickedItem == MenuHelphelp)
             {
@@ -72,12 +72,13 @@ namespace WAX_converter
             }
         }
 
+        // -------------------------------------------------------------------------------------
+
         private void openPalDialog_FileOk(object sender, CancelEventArgs e)
         {
             if (palette.LoadfromFile(openPalDialog.FileName))
             {
-                LabelPal.Text = $"{openPalDialog.FileName}";
-                MenuOpenWax.Enabled = true;
+                LabelPal.Text = $"{Path.GetFileName(openPalDialog.FileName)}";
             }
             else
             {
@@ -87,10 +88,18 @@ namespace WAX_converter
 
         private void openWaxDialog_FileOk(object sender, CancelEventArgs e)
         {
-            wax = new Waxfile();
-            if (wax.LoadFromFile(openWaxDialog.FileName, palette))
+            Waxfile tryOpenWax = new Waxfile();
+            if (tryOpenWax.LoadFromFile(openWaxDialog.FileName, palette))
             {
-                labelWax.Text = openWaxDialog.FileName;
+                this.wax = tryOpenWax;
+                
+                // remove event handlers (to prevent exceptions when resetting values)
+                this.ActionNumber.ValueChanged -= this.ActionNumber_ValueChanged;
+                this.ViewNumber.ValueChanged -= this.ViewNumber_ValueChanged;
+                this.SeqNumber.ValueChanged -= this.SeqNumber_ValueChanged;
+                this.FrameNumber.ValueChanged -= this.FrameNumber_ValueChanged_1;
+
+                labelWax.Text = Path.GetFileName(openWaxDialog.FileName);
                 RadioGroup.Enabled = true;
                 SeqFrame = 0;
                 ActionNumber.Value = 0;
@@ -98,12 +107,18 @@ namespace WAX_converter
                 SeqNumber.Value = 0;
                 FrameNumber.Value = 0;
                 CellNumber.Value = 0;
-                CellNumber.Maximum = wax.Ncells - 1;
-                FrameNumber.Maximum = wax.Nframes - 1;
-                SeqNumber.Maximum = wax.Nseqs - 1;
                 ActionNumber.Maximum = wax.numActions - 1;
+                SeqNumber.Maximum = wax.Nseqs - 1;
+                FrameNumber.Maximum = wax.Nframes - 1;
+                CellNumber.Maximum = wax.Ncells - 1;
                 radioAction.Checked = false;
                 radioAction.Checked = true;
+
+                // add event handlers
+                this.ActionNumber.ValueChanged += new System.EventHandler(this.ActionNumber_ValueChanged);
+                this.ViewNumber.ValueChanged += new System.EventHandler(this.ViewNumber_ValueChanged);
+                this.SeqNumber.ValueChanged += new System.EventHandler(this.SeqNumber_ValueChanged);
+                this.FrameNumber.ValueChanged += new System.EventHandler(this.FrameNumber_ValueChanged_1);
 
                 // display Wax details
                 string[] strings = new string[9];
@@ -127,10 +142,6 @@ namespace WAX_converter
             {
                 MessageBox.Show("Error loading WAX file.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            /*****************************************************************************/
-            //output.Text = wax.numActions.ToString();
-           /*****************************************************************************/
         }
 
         // ---------------------------------------------------------------------------------------------------------
@@ -139,7 +150,7 @@ namespace WAX_converter
         {
             UpdateActionInfo();
 
-            ActionNumber.Value = 0;
+            //ActionNumber.Value = 0;
 
             ActionNumber.Enabled = true;
             ViewNumber.Enabled = true;
@@ -155,6 +166,7 @@ namespace WAX_converter
             UpdateSeqInfo();
             UpdateFrame();
 
+            ActionInfo.Text = ""; 
             ActionNumber.Enabled = false;
             ViewNumber.Enabled = false;
             SeqNumber.Enabled = true;
@@ -170,7 +182,6 @@ namespace WAX_converter
 
             ActionInfo.Text = "";
             SeqInfo.Text = "";
-            FrameNumber.Value = 0;
 
             ActionNumber.Enabled = false;
             ViewNumber.Enabled = false;
@@ -206,13 +217,15 @@ namespace WAX_converter
 
         private void UpdateActionInfo()
         {
+            int thisAction = (int)ActionNumber.Value;
+
             // display Action info
             string[] strings = new string[5];
-            strings[0] = $"Wwidth: {wax.Actions[(int)ActionNumber.Value].Wwidth}";
-            strings[1] = $"Wheight: {wax.Actions[(int)ActionNumber.Value].Wheight}";
-            strings[2] = $"Framerate: {wax.Actions[(int)ActionNumber.Value].FrameRate}";
-            //strings[3] = $"{wax.Actions[(int)ActionNumber.Value].Nframes}";
-            //strings[4] = $"{wax.Actions[(int)ActionNumber.Value].pad2} {wax.Actions[(int)ActionNumber.Value].pad3} {wax.Actions[(int)ActionNumber.Value].pad4}";
+            strings[0] = $"Wwidth: {wax.Actions[thisAction].Wwidth}";
+            strings[1] = $"Wheight: {wax.Actions[thisAction].Wheight}";
+            strings[2] = $"Framerate: {wax.Actions[thisAction].FrameRate}";
+            //strings[3] = $"{wax.Actions[thisAction].Nframes}";
+            //strings[4] = $"{wax.Actions[thisAction].pad2} {wax.Actions[thisAction].pad3} {wax.Actions[thisAction].pad4}";
             ActionInfo.Lines = strings;
 
             ViewNumber.Value = 0;
@@ -228,25 +241,26 @@ namespace WAX_converter
         {
             int thisSequence = wax.Actions[(int)ActionNumber.Value].seqIndexes[(int)ViewNumber.Value];
             SeqNumber.Value = thisSequence;
-            SeqFrame = 0;
             
             UpdateSeqInfo();
         }
 
         private void SeqNumber_ValueChanged(object sender, EventArgs e)
         {
-            int thisSequence = (int) SeqNumber.Value;
-            int thisFrame = wax.Sequences[thisSequence].frameIndexes[0];
-
-            FrameNumber.Value = thisFrame;
             UpdateSeqInfo();
         }
 
         private void UpdateSeqInfo()
         {
+            int thisSequence = (int)SeqNumber.Value;
+            int thisFrame = wax.Sequences[thisSequence].frameIndexes[0];
+            FrameNumber.Value = thisFrame;
+            SeqFrame = 0;
+            labelSeqFrame.Text = SeqFrame.ToString();
+
             string[] s = new string[3];
-            s[0] = $"This sequence has {wax.Sequences[(int) SeqNumber.Value].numFrames} frames";
-            //s[2] = $"{wax.Sequences[(int)SeqNumber.Value].pad1} {wax.Sequences[(int)SeqNumber.Value].pad2} {wax.Sequences[(int)SeqNumber.Value].pad3} {wax.Sequences[(int)SeqNumber.Value].pad4}";
+            s[0] = $"This sequence has {wax.Sequences[thisSequence].numFrames} frames";
+            //s[2] = $"{wax.Sequences[thisSequence].pad1} {wax.Sequences[thisSequence].pad2} {wax.Sequences[thisSequence].pad3} {wax.Sequences[thisSequence].pad4}";
             SeqInfo.Lines = s;
 
             UpdateFrame();
@@ -260,6 +274,7 @@ namespace WAX_converter
             if (SeqFrame < maxFrame)
             {
                 SeqFrame++;
+                labelSeqFrame.Text = SeqFrame.ToString();
                 int thisFrame = wax.Sequences[thisSequence].frameIndexes[SeqFrame];
                 FrameNumber.Value = thisFrame;
                 UpdateFrame();
@@ -273,22 +288,12 @@ namespace WAX_converter
             if (SeqFrame > 0)
             {
                 SeqFrame--;
+                labelSeqFrame.Text = SeqFrame.ToString();
                 int thisFrame = wax.Sequences[thisSequence].frameIndexes[SeqFrame];
                 FrameNumber.Value = thisFrame;
                 UpdateFrame();
             }
         }
-
-        /*
-        private void UpdateSeqFrame()
-        {
-            int thisSequence = (int)SeqNumber.Value;
-            //int thisSequence = wax.Actions[(int)ActionNumber.Value].seqIndexes[(int)ViewNumber.Value];
-            int thisFrame = wax.Sequences[thisSequence].frameIndexes[(int)SeqFrameNumber.Value];
-
-            FrameNumber.Value = thisFrame;
-            UpdateFrame();
-        } */
 
         // ---------------------------------------------------------------------------------------------------------
 
@@ -299,16 +304,18 @@ namespace WAX_converter
 
         private void UpdateFrame()
         {
+            int thisFrame = (int)FrameNumber.Value;
+
             string[] strings = new string[7];
-            strings[0] = $"InsertX: {wax.Frames[(int)FrameNumber.Value].InsertX}";
-            strings[1] = $"InsertY: {wax.Frames[(int)FrameNumber.Value].InsertY}";
-            strings[2] = $"Flip: {wax.Frames[(int)FrameNumber.Value].Flip}";
-            strings[3] = $"Cell Address: 0x{Convert.ToString(wax.Frames[(int)FrameNumber.Value].CellAddress, 16)}";
-            //strings[4] = $"{wax.Frames[(int)FrameNumber.Value].UnitWidth} {wax.Frames[(int)FrameNumber.Value].UnitHeight}";
-            //strings[5] = $"{wax.Frames[(int)FrameNumber.Value].pad3} {wax.Frames[(int)FrameNumber.Value].pad4}";
+            strings[0] = $"InsertX: {wax.Frames[thisFrame].InsertX}";
+            strings[1] = $"InsertY: {wax.Frames[thisFrame].InsertY}";
+            strings[2] = $"Flip: {wax.Frames[thisFrame].Flip}";
+            strings[3] = $"Cell Address: 0x{Convert.ToString(wax.Frames[thisFrame].CellAddress, 16)}";
+            //strings[4] = $"{wax.Frames[thisFrame].UnitWidth} {wax.Frames[thisFrame].UnitHeight}";
+            //strings[5] = $"{wax.Frames[thisFrame].pad3} {wax.Frames[thisFrame].pad4}";
             FrameInfo.Lines = strings;
 
-            CellNumber.Value = wax.Frames[(int)FrameNumber.Value].CellIndex;
+            CellNumber.Value = wax.Frames[thisFrame].CellIndex;
             UpdateCell();
         }
 
@@ -319,17 +326,19 @@ namespace WAX_converter
 
         private void UpdateCell()
         {
+            int thisCell = (int)CellNumber.Value;
+
             string[] strings = new string[8];
-            strings[0] = $"SizeX: {wax.Cells[(int)CellNumber.Value].SizeX}";
-            strings[1] = $"SizeY: {wax.Cells[(int)CellNumber.Value].SizeY}";
-            strings[2] = $"Compressed: {wax.Cells[(int)CellNumber.Value].Compressed}";
-            strings[3] = $"DataSize: {wax.Cells[(int)CellNumber.Value].DataSize}";
-            strings[4] = $"ColOffs: {wax.Cells[(int)CellNumber.Value].ColOffs}";
-            //strings[5] = $"{wax.Cells[(int)CellNumber.Value].pad1}";
-            //strings[6] = $"ADDRESS: 0x{Convert.ToString(wax.Cells[(int)CellNumber.Value].address, 16)}";
+            strings[0] = $"SizeX: {wax.Cells[thisCell].SizeX}";
+            strings[1] = $"SizeY: {wax.Cells[thisCell].SizeY}";
+            strings[2] = $"Compressed: {wax.Cells[thisCell].Compressed}";
+            strings[3] = $"DataSize: {wax.Cells[thisCell].DataSize}";
+            //strings[4] = $"ColOffs: {wax.Cells[thisCell].ColOffs}";
+            //strings[5] = $"{wax.Cells[thisCell].pad1}";
+            //strings[6] = $"ADDRESS: 0x{Convert.ToString(wax.Cells[thisCell].address, 16)}";
             CellInfo.Lines = strings;
 
-            displayBox.Image = wax.Cells[(int)CellNumber.Value].bitmap;
+            displayBox.Image = wax.Cells[thisCell].bitmap;
         }
 
         // ---------------------------------------------------------------------------------------------------------
@@ -358,13 +367,13 @@ namespace WAX_converter
 
         private void saveBMPDialog_FileOk(object sender, CancelEventArgs e)
         {
-            if (wax.exportToBMP(saveBMPDialog.FileName))
+            if (wax.exportToPNG(saveBMPDialog.FileName))
             {
-                MessageBox.Show("Successfully saved BMPs.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Successfully saved PNGs.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show("Error saving BMPs.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error saving PNGs.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

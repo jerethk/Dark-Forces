@@ -16,7 +16,7 @@ namespace WAX_converter
 
     public class Waxfile : Object
     {
-        // Constructor -----------------------------------------------
+        // Constructor -------------------------
         public Waxfile()
         {
             this.Version = 0x11000;
@@ -27,7 +27,7 @@ namespace WAX_converter
             this.Cells = new List<Cell>();
         }
 
-        // Properties  -----------------------------------------------------
+        // Properties  ---------------------------
         public int Version { get; set; }
         public int Nseqs { get; set; }
         public int Nframes { get; set; }
@@ -161,7 +161,7 @@ namespace WAX_converter
 
                     Cell.Pixels = new short[Cell.SizeX, Cell.SizeY];
 
-                    // Read (& uncompress) the image data
+                    // Read the image data
                     if (Cell.Compressed == 0)
                     {
                         // uncompressed
@@ -175,18 +175,27 @@ namespace WAX_converter
                     }
                     else if (Cell.Compressed == 1)
                     {
-                        // read raw data into an array of bytes
-                        byte[] rawData = new byte[Cell.DataSize - 24];       // header size is 24 bytes
-                        for (int b = 0; b < Cell.DataSize - 24; b++)
+                        // read column offsets
+                        Cell.columnOffsets = new int[Cell.SizeX];
+                        for (int x = 0; x < Cell.SizeX; x++)
                         {
-                            rawData[b] = fileReader.ReadByte();
+                            Cell.columnOffsets[x] = fileReader.ReadInt32();
+                        }
+
+                        // read compressed data
+                        int compressedDataLength = Cell.DataSize - 24 - (Cell.SizeX * 4);   // DataSize minus header minus offset table
+                        Cell.compressedData = new List<byte>();                        
+                        
+                        for (int i = 0; i < compressedDataLength; i++)
+                        {
+                            Cell.compressedData.Add(fileReader.ReadByte());
                         }
 
                         // uncompress data
-                        Cell.uncompressImage(rawData);
+                        Cell.uncompressImage();
                     }
 
-                    // Create bitmap
+                    // Create bitmap from cell image
                     Cell.createBitmap(palette /*, frame.Flip */);
 
                     this.Cells.Add(Cell);
@@ -216,7 +225,7 @@ namespace WAX_converter
             return true;
         }
 
-        public bool exportToBMP(string filename)
+        public bool exportToPNG(string filename)
         {
             try
             {
@@ -235,8 +244,8 @@ namespace WAX_converter
                         leadingZeroes = "0";
                     }
 
-                    string saveName = dir + "/" + baseFilename + leadingZeroes + i + ".BMP";
-                    this.Cells[i].bitmap.Save(saveName, ImageFormat.Bmp);
+                    string saveName = dir + "/" + baseFilename + leadingZeroes + i + ".PNG";
+                    this.Cells[i].bitmap.Save(saveName, ImageFormat.Png);
                 } 
             }
             catch (IOException)
@@ -247,7 +256,7 @@ namespace WAX_converter
             return true;
         }
 
-        public bool save(string filename)
+        public bool save(string filename, bool compress)
         {
             try
             {
@@ -322,21 +331,38 @@ namespace WAX_converter
                     fileWriter.Write(this.Cells[c].ColOffs);
                     fileWriter.Write(this.Cells[c].pad1);
 
-                    /*  This was for writing compressed cell. Commented out 
-                    for (int i = 0; i < this.Cells[c].compressedData.Count; i++)
-                    {
-                        fileWriter.Write(this.Cells[c].compressedData[i]);
-                    } */
 
-                    byte b;
-                    for (int x = 0; x < this.Cells[c].SizeX; x++)
+                    if (compress)
                     {
-                        for (int y = 0; y < this.Cells[c].SizeY; y++)
+                        foreach (int i in this.Cells[c].columnOffsets)
                         {
-                            b = (byte)this.Cells[c].Pixels[x, y];
-                            fileWriter.Write(b);
+                            fileWriter.Write(i);
                         }
 
+                        foreach (byte b in this.Cells[c].compressedData)
+                        {
+                            fileWriter.Write(b);
+                        }
+                    }
+                    else    // uncompressed
+                    {
+                        for (int x = 0; x < this.Cells[c].SizeX; x++)
+                        {
+                            for (int y = 0; y < this.Cells[c].SizeY; y++)
+                            {
+                                byte b;
+                                if (this.Cells[c].Pixels[x, y] == -1)
+                                {
+                                    b = 0;  // transparent = index 0
+                                } 
+                                else
+                                {
+                                    b = (byte)this.Cells[c].Pixels[x, y];
+                                }
+                                
+                                fileWriter.Write(b);
+                            }
+                        }
                     }
                 }
 
@@ -364,8 +390,8 @@ namespace WAX_converter
             pad2 = 0;
             pad3 = 0;
             pad4 = 0;
-            viewAddresses = new int[32];      // address in WAX file for the 32 views
-            seqIndexes = new int[32];
+            viewAddresses = new int[32];      
+            seqIndexes = new int[32];       
         }
 
         // Properties & fields
@@ -376,21 +402,26 @@ namespace WAX_converter
         public int pad2 { get; set; }
         public int pad3 { get; set; }
         public int pad4 { get; set; }
-        public int[] viewAddresses { get; set; }
+        public int[] viewAddresses { get; set; }    // address in WAX file for the 32 views
 
-        public int[] seqIndexes { get; set; }
+        public int[] seqIndexes { get; set; }       // sequence# corresponding to each view
     }
 
     public class Sequence
     {
         public Sequence()
         {
-            frameAddresses = new int[32];       // address in WAX file for frames (up to 32) per sequence
+            frameAddresses = new int[32];       
             frameIndexes = new int[32];
             pad1 = 0;
             pad2 = 0;
             pad3 = 0;
             pad4 = 0;
+
+            for (int i = 0; i < 32; i++)
+            {
+                this.frameIndexes[i] = -1;      // set to -1 by default (empty)
+            }
         }
 
         // Properties & fields
@@ -398,11 +429,10 @@ namespace WAX_converter
         public int pad2 { get; set; }
         public int pad3 { get; set; }
         public int pad4 { get; set; }
-        public int[] frameAddresses { get; set; }       // address in WAX file
+        public int[] frameAddresses { get; set; }       // address in WAX file for frames (up to 32 per sequence)
 
         public int numFrames { get; set; }
         public int[] frameIndexes { get; set; }
-        //public long address { get; set; }           // address in WAX file
     }
 
     public class Frame
@@ -426,7 +456,6 @@ namespace WAX_converter
         public int pad4 { get; set; }
 
         public int CellIndex { get; set; }
-        //public long address { get; set; }       // address in WAX file
     }
 
 }

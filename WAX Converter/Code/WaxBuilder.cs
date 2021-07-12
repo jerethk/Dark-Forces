@@ -9,8 +9,11 @@ namespace WAX_converter
     // A static class containing static methods used to create a new WAX file //
     public static class WaxBuilder
     {
-        public static Waxfile BuildWax(int LogicType, List<Action> SourceActionList, List<Sequence> SourceSequenceList, List<Frame> SourceFrameList, List<Bitmap> SourceImageList, DFPal palette, Color transparentColour, bool includeIlluminatedColours)
+        public static Waxfile BuildWax(int LogicType, List<Action> SourceActionList, List<Sequence> SourceSequenceList, List<Frame> SourceFrameList, List<Bitmap> SourceImageList, DFPal palette, Color transparentColour, bool includeIlluminatedColours, bool compress)
         {
+            ProgressBarWindow progressMeter = new ProgressBarWindow();
+            progressMeter.Show();
+            
             Waxfile newWax = new Waxfile();
 
             switch (LogicType)
@@ -76,33 +79,51 @@ namespace WAX_converter
                 }
             }
 
-            // create Cells from bitmap images
+            // create Cells from bitmap images. Show progress meter because this can be lengthy
+            progressMeter.progressBar.Maximum = SourceImageList.Count + 1;
+            progressMeter.progressBar.Value = 1;
+
             int firstCellAddress = 160 + newWax.numActions * 156 + newWax.Nseqs * 144 + newWax.Nframes * 32;
             for (int i = 0; i < SourceImageList.Count; i++)  
             {
                 Cell newCell = new Cell();
                 newCell.SizeX = SourceImageList[i].Width;
                 newCell.SizeY = SourceImageList[i].Height;
-                newCell.Compressed = 0;
-                newCell.DataSize = 0;   // zero if uncompressed cell
                 newCell.ColOffs = 0;    // always zero
 
                 newCell.Pixels = new short[newCell.SizeX, newCell.SizeY];
                 newCell.createCellImage(SourceImageList[i], palette, transparentColour, includeIlluminatedColours);       // result is stored in the cell object's Pixels property
-                // newCell.compressCell();                                     // result is stored in the cell object's compressedData property (List of bytes)
 
-                // newCell.DataSize = 24 + newCell.compressedData.Count;
-
+                if (compress)
+                {
+                    newCell.compressCell();     // result is stored in the cell object's compressedData property (List of bytes)
+                    newCell.Compressed = 1;
+                    newCell.DataSize = 24 + (4 * newCell.SizeX) + newCell.compressedData.Count;
+                }
+                else
+                {
+                    newCell.Compressed = 0;
+                    newCell.DataSize = 0;
+                }
+                
                 if (i == 0)
                 {
                     newCell.address = firstCellAddress;
                 }
                 else
                 {
-                    newCell.address = newWax.Cells[i-1].address + 24 + newWax.Cells[i-1].SizeX * newWax.Cells[i-1].SizeY;   // header (24 bytes) + size of previous cell
+                    if (compress)
+                    {
+                        newCell.address = newWax.Cells[i - 1].address + newWax.Cells[i - 1].DataSize;   // address of prev cell + datasize of previous cell
+                    }
+                    else // not compressed
+                    {
+                        newCell.address = newWax.Cells[i - 1].address + 24 + newWax.Cells[i - 1].SizeX * newWax.Cells[i - 1].SizeY;   // header (24 bytes) + image size (x * y)
+                    }
                 }
-                
+
                 newWax.Cells.Add(newCell);
+                progressMeter.progressBar.Value++;
             }
 
             // Frames
@@ -114,6 +135,8 @@ namespace WAX_converter
                 newWax.Frames[f].CellAddress = newWax.Cells[cellIndex].address;  
             }
 
+            progressMeter.Close();
+            progressMeter.Dispose();
             return newWax;
         }
         
@@ -161,6 +184,9 @@ namespace WAX_converter
             return bestMatch;
         }
 
+
+
+        /*
         public static Bitmap quantizeBitmap(Bitmap sourceImage, DFPal palette)
         {
             // Color quantizes to the PAL using Euclidean distance technique
@@ -202,5 +228,6 @@ namespace WAX_converter
 
             return newImage;
         }
+        */
     }
 }
