@@ -66,7 +66,13 @@ namespace WAX_converter
                 this.Dispose();
             }
         }
-        
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            HelpWindow hlpwin = new HelpWindow();
+            hlpwin.ShowDialog();
+        }
+
         private void ButtonPal_Click(object sender, EventArgs e)
         {
             openPalDialog.ShowDialog();
@@ -111,11 +117,11 @@ namespace WAX_converter
             TransparentDialog.Dispose();
         }
 
-// --- CELL AREA --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // --- CELL AREA --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         private void listboxImages_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ImageList.Count >= 1)
+            if (ImageList.Count >= 1 && listboxImages.SelectedIndex >= 0)
             {
                 displayBox2.Image = ImageList[listboxImages.SelectedIndex];
             }
@@ -223,19 +229,43 @@ namespace WAX_converter
 
         private void buttonAddFrame_Click(object sender, EventArgs e)
         {
-            if (ImageList.Count > 0 && listboxImages.SelectedIndex >= 0)
+            if (ImageList.Count > 0)
             {
-                int selectedCell = listboxImages.SelectedIndex;
+                MessageBox.Show("Select the cells to turn into frames, then press DONE. Multiselect using CTRL and SHIFT keys.");
+                btnDoneAddingFrames.Visible = true;
+                listboxImages.SelectionMode = SelectionMode.MultiExtended;    // allow multiselection
 
-                Frame newFrame = new Frame();
-                newFrame.CellIndex = selectedCell;
-                newFrame.InsertX = ImageList[selectedCell].Width / 2 * -1;      // set sensible default values based on size of image
-                newFrame.InsertY = ImageList[selectedCell].Height * -1;
-                newFrame.Flip = 0;
+                ButtonMoveUp.Enabled = false;
+                ButtonMoveDown.Enabled = false;
+                ButtonRemoveImage.Enabled = false;
+                ButtonAddImage.Enabled = false;
+                panel1.Enabled = false;
+                panel3.Enabled = false;
+                panel5.Enabled = false;
+                panel6.Enabled = false;
+                panel7.Enabled = false;
+            }
+        }
 
-                FrameList.Add(newFrame);
-                listboxFrames.Items.Add(listboxFrames.Items.Count);
-                listboxFrames.SelectedIndex = listboxFrames.Items.Count - 1;
+        private void btnDoneAddingFrames_Click(object sender, EventArgs e)
+        {
+            if (listboxImages.SelectedItems.Count > 0)
+            {
+                // makes all selected cells into frames
+                foreach (object o in listboxImages.SelectedItems)
+                {
+                    int selectedCell = listboxImages.Items.IndexOf(o);
+
+                    Frame newFrame = new Frame();
+                    newFrame.CellIndex = selectedCell;
+                    newFrame.InsertX = ImageList[selectedCell].Width / 2 * -1;      // set sensible default values based on size of image
+                    newFrame.InsertY = ImageList[selectedCell].Height * -1;
+                    newFrame.Flip = 0;
+
+                    FrameList.Add(newFrame);
+                    listboxFrames.Items.Add(listboxFrames.Items.Count);
+                    listboxFrames.SelectedIndex = listboxFrames.Items.Count - 1;
+                }
 
                 InsertX.Enabled = true;
                 InsertY.Enabled = true;
@@ -243,12 +273,24 @@ namespace WAX_converter
                 buttonAddSequence.Enabled = true;
                 buttonRemoveSequence.Enabled = true;
                 labelNFrames.Text = "n = " + FrameList.Count;
-
-                // once Frames have been added, disable ability to move & remove cells
-                ButtonMoveUp.Enabled = false;
-                ButtonMoveDown.Enabled = false;
-                ButtonRemoveImage.Enabled = false;
             }
+
+            // once Frames have been added, disable ability to move & remove cells
+            if (FrameList.Count == 0)
+            {
+                ButtonMoveUp.Enabled = true;
+                ButtonMoveDown.Enabled = true;
+                ButtonRemoveImage.Enabled = true;
+            }
+
+            ButtonAddImage.Enabled = true;
+            panel1.Enabled = true;
+            panel3.Enabled = true;
+            panel5.Enabled = true;
+            panel6.Enabled = true;
+            panel7.Enabled = true;
+            btnDoneAddingFrames.Visible = false;
+            listboxImages.SelectionMode = SelectionMode.One;
         }
 
         private void buttonRemoveFrame_Click(object sender, EventArgs e)
@@ -267,6 +309,15 @@ namespace WAX_converter
                 labelNFrames.Text = "n = " + FrameList.Count;
             }
 
+            if (FrameList.Count == 0)
+            {
+                ButtonMoveUp.Enabled = true;
+                ButtonMoveDown.Enabled = true;
+                ButtonRemoveImage.Enabled = true;
+                InsertX.Enabled = false;
+                InsertY.Enabled = false;
+                checkBoxFlip.Enabled = false;
+            }
         }
 
         private void InsertX_ValueChanged(object sender, EventArgs e)
@@ -324,7 +375,6 @@ namespace WAX_converter
                 Wwidth.Enabled = true;
                 Wheight.Enabled = true;
                 FRate.Enabled = true;
-                
             }
         }
 
@@ -334,35 +384,39 @@ namespace WAX_converter
 
             if (SequenceList.Count > 1 && index >= 0)
             {
-                if (index > 0)
+                DialogResult answer = MessageBox.Show("The entire selected sequence will be deleted. Are you sure?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (answer == DialogResult.Yes)
                 {
-                    listboxSeqs.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
-                }
-
-                SequenceList.RemoveAt(index);
-                listboxSeqs.Items.RemoveAt(listboxSeqs.Items.Count - 1);
-
-                labelNSeqs.Text = "n = " + SequenceList.Count;
-
-                // Go through all the actions and re-index every sequence after the removed sequence, then update the datagrid
-                for (int a = 0; a < 14; a++)
-                {
-                    for (int v = 0; v < 32; v++)
+                    if (index > 0)
                     {
-                        int value = ActionList[a].seqIndexes[v];
-                        if (value > index || value >= SequenceList.Count)
+                        listboxSeqs.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
+                    }
+
+                    SequenceList.RemoveAt(index);
+                    listboxSeqs.Items.RemoveAt(listboxSeqs.Items.Count - 1);
+
+                    labelNSeqs.Text = "n = " + SequenceList.Count;
+
+                    // Go through all the actions and re-index every sequence after the removed sequence, then update the datagrid
+                    for (int a = 0; a < 14; a++)
+                    {
+                        for (int v = 0; v < 32; v++)
                         {
-                            ActionList[a].seqIndexes[v] -= 1;
+                            int value = ActionList[a].seqIndexes[v];
+                            if (value > index || value >= SequenceList.Count)
+                            {
+                                ActionList[a].seqIndexes[v] -= 1;
+                            }
                         }
                     }
-                }
 
-                for (int i = 0; i < 32; i++)
-                {
-                    dataGridViews.Rows[i].Cells[1].Value = ActionList[comboBoxAction.SelectedIndex].seqIndexes[i];
+                    for (int i = 0; i < 32; i++)
+                    {
+                        dataGridViews.Rows[i].Cells[1].Value = ActionList[comboBoxAction.SelectedIndex].seqIndexes[i];
+                    }
                 }
             }
-
         }
 
         private void listboxSeqFrames_SelectedIndexChanged(object sender, EventArgs e)
@@ -381,26 +435,64 @@ namespace WAX_converter
 
         private void buttonSetFrame_Click(object sender, EventArgs e)
         {
-            int selectedFrame = listboxFrames.SelectedIndex;
-            int selectedSequence = listboxSeqs.SelectedIndex;
-
-            if (selectedFrame >= 0 && selectedSequence >= 0)
+            if (listboxSeqs.SelectedIndex >= 0)
             {
-                int seqFrame = listboxSeqFrames.SelectedIndex;
+                MessageBox.Show("Select the frames to assign to this sequence, then press DONE. Multiselect using CTRL and SHIFT keys. To cancel, press DONE with no frames selected.");
+                btnDoneSettingFrames.Visible = true;
+                listboxFrames.SelectionMode = SelectionMode.MultiExtended;    // allow multiselection
 
-                if (seqFrame == 0 || SequenceList[selectedSequence].frameIndexes[seqFrame - 1] != -1)   // disallow if previous frame in sequence is set to -1
-                {
-                    labelNotes.Text = "Notes:";
-                    SequenceList[selectedSequence].frameIndexes[seqFrame] = selectedFrame;
-                    listboxSeqFrames.DataSource = new int[32];   // for some reason, need to do this to update the listbox!
-                    listboxSeqFrames.DataSource = SequenceList[listboxSeqs.SelectedIndex].frameIndexes;
-                    if (listboxSeqFrames.SelectedIndex < 31) listboxSeqFrames.SelectedIndex += 1; // move 1 down
-                }
-                else
-                {
-                    labelNotes.Text = "Notes:  Cannot set a frame after an empty frame.";
-                }
+                buttonAddFrame.Enabled = false;
+                buttonRemoveFrame.Enabled = false;
+                InsertX.Enabled = false;
+                InsertY.Enabled = false;
+                checkBoxFlip.Enabled = false;
+                panel1.Enabled = false;
+                panel2.Enabled = false;
+                panel5.Enabled = false;
+                panel6.Enabled = false;
+                panel7.Enabled = false;
             }
+        }
+
+        private void btnDoneSettingFrames_Click(object sender, EventArgs e)
+        {
+            int nFrames = listboxFrames.SelectedItems.Count;
+            
+            if (nFrames > 0)
+            {
+                int selectedSequence = listboxSeqs.SelectedIndex;
+                if (nFrames > 32) nFrames = 32;
+
+                for (int f = 0; f < nFrames; f++)
+                {
+                    Object o = listboxFrames.SelectedItems[f];
+                    int selectedFrame = listboxFrames.Items.IndexOf(o);
+                    SequenceList[selectedSequence].frameIndexes[f] = selectedFrame;
+                }
+                
+                for  (int f = nFrames; f < 32; f++)
+                {
+                    SequenceList[selectedSequence].frameIndexes[f] = -1;
+                }
+
+                listboxSeqFrames.DataSource = new int[32];   // for some reason, need to do this to update the listbox!
+                listboxSeqFrames.DataSource = SequenceList[listboxSeqs.SelectedIndex].frameIndexes;
+                listboxSeqFrames.SelectedIndex = 0;
+            }
+
+            btnDoneSettingFrames.Visible = false;
+            listboxFrames.SelectionMode = SelectionMode.One;
+
+            buttonAddFrame.Enabled = true;
+            buttonRemoveFrame.Enabled = false;
+            InsertX.Enabled = true;
+            InsertY.Enabled = true;
+            checkBoxFlip.Enabled = true;
+            panel1.Enabled = true;
+            panel2.Enabled = true;
+            panel5.Enabled = true;
+            panel6.Enabled = true;
+            panel7.Enabled = true;
         }
 
         private void buttonClearFrame_Click(object sender, EventArgs e)
@@ -418,9 +510,7 @@ namespace WAX_converter
                         listboxSeqFrames.DataSource = SequenceList[listboxSeqs.SelectedIndex].frameIndexes;
                         break;
                     }
-
                 }
-
             }
         }
 
@@ -944,9 +1034,10 @@ namespace WAX_converter
             }
         }
 
+        
         // -----------
-    
-       
+
+
     }
 
 

@@ -274,11 +274,16 @@ namespace WAX_converter
             if (SeqFrame < maxFrame)
             {
                 SeqFrame++;
-                labelSeqFrame.Text = SeqFrame.ToString();
-                int thisFrame = wax.Sequences[thisSequence].frameIndexes[SeqFrame];
-                FrameNumber.Value = thisFrame;
-                UpdateFrame();
             }
+            else
+            {
+                SeqFrame = 0;
+            }
+
+            labelSeqFrame.Text = SeqFrame.ToString();
+            int thisFrame = wax.Sequences[thisSequence].frameIndexes[SeqFrame];
+            FrameNumber.Value = thisFrame;
+            UpdateFrame();
         }
 
         private void SeqPrevFrame_Click(object sender, EventArgs e)
@@ -288,11 +293,16 @@ namespace WAX_converter
             if (SeqFrame > 0)
             {
                 SeqFrame--;
-                labelSeqFrame.Text = SeqFrame.ToString();
-                int thisFrame = wax.Sequences[thisSequence].frameIndexes[SeqFrame];
-                FrameNumber.Value = thisFrame;
-                UpdateFrame();
             }
+            else
+            {
+                SeqFrame = wax.Sequences[thisSequence].numFrames - 1;
+            }
+
+            labelSeqFrame.Text = SeqFrame.ToString();
+            int thisFrame = wax.Sequences[thisSequence].frameIndexes[SeqFrame];
+            FrameNumber.Value = thisFrame;
+            UpdateFrame();
         }
 
         // ---------------------------------------------------------------------------------------------------------

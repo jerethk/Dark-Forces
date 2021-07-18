@@ -57,6 +57,7 @@ namespace WAX_converter
             this.MenuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.openWaxDialog = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.labelSeqFrame = new System.Windows.Forms.Label();
             this.SeqNextFrame = new System.Windows.Forms.Button();
             this.SeqPrevFrame = new System.Windows.Forms.Button();
             this.SeqNumber = new System.Windows.Forms.NumericUpDown();
@@ -78,7 +79,6 @@ namespace WAX_converter
             this.label4 = new System.Windows.Forms.Label();
             this.openPalDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveBMPDialog = new System.Windows.Forms.SaveFileDialog();
-            this.labelSeqFrame = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             this.RadioGroup.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -351,6 +351,15 @@ namespace WAX_converter
             this.panel1.Size = new System.Drawing.Size(193, 486);
             this.panel1.TabIndex = 3;
             // 
+            // labelSeqFrame
+            // 
+            this.labelSeqFrame.AutoSize = true;
+            this.labelSeqFrame.Location = new System.Drawing.Point(80, 323);
+            this.labelSeqFrame.Name = "labelSeqFrame";
+            this.labelSeqFrame.Size = new System.Drawing.Size(17, 15);
+            this.labelSeqFrame.TabIndex = 11;
+            this.labelSeqFrame.Text = "--";
+            // 
             // SeqNextFrame
             // 
             this.SeqNextFrame.Location = new System.Drawing.Point(117, 317);
@@ -574,15 +583,6 @@ namespace WAX_converter
             this.saveBMPDialog.Filter = "PNG files|*.png";
             this.saveBMPDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveBMPDialog_FileOk);
             // 
-            // labelSeqFrame
-            // 
-            this.labelSeqFrame.AutoSize = true;
-            this.labelSeqFrame.Location = new System.Drawing.Point(80, 323);
-            this.labelSeqFrame.Name = "labelSeqFrame";
-            this.labelSeqFrame.Size = new System.Drawing.Size(17, 15);
-            this.labelSeqFrame.TabIndex = 11;
-            this.labelSeqFrame.Text = "--";
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -596,7 +596,7 @@ namespace WAX_converter
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(960, 720);
             this.Name = "MainWindow";
-            this.Text = "WAX Converter (version 0.9 - beta)";
+            this.Text = "WAX Converter (version 0.91 - beta)";
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.RadioGroup.ResumeLayout(false);

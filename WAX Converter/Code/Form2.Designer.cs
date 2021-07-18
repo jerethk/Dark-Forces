@@ -44,12 +44,14 @@ namespace WAX_converter
             this.transpColourBox = new System.Windows.Forms.PictureBox();
             this.buttonTransparent = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btnDoneAddingFrames = new System.Windows.Forms.Button();
             this.labelNCells = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.ButtonRemoveImage = new System.Windows.Forms.Button();
             this.ButtonMoveUp = new System.Windows.Forms.Button();
             this.ButtonMoveDown = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.btnDoneSettingFrames = new System.Windows.Forms.Button();
             this.labelNFrames = new System.Windows.Forms.Label();
             this.InsertY = new System.Windows.Forms.NumericUpDown();
             this.InsertX = new System.Windows.Forms.NumericUpDown();
@@ -99,6 +101,7 @@ namespace WAX_converter
             this.saveWIPDialog = new System.Windows.Forms.SaveFileDialog();
             this.openWIPDialog = new System.Windows.Forms.OpenFileDialog();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.btnHelp = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.displayBox2)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.transpColourBox)).BeginInit();
@@ -183,6 +186,7 @@ namespace WAX_converter
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnHelp);
             this.panel1.Controls.Add(this.checkBoxIlluminated);
             this.panel1.Controls.Add(this.buttonSaveWIP);
             this.panel1.Controls.Add(this.buttonLoadWIP);
@@ -249,6 +253,7 @@ namespace WAX_converter
             // 
             this.panel2.AutoScroll = true;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel2.Controls.Add(this.btnDoneAddingFrames);
             this.panel2.Controls.Add(this.labelNCells);
             this.panel2.Controls.Add(this.label2);
             this.panel2.Controls.Add(this.ButtonRemoveImage);
@@ -260,8 +265,20 @@ namespace WAX_converter
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 47);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(388, 714);
+            this.panel2.Size = new System.Drawing.Size(388, 737);
             this.panel2.TabIndex = 7;
+            // 
+            // btnDoneAddingFrames
+            // 
+            this.btnDoneAddingFrames.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnDoneAddingFrames.Location = new System.Drawing.Point(259, 43);
+            this.btnDoneAddingFrames.Name = "btnDoneAddingFrames";
+            this.btnDoneAddingFrames.Size = new System.Drawing.Size(97, 52);
+            this.btnDoneAddingFrames.TabIndex = 10;
+            this.btnDoneAddingFrames.Text = "DONE";
+            this.btnDoneAddingFrames.UseVisualStyleBackColor = true;
+            this.btnDoneAddingFrames.Visible = false;
+            this.btnDoneAddingFrames.Click += new System.EventHandler(this.btnDoneAddingFrames_Click);
             // 
             // labelNCells
             // 
@@ -288,7 +305,7 @@ namespace WAX_converter
             this.ButtonRemoveImage.Name = "ButtonRemoveImage";
             this.ButtonRemoveImage.Size = new System.Drawing.Size(95, 34);
             this.ButtonRemoveImage.TabIndex = 7;
-            this.ButtonRemoveImage.Text = "Remove";
+            this.ButtonRemoveImage.Text = "Remove cell";
             this.ButtonRemoveImage.UseVisualStyleBackColor = true;
             this.ButtonRemoveImage.Click += new System.EventHandler(this.ButtonRemoveImage_Click);
             // 
@@ -315,6 +332,7 @@ namespace WAX_converter
             // panel3
             // 
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel3.Controls.Add(this.btnDoneSettingFrames);
             this.panel3.Controls.Add(this.labelNFrames);
             this.panel3.Controls.Add(this.InsertY);
             this.panel3.Controls.Add(this.InsertX);
@@ -330,8 +348,20 @@ namespace WAX_converter
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(265, 296);
+            this.panel3.Size = new System.Drawing.Size(265, 327);
             this.panel3.TabIndex = 8;
+            // 
+            // btnDoneSettingFrames
+            // 
+            this.btnDoneSettingFrames.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnDoneSettingFrames.Location = new System.Drawing.Point(87, 255);
+            this.btnDoneSettingFrames.Name = "btnDoneSettingFrames";
+            this.btnDoneSettingFrames.Size = new System.Drawing.Size(132, 47);
+            this.btnDoneSettingFrames.TabIndex = 11;
+            this.btnDoneSettingFrames.Text = "DONE";
+            this.btnDoneSettingFrames.UseVisualStyleBackColor = true;
+            this.btnDoneSettingFrames.Visible = false;
+            this.btnDoneSettingFrames.Click += new System.EventHandler(this.btnDoneSettingFrames_Click);
             // 
             // labelNFrames
             // 
@@ -432,9 +462,9 @@ namespace WAX_converter
             this.buttonRemoveFrame.Enabled = false;
             this.buttonRemoveFrame.Location = new System.Drawing.Point(87, 72);
             this.buttonRemoveFrame.Name = "buttonRemoveFrame";
-            this.buttonRemoveFrame.Size = new System.Drawing.Size(75, 23);
+            this.buttonRemoveFrame.Size = new System.Drawing.Size(132, 23);
             this.buttonRemoveFrame.TabIndex = 3;
-            this.buttonRemoveFrame.Text = "Remove";
+            this.buttonRemoveFrame.Text = "Remove frame";
             this.buttonRemoveFrame.UseVisualStyleBackColor = true;
             this.buttonRemoveFrame.Click += new System.EventHandler(this.buttonRemoveFrame_Click);
             // 
@@ -443,9 +473,9 @@ namespace WAX_converter
             this.buttonAddFrame.Enabled = false;
             this.buttonAddFrame.Location = new System.Drawing.Point(87, 43);
             this.buttonAddFrame.Name = "buttonAddFrame";
-            this.buttonAddFrame.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddFrame.Size = new System.Drawing.Size(132, 23);
             this.buttonAddFrame.TabIndex = 2;
-            this.buttonAddFrame.Text = "Add";
+            this.buttonAddFrame.Text = "CHOOSE CELLS";
             this.buttonAddFrame.UseVisualStyleBackColor = true;
             this.buttonAddFrame.Click += new System.EventHandler(this.buttonAddFrame_Click);
             // 
@@ -455,7 +485,7 @@ namespace WAX_converter
             this.listboxFrames.ItemHeight = 15;
             this.listboxFrames.Location = new System.Drawing.Point(13, 43);
             this.listboxFrames.Name = "listboxFrames";
-            this.listboxFrames.Size = new System.Drawing.Size(56, 229);
+            this.listboxFrames.Size = new System.Drawing.Size(56, 259);
             this.listboxFrames.TabIndex = 1;
             this.listboxFrames.SelectedIndexChanged += new System.EventHandler(this.listboxFrames_SelectedIndexChanged);
             // 
@@ -476,7 +506,7 @@ namespace WAX_converter
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(265, 714);
+            this.panel4.Size = new System.Drawing.Size(265, 737);
             this.panel4.TabIndex = 9;
             // 
             // panel5
@@ -492,18 +522,18 @@ namespace WAX_converter
             this.panel5.Controls.Add(this.buttonRemoveSequence);
             this.panel5.Controls.Add(this.buttonAddSequence);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(0, 296);
+            this.panel5.Location = new System.Drawing.Point(0, 327);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(265, 418);
+            this.panel5.Size = new System.Drawing.Size(265, 410);
             this.panel5.TabIndex = 9;
             // 
             // buttonClearFrame
             // 
             this.buttonClearFrame.Enabled = false;
             this.buttonClearFrame.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonClearFrame.Location = new System.Drawing.Point(100, 338);
+            this.buttonClearFrame.Location = new System.Drawing.Point(87, 304);
             this.buttonClearFrame.Name = "buttonClearFrame";
-            this.buttonClearFrame.Size = new System.Drawing.Size(106, 27);
+            this.buttonClearFrame.Size = new System.Drawing.Size(132, 27);
             this.buttonClearFrame.TabIndex = 19;
             this.buttonClearFrame.Text = "Clear Last Frame";
             this.buttonClearFrame.UseVisualStyleBackColor = true;
@@ -512,11 +542,11 @@ namespace WAX_converter
             // buttonSetFrame
             // 
             this.buttonSetFrame.Enabled = false;
-            this.buttonSetFrame.Location = new System.Drawing.Point(100, 305);
+            this.buttonSetFrame.Location = new System.Drawing.Point(87, 271);
             this.buttonSetFrame.Name = "buttonSetFrame";
-            this.buttonSetFrame.Size = new System.Drawing.Size(106, 27);
+            this.buttonSetFrame.Size = new System.Drawing.Size(132, 27);
             this.buttonSetFrame.TabIndex = 18;
-            this.buttonSetFrame.Text = "Set Frame";
+            this.buttonSetFrame.Text = "CHOOSE FRAMES";
             this.buttonSetFrame.UseVisualStyleBackColor = true;
             this.buttonSetFrame.Click += new System.EventHandler(this.buttonSetFrame_Click);
             // 
@@ -527,7 +557,7 @@ namespace WAX_converter
             this.listboxSeqFrames.ItemHeight = 15;
             this.listboxSeqFrames.Location = new System.Drawing.Point(87, 130);
             this.listboxSeqFrames.Name = "listboxSeqFrames";
-            this.listboxSeqFrames.Size = new System.Drawing.Size(132, 169);
+            this.listboxSeqFrames.Size = new System.Drawing.Size(132, 124);
             this.listboxSeqFrames.TabIndex = 17;
             this.listboxSeqFrames.SelectedIndexChanged += new System.EventHandler(this.listboxSeqFrames_SelectedIndexChanged);
             // 
@@ -555,7 +585,7 @@ namespace WAX_converter
             this.listboxSeqs.ItemHeight = 15;
             this.listboxSeqs.Location = new System.Drawing.Point(13, 42);
             this.listboxSeqs.Name = "listboxSeqs";
-            this.listboxSeqs.Size = new System.Drawing.Size(56, 319);
+            this.listboxSeqs.Size = new System.Drawing.Size(56, 289);
             this.listboxSeqs.TabIndex = 12;
             this.listboxSeqs.SelectedIndexChanged += new System.EventHandler(this.listboxSeqs_SelectedIndexChanged);
             // 
@@ -574,9 +604,9 @@ namespace WAX_converter
             this.buttonRemoveSequence.Enabled = false;
             this.buttonRemoveSequence.Location = new System.Drawing.Point(87, 71);
             this.buttonRemoveSequence.Name = "buttonRemoveSequence";
-            this.buttonRemoveSequence.Size = new System.Drawing.Size(75, 23);
+            this.buttonRemoveSequence.Size = new System.Drawing.Size(132, 23);
             this.buttonRemoveSequence.TabIndex = 14;
-            this.buttonRemoveSequence.Text = "Remove";
+            this.buttonRemoveSequence.Text = "Remove sequence";
             this.buttonRemoveSequence.UseVisualStyleBackColor = true;
             this.buttonRemoveSequence.Click += new System.EventHandler(this.buttonRemoveSequence_Click);
             // 
@@ -585,9 +615,9 @@ namespace WAX_converter
             this.buttonAddSequence.Enabled = false;
             this.buttonAddSequence.Location = new System.Drawing.Point(87, 42);
             this.buttonAddSequence.Name = "buttonAddSequence";
-            this.buttonAddSequence.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddSequence.Size = new System.Drawing.Size(132, 23);
             this.buttonAddSequence.TabIndex = 13;
-            this.buttonAddSequence.Text = "Add";
+            this.buttonAddSequence.Text = "Add sequence";
             this.buttonAddSequence.UseVisualStyleBackColor = true;
             this.buttonAddSequence.Click += new System.EventHandler(this.buttonAddSequence_Click);
             // 
@@ -815,7 +845,7 @@ namespace WAX_converter
             this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel7.Location = new System.Drawing.Point(265, 0);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(291, 714);
+            this.panel7.Size = new System.Drawing.Size(291, 737);
             this.panel7.TabIndex = 11;
             // 
             // checkBoxCompress
@@ -892,12 +922,23 @@ namespace WAX_converter
             this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel8.Location = new System.Drawing.Point(388, 47);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(556, 714);
+            this.panel8.Size = new System.Drawing.Size(556, 737);
             this.panel8.TabIndex = 0;
+            // 
+            // btnHelp
+            // 
+            this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnHelp.Location = new System.Drawing.Point(875, 12);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(31, 22);
+            this.btnHelp.TabIndex = 13;
+            this.btnHelp.Text = "?";
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // BuildWindow
             // 
-            this.ClientSize = new System.Drawing.Size(944, 761);
+            this.ClientSize = new System.Drawing.Size(944, 784);
             this.ControlBox = false;
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel8);
@@ -1002,5 +1043,8 @@ namespace WAX_converter
         private System.Windows.Forms.DataGridViewTextBoxColumn ViewColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn Sequence;
         private System.Windows.Forms.CheckBox checkBoxCompress;
+        private System.Windows.Forms.Button btnDoneAddingFrames;
+        private System.Windows.Forms.Button btnDoneSettingFrames;
+        private System.Windows.Forms.Button btnHelp;
     }
 }
