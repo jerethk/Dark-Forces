@@ -22,29 +22,32 @@ namespace WAX_converter
         private Waxfile wax;
         private DFPal palette;
         private int SeqFrame = 0;       // the sequence frame currently being viewed
-        
+
         private void menuFile_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             if (e.ClickedItem == MenuOpenWax)
             {
                 openWaxDialog.ShowDialog();
-            } 
-            else if (e.ClickedItem == MenuCloseWax) 
+            }
+            else if (e.ClickedItem == MenuCloseWax)
             {
                 closeWax();
-            } 
+            }
             else if (e.ClickedItem == MenuLoadPal)
             {
                 openPalDialog.ShowDialog();
             }
             else if (e.ClickedItem == MenuSaveBMP)
             {
-                saveBMPDialog.FileName = Path.GetFileNameWithoutExtension(openWaxDialog.FileName);
                 saveBMPDialog.ShowDialog();
+            }
+            else if (e.ClickedItem == MenuOpenFme)
+            {
+                openFmeDialog.ShowDialog();
             }
             else if (e.ClickedItem == MenuQuit)
             {
-                Application.Exit(); 
+                Application.Exit();
             }
         }
 
@@ -53,7 +56,7 @@ namespace WAX_converter
             if (e.ClickedItem == MenuBuild)
             {
                 BuildWindow buildWindow = new BuildWindow();
-                buildWindow.Show(); 
+                buildWindow.Show();
             }
         }
 
@@ -92,7 +95,8 @@ namespace WAX_converter
             if (tryOpenWax.LoadFromFile(openWaxDialog.FileName, palette))
             {
                 this.wax = tryOpenWax;
-                
+                saveBMPDialog.FileName = Path.GetFileNameWithoutExtension(openWaxDialog.FileName);
+
                 // remove event handlers (to prevent exceptions when resetting values)
                 this.ActionNumber.ValueChanged -= this.ActionNumber_ValueChanged;
                 this.ViewNumber.ValueChanged -= this.ViewNumber_ValueChanged;
@@ -101,6 +105,7 @@ namespace WAX_converter
 
                 labelWax.Text = Path.GetFileName(openWaxDialog.FileName);
                 RadioGroup.Enabled = true;
+                panel1.Enabled = true;
                 SeqFrame = 0;
                 ActionNumber.Value = 0;
                 ViewNumber.Value = 0;
@@ -166,7 +171,7 @@ namespace WAX_converter
             UpdateSeqInfo();
             UpdateFrame();
 
-            ActionInfo.Text = ""; 
+            ActionInfo.Text = "";
             ActionNumber.Enabled = false;
             ViewNumber.Enabled = false;
             SeqNumber.Enabled = true;
@@ -241,7 +246,7 @@ namespace WAX_converter
         {
             int thisSequence = wax.Actions[(int)ActionNumber.Value].seqIndexes[(int)ViewNumber.Value];
             SeqNumber.Value = thisSequence;
-            
+
             UpdateSeqInfo();
         }
 
@@ -252,23 +257,26 @@ namespace WAX_converter
 
         private void UpdateSeqInfo()
         {
-            int thisSequence = (int)SeqNumber.Value;
-            int thisFrame = wax.Sequences[thisSequence].frameIndexes[0];
-            FrameNumber.Value = thisFrame;
-            SeqFrame = 0;
-            labelSeqFrame.Text = SeqFrame.ToString();
+            if (wax.Sequences.Count > 0)
+            {
+                int thisSequence = (int)SeqNumber.Value;
+                int thisFrame = wax.Sequences[thisSequence].frameIndexes[0];
+                FrameNumber.Value = thisFrame;
+                SeqFrame = 0;
+                labelSeqFrame.Text = SeqFrame.ToString();
 
-            string[] s = new string[3];
-            s[0] = $"This sequence has {wax.Sequences[thisSequence].numFrames} frames";
-            //s[2] = $"{wax.Sequences[thisSequence].pad1} {wax.Sequences[thisSequence].pad2} {wax.Sequences[thisSequence].pad3} {wax.Sequences[thisSequence].pad4}";
-            SeqInfo.Lines = s;
+                string[] s = new string[3];
+                s[0] = $"This sequence has {wax.Sequences[thisSequence].numFrames} frames";
+                //s[2] = $"{wax.Sequences[thisSequence].pad1} {wax.Sequences[thisSequence].pad2} {wax.Sequences[thisSequence].pad3} {wax.Sequences[thisSequence].pad4}";
+                SeqInfo.Lines = s;
 
-            UpdateFrame();
+                UpdateFrame();
+            }
         }
 
         private void SeqNextFrame_Click(object sender, EventArgs e)
         {
-            int thisSequence = (int) SeqNumber.Value;
+            int thisSequence = (int)SeqNumber.Value;
             int maxFrame = wax.Sequences[thisSequence].numFrames - 1;
 
             if (SeqFrame < maxFrame)
@@ -398,5 +406,46 @@ namespace WAX_converter
                 displayBox.SizeMode = PictureBoxSizeMode.Normal;
             }
         }
+
+        private void openFmeDialog_FileOk(object sender, CancelEventArgs e)
+        {
+            // Load a FME file as a Waxfile object
+            Waxfile tryOpenFme = new Waxfile();
+
+            if (tryOpenFme.LoadFromFME(openFmeDialog.FileName, palette))
+            {
+                this.wax = tryOpenFme;
+                saveBMPDialog.FileName = Path.GetFileNameWithoutExtension(openFmeDialog.FileName);
+
+                // remove event handlers (to prevent exceptions when resetting values)
+                this.ActionNumber.ValueChanged -= this.ActionNumber_ValueChanged;
+                this.ViewNumber.ValueChanged -= this.ViewNumber_ValueChanged;
+                this.SeqNumber.ValueChanged -= this.SeqNumber_ValueChanged;
+                this.FrameNumber.ValueChanged -= this.FrameNumber_ValueChanged_1;
+
+                // display FME details
+                string[] strings = new string[2];
+                strings[0] = $"FME file";
+                WaxDetails.Lines = strings;
+
+                panel1.Enabled = false;
+                RadioGroup.Enabled = false;
+                MenuSaveBMP.Enabled = true;
+                FrameNumber.Value = 0;
+                FrameNumber.Maximum = 0;
+                CellNumber.Value = 0;
+                CellNumber.Maximum = 0;
+                labelWax.Text = Path.GetFileName(openFmeDialog.FileName);
+                ActionInfo.Text = "";
+                SeqInfo.Text = "";
+                UpdateFrame();
+            }
+            else
+            {
+                MessageBox.Show("Error loading FME file.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
+
+

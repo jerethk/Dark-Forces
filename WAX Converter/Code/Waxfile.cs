@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Text;
-
+using System.Windows.Forms;
 
 namespace WAX_converter
 {
@@ -376,8 +376,93 @@ namespace WAX_converter
 
             return true;
         }
+
+
+        public bool LoadFromFME(string filename, DFPal palette)
+        {
+            // a FME is a single frame and a single cell
+            this.Nframes = 1;
+            this.Ncells = 1;
+            BinaryReader FMEReader = null;
+
+            try
+            {
+                FMEReader = new BinaryReader(File.Open(filename, FileMode.Open));
+                Frame frame = new Frame();
+                frame.InsertX = FMEReader.ReadInt32();
+                frame.InsertY = FMEReader.ReadInt32();
+                frame.Flip = FMEReader.ReadInt32();
+                frame.CellAddress = FMEReader.ReadInt32();
+                frame.UnitWidth = FMEReader.ReadInt32();
+                frame.UnitHeight = FMEReader.ReadInt32();
+                frame.pad3 = FMEReader.ReadInt32();
+                frame.pad4 = FMEReader.ReadInt32();
+                this.Frames.Add(frame);
+
+                Cell Cell = new Cell();
+                Cell.SizeX = FMEReader.ReadInt32();
+                Cell.SizeY = FMEReader.ReadInt32();
+                Cell.Compressed = FMEReader.ReadInt32();
+                Cell.DataSize = FMEReader.ReadInt32();
+                Cell.ColOffs = FMEReader.ReadInt32();
+                Cell.pad1 = FMEReader.ReadInt32();
+
+                Cell.Pixels = new short[Cell.SizeX, Cell.SizeY];
+
+                // Read the image data
+                if (Cell.Compressed == 0)
+                {
+                    // uncompressed
+                    for (int x = 0; x < Cell.SizeX; x++)
+                    {
+                        for (int y = 0; y < Cell.SizeY; y++)
+                        {
+                            Cell.Pixels[x, y] = FMEReader.ReadByte();
+                        }
+                    }
+                }
+                else if (Cell.Compressed == 1)
+                {
+                    // read column offsets
+                    Cell.columnOffsets = new int[Cell.SizeX];
+                    for (int x = 0; x < Cell.SizeX; x++)
+                    {
+                        Cell.columnOffsets[x] = FMEReader.ReadInt32();
+                    }
+
+                    // read compressed data
+                    int compressedDataLength = Cell.DataSize - 24 - (Cell.SizeX * 4);   // DataSize minus header minus offset table
+                    Cell.compressedData = new List<byte>();
+
+                    for (int i = 0; i < compressedDataLength; i++)
+                    {
+                        Cell.compressedData.Add(FMEReader.ReadByte());
+                    }
+
+                    // uncompress data
+                    Cell.uncompressImage();
+                }
+
+                // Create bitmap from cell image
+                Cell.createBitmap(palette /*, frame.Flip */);
+
+                this.Cells.Add(Cell);
+
+                FMEReader.Close();
+                FMEReader.Dispose();
+            }
+            catch (IOException)
+            {
+                FMEReader.Dispose();
+                return false;
+            }
+
+            return true;
+        }
+
     }
-     
+
+
     public class Action
     {
         // Constructor

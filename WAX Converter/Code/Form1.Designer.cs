@@ -49,6 +49,8 @@ namespace WAX_converter
             this.MenuCloseWax = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSaveBMP = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuOpenFme = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.MenuQuit = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuBuildWax = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuBuild = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,6 +81,7 @@ namespace WAX_converter
             this.label4 = new System.Windows.Forms.Label();
             this.openPalDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveBMPDialog = new System.Windows.Forms.SaveFileDialog();
+            this.openFmeDialog = new System.Windows.Forms.OpenFileDialog();
             this.panel2.SuspendLayout();
             this.RadioGroup.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -240,6 +243,8 @@ namespace WAX_converter
             this.MenuCloseWax,
             this.MenuSaveBMP,
             this.toolStripSeparator6,
+            this.MenuOpenFme,
+            this.toolStripSeparator2,
             this.MenuQuit});
             this.MenuFile.Name = "MenuFile";
             this.MenuFile.Size = new System.Drawing.Size(37, 20);
@@ -281,6 +286,17 @@ namespace WAX_converter
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
             this.toolStripSeparator6.Size = new System.Drawing.Size(146, 6);
+            // 
+            // MenuOpenFme
+            // 
+            this.MenuOpenFme.Name = "MenuOpenFme";
+            this.MenuOpenFme.Size = new System.Drawing.Size(149, 22);
+            this.MenuOpenFme.Text = "Open FME";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(146, 6);
             // 
             // MenuQuit
             // 
@@ -583,6 +599,13 @@ namespace WAX_converter
             this.saveBMPDialog.Filter = "PNG files|*.png";
             this.saveBMPDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveBMPDialog_FileOk);
             // 
+            // openFmeDialog
+            // 
+            this.openFmeDialog.DefaultExt = "wax";
+            this.openFmeDialog.Filter = "Dark Forces FME files|*.fme";
+            this.openFmeDialog.Title = "Open FME file";
+            this.openFmeDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openFmeDialog_FileOk);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -596,7 +619,7 @@ namespace WAX_converter
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(960, 720);
             this.Name = "MainWindow";
-            this.Text = "WAX Converter (version 0.91 - beta)";
+            this.Text = "WAX Converter (version 0.92 - beta)";
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.RadioGroup.ResumeLayout(false);
@@ -669,6 +692,9 @@ namespace WAX_converter
         private System.Windows.Forms.ToolStripMenuItem MenuHelphelp;
         private System.Windows.Forms.ToolStripMenuItem MenuAbout;
         private System.Windows.Forms.Label labelSeqFrame;
+        private System.Windows.Forms.ToolStripMenuItem MenuOpenFme;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.OpenFileDialog openFmeDialog;
     }
 }
 
