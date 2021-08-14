@@ -158,6 +158,8 @@ namespace BM_Converter
         {
             if (SourceImages.Count > 0)
             {
+                string fn = Path.GetFileNameWithoutExtension((string)listBoxImages.Items[0]);
+                saveBMDialog.FileName = fn;
                 saveBMDialog.ShowDialog();
             }
             

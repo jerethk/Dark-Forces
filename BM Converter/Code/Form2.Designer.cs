@@ -160,7 +160,7 @@ namespace BM_Converter
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 47);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(744, 554);
+            this.panel2.Size = new System.Drawing.Size(744, 577);
             this.panel2.TabIndex = 5;
             // 
             // btnCreateBM
@@ -254,7 +254,7 @@ namespace BM_Converter
             this.displayBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.displayBox.Location = new System.Drawing.Point(280, 145);
             this.displayBox.Name = "displayBox";
-            this.displayBox.Size = new System.Drawing.Size(418, 394);
+            this.displayBox.Size = new System.Drawing.Size(418, 417);
             this.displayBox.TabIndex = 8;
             this.displayBox.TabStop = false;
             // 
@@ -297,7 +297,7 @@ namespace BM_Converter
             // 
             // Form2
             // 
-            this.ClientSize = new System.Drawing.Size(744, 601);
+            this.ClientSize = new System.Drawing.Size(744, 624);
             this.ControlBox = false;
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
