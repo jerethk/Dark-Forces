@@ -27,8 +27,8 @@ namespace WAX_converter
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BuildWindow));
             this.listboxImages = new System.Windows.Forms.ListBox();
             this.ButtonAddImage = new System.Windows.Forms.Button();
@@ -69,7 +69,7 @@ namespace WAX_converter
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.buttonClearFrame = new System.Windows.Forms.Button();
-            this.buttonSetFrames = new System.Windows.Forms.Button();
+            this.buttonEditSequence = new System.Windows.Forms.Button();
             this.listboxSeqFrames = new System.Windows.Forms.ListBox();
             this.labelNSeqs = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -384,7 +384,7 @@ namespace WAX_converter
             this.btnDoneSettingFrames.Name = "btnDoneSettingFrames";
             this.btnDoneSettingFrames.Size = new System.Drawing.Size(132, 47);
             this.btnDoneSettingFrames.TabIndex = 11;
-            this.btnDoneSettingFrames.Text = "DONE";
+            this.btnDoneSettingFrames.Text = "DONE (defunct)";
             this.btnDoneSettingFrames.UseVisualStyleBackColor = true;
             this.btnDoneSettingFrames.Visible = false;
             this.btnDoneSettingFrames.Click += new System.EventHandler(this.btnDoneSettingFrames_Click);
@@ -537,7 +537,7 @@ namespace WAX_converter
             // 
             this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel5.Controls.Add(this.buttonClearFrame);
-            this.panel5.Controls.Add(this.buttonSetFrames);
+            this.panel5.Controls.Add(this.buttonEditSequence);
             this.panel5.Controls.Add(this.listboxSeqFrames);
             this.panel5.Controls.Add(this.labelNSeqs);
             this.panel5.Controls.Add(this.label6);
@@ -564,15 +564,15 @@ namespace WAX_converter
             this.buttonClearFrame.Visible = false;
             this.buttonClearFrame.Click += new System.EventHandler(this.buttonClearFrame_Click);
             // 
-            // buttonSetFrames
+            // buttonEditSequence
             // 
-            this.buttonSetFrames.Location = new System.Drawing.Point(87, 71);
-            this.buttonSetFrames.Name = "buttonSetFrames";
-            this.buttonSetFrames.Size = new System.Drawing.Size(132, 27);
-            this.buttonSetFrames.TabIndex = 18;
-            this.buttonSetFrames.Text = "Edit Sequence";
-            this.buttonSetFrames.UseVisualStyleBackColor = true;
-            this.buttonSetFrames.Click += new System.EventHandler(this.buttonSetFrame_Click);
+            this.buttonEditSequence.Location = new System.Drawing.Point(87, 71);
+            this.buttonEditSequence.Name = "buttonEditSequence";
+            this.buttonEditSequence.Size = new System.Drawing.Size(132, 27);
+            this.buttonEditSequence.TabIndex = 18;
+            this.buttonEditSequence.Text = "Edit Sequence";
+            this.buttonEditSequence.UseVisualStyleBackColor = true;
+            this.buttonEditSequence.Click += new System.EventHandler(this.buttonEditSequence_Click);
             // 
             // listboxSeqFrames
             // 
@@ -671,14 +671,14 @@ namespace WAX_converter
             this.dataGridViews.AllowUserToDeleteRows = false;
             this.dataGridViews.AllowUserToResizeColumns = false;
             this.dataGridViews.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.Silver;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViews.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.Silver;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViews.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridViews.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViews.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ViewColumn,
@@ -689,14 +689,14 @@ namespace WAX_converter
             this.dataGridViews.MultiSelect = false;
             this.dataGridViews.Name = "dataGridViews";
             this.dataGridViews.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlDark;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViews.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.ControlDark;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViews.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridViews.RowHeadersVisible = false;
             this.dataGridViews.RowTemplate.Height = 25;
             this.dataGridViews.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -1024,7 +1024,7 @@ namespace WAX_converter
         private System.Windows.Forms.Label labelNSeqs;
         private System.Windows.Forms.ListBox listboxSeqFrames;
         private System.Windows.Forms.Button buttonClearFrame;
-        private System.Windows.Forms.Button buttonSetFrames;
+        private System.Windows.Forms.Button buttonEditSequence;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBoxLogic;

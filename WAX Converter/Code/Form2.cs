@@ -436,7 +436,7 @@ namespace WAX_converter
                 listboxSeqs.SelectedIndex = listboxSeqs.Items.Count - 1;
 
                 listboxSeqFrames.Enabled = true;
-                buttonSetFrames.Enabled = true;
+                buttonEditSequence.Enabled = true;
                 buttonClearFrame.Enabled = true;
                 labelNSeqs.Text = "n = " + SequenceList.Count;
 
@@ -526,7 +526,7 @@ namespace WAX_converter
             }
         }
 
-        private void buttonSetFrame_Click(object sender, EventArgs e)
+        private void buttonEditSequence_Click(object sender, EventArgs e)
         {
             int sequenceNumber = listboxSeqs.SelectedIndex;
 
@@ -561,6 +561,7 @@ namespace WAX_converter
         private void btnDoneSettingFrames_Click(object sender, EventArgs e)
         {
             // NO LONGER USED
+            /*
 
             int nFrames = listboxFrames.SelectedItems.Count;
             
@@ -583,6 +584,7 @@ namespace WAX_converter
 
                 listboxSeqFrames.DataSource = new BindingSource(SequenceList[listboxSeqs.SelectedIndex].frameIndexes, "");
                 listboxSeqFrames.SelectedIndex = 0;
+                
             }
 
             btnDoneSettingFrames.Visible = false;
@@ -598,12 +600,14 @@ namespace WAX_converter
             panel5.Enabled = true;
             panel6.Enabled = true;
             panel7.Enabled = true;
+
+            */
         }
 
         private void buttonClearFrame_Click(object sender, EventArgs e)
         {
             // NO LONGER USED
-
+            /*
             int selectedSequence = listboxSeqs.SelectedIndex;
 
             if (selectedSequence >= 0)
@@ -618,6 +622,7 @@ namespace WAX_converter
                     }
                 }
             }
+            */
         }
 
 // --- ACTIONS AREA --------------------------------------------------------------------------------------------------------------------------------------------------------------------
