@@ -49,176 +49,175 @@ namespace WAX_converter
         {
             try
             {
-                BinaryReader fileReader = new BinaryReader(File.Open(filename, FileMode.Open));
-
-                // Read the header
-                this.Version = fileReader.ReadInt32();
-                this.Nseqs = fileReader.ReadInt32();
-                this.Nframes = fileReader.ReadInt32();
-                this.Ncells = fileReader.ReadInt32();
-                this.Xscale = fileReader.ReadInt32();
-                this.Yscale = fileReader.ReadInt32();
-                this.XtraLight = fileReader.ReadInt32();
-                this.pad4 = fileReader.ReadInt32();
-
-                for (int i = 0; i < 32; i++)
+                using (BinaryReader fileReader = new BinaryReader(File.Open(filename, FileMode.Open)))
                 {
-                    this.actionAddresses[i] = fileReader.ReadInt32();
-                    if (this.actionAddresses[i] == 0)       // an address of 0 indicates the end of the action list
+                    // Read the header
+                    this.Version = fileReader.ReadInt32();
+                    this.Nseqs = fileReader.ReadInt32();
+                    this.Nframes = fileReader.ReadInt32();
+                    this.Ncells = fileReader.ReadInt32();
+                    this.Xscale = fileReader.ReadInt32();
+                    this.Yscale = fileReader.ReadInt32();
+                    this.XtraLight = fileReader.ReadInt32();
+                    this.pad4 = fileReader.ReadInt32();
+
+                    for (int i = 0; i < 32; i++)
                     {
-                        this.numActions = i;
-                        break;
-                    }
-                }
-
-                // Read the wax actions
-                for (int i = 0; i < this.numActions; i++)
-                {
-                    Action action = new Action();
-                    fileReader.BaseStream.Seek(this.actionAddresses[i], SeekOrigin.Begin);
-                    action.Wwidth = fileReader.ReadInt32();
-                    action.Wheight = fileReader.ReadInt32();
-                    action.FrameRate = fileReader.ReadInt32();
-                    action.Nframes = fileReader.ReadInt32();
-                    action.pad2 = fileReader.ReadInt32();
-                    action.pad3 = fileReader.ReadInt32();
-                    action.pad4 = fileReader.ReadInt32();
-
-                    for (int v = 0; v < 32; v++)
-                    {
-                        action.viewAddresses[v] = fileReader.ReadInt32();
-                        action.seqIndexes[v] = (action.viewAddresses[v] - 160 - this.numActions * 156) / 144;       // address minus file header minus actions, divided by size of seq header
-                    }
-
-                    this.Actions.Add(action);
-                }
-
-                // Read the sequences
-                fileReader.BaseStream.Seek(160 + this.numActions * 156, SeekOrigin.Begin);
-                for (int s = 0; s < this.Nseqs; s++)
-                {
-                    Sequence seq = new Sequence();
-                    seq.pad1 = fileReader.ReadInt32();
-                    seq.pad2 = fileReader.ReadInt32();
-                    seq.pad3 = fileReader.ReadInt32();
-                    seq.pad4 = fileReader.ReadInt32();
-
-                    for (int f = 0; f < 32; f++)
-                    {
-                        seq.frameAddresses[f] = fileReader.ReadInt32();
-                        if (seq.frameAddresses[f] > 0)
+                        this.actionAddresses[i] = fileReader.ReadInt32();
+                        if (this.actionAddresses[i] == 0)       // an address of 0 indicates the end of the action list
                         {
-                            seq.frameIndexes[f] = (seq.frameAddresses[f] - 160 - this.numActions * 156 - this.Nseqs * 144) / 32;      // address minus file header minus actions minus sequences, divided by size of frame
-                        }
-                        else            // address of 0 indicates no frame; set index to -1
-                        {
-                            seq.frameIndexes[f] = -1;
-                        }
-                    }
-
-                    for (int f = 0; f < 32; f++)    // set the number of frames for this sequence by finding the first empty frame
-                    {
-                        if (seq.frameIndexes[f] == -1)
-                        {
-                            seq.numFrames = f;
+                            this.numActions = i;
                             break;
                         }
                     }
 
-                    this.Sequences.Add(seq);
-                }
-
-                // Read the frames
-                fileReader.BaseStream.Seek(160 + this.numActions * 156 + this.Nseqs * 144, SeekOrigin.Begin);
-                for (int f = 0; f < this.Nframes; f++)
-                {
-                    Frame frame = new Frame();
-                    frame.InsertX = fileReader.ReadInt32();
-                    frame.InsertY = fileReader.ReadInt32();
-                    frame.Flip = fileReader.ReadInt32();
-                    frame.CellAddress = fileReader.ReadInt32();
-                    frame.UnitWidth = fileReader.ReadInt32();
-                    frame.UnitHeight = fileReader.ReadInt32();
-                    frame.pad3 = fileReader.ReadInt32();
-                    frame.pad4 = fileReader.ReadInt32();
-
-                    this.Frames.Add(frame);
-                }
-
-                // Read the cells
-                fileReader.BaseStream.Seek(160 + this.numActions * 156 + this.Nseqs * 144 + this.Nframes * 32, SeekOrigin.Begin);
-
-                for (int c = 0; c < this.Ncells; c++)
-                {
-                    Cell Cell = new Cell();
-                    Cell.address = (int) fileReader.BaseStream.Position;
-                    Cell.SizeX = fileReader.ReadInt32();
-                    Cell.SizeY = fileReader.ReadInt32();
-                    Cell.Compressed = fileReader.ReadInt32();
-                    Cell.DataSize = fileReader.ReadInt32();
-                    Cell.ColOffs = fileReader.ReadInt32();
-                    Cell.pad1 = fileReader.ReadInt32();
-
-                    Cell.Pixels = new short[Cell.SizeX, Cell.SizeY];
-
-                    // Read the image data
-                    if (Cell.Compressed == 0)
+                    // Read the wax actions
+                    for (int i = 0; i < this.numActions; i++)
                     {
-                        // uncompressed
-                        for (int x = 0; x < Cell.SizeX; x++)
+                        Action action = new Action();
+                        fileReader.BaseStream.Seek(this.actionAddresses[i], SeekOrigin.Begin);
+                        action.Wwidth = fileReader.ReadInt32();
+                        action.Wheight = fileReader.ReadInt32();
+                        action.FrameRate = fileReader.ReadInt32();
+                        action.Nframes = fileReader.ReadInt32();
+                        action.pad2 = fileReader.ReadInt32();
+                        action.pad3 = fileReader.ReadInt32();
+                        action.pad4 = fileReader.ReadInt32();
+
+                        for (int v = 0; v < 32; v++)
                         {
-                            for (int y = 0; y < Cell.SizeY; y++)
+                            action.viewAddresses[v] = fileReader.ReadInt32();
+                            action.seqIndexes[v] = (action.viewAddresses[v] - 160 - this.numActions * 156) / 144;       // address minus file header minus actions, divided by size of seq header
+                        }
+
+                        this.Actions.Add(action);
+                    }
+
+                    // Read the sequences
+                    fileReader.BaseStream.Seek(160 + this.numActions * 156, SeekOrigin.Begin);
+                    for (int s = 0; s < this.Nseqs; s++)
+                    {
+                        Sequence seq = new Sequence();
+                        seq.pad1 = fileReader.ReadInt32();
+                        seq.pad2 = fileReader.ReadInt32();
+                        seq.pad3 = fileReader.ReadInt32();
+                        seq.pad4 = fileReader.ReadInt32();
+
+                        for (int f = 0; f < 32; f++)
+                        {
+                            seq.frameAddresses[f] = fileReader.ReadInt32();
+                            if (seq.frameAddresses[f] > 0)
                             {
-                                Cell.Pixels[x, y] = fileReader.ReadByte();
+                                seq.frameIndexes[f] = (seq.frameAddresses[f] - 160 - this.numActions * 156 - this.Nseqs * 144) / 32;      // address minus file header minus actions minus sequences, divided by size of frame
+                            }
+                            else            // address of 0 indicates no frame; set index to -1
+                            {
+                                seq.frameIndexes[f] = -1;
                             }
                         }
+
+                        for (int f = 0; f < 32; f++)    // set the number of frames for this sequence by finding the first empty frame
+                        {
+                            if (seq.frameIndexes[f] == -1)
+                            {
+                                seq.numFrames = f;
+                                break;
+                            }
+                        }
+
+                        this.Sequences.Add(seq);
                     }
-                    else if (Cell.Compressed == 1)
+
+                    // Read the frames
+                    fileReader.BaseStream.Seek(160 + this.numActions * 156 + this.Nseqs * 144, SeekOrigin.Begin);
+                    for (int f = 0; f < this.Nframes; f++)
                     {
-                        // read column offsets
-                        Cell.columnOffsets = new int[Cell.SizeX];
-                        for (int x = 0; x < Cell.SizeX; x++)
-                        {
-                            Cell.columnOffsets[x] = fileReader.ReadInt32();
-                        }
+                        Frame frame = new Frame();
+                        frame.InsertX = fileReader.ReadInt32();
+                        frame.InsertY = fileReader.ReadInt32();
+                        frame.Flip = fileReader.ReadInt32();
+                        frame.CellAddress = fileReader.ReadInt32();
+                        frame.UnitWidth = fileReader.ReadInt32();
+                        frame.UnitHeight = fileReader.ReadInt32();
+                        frame.pad3 = fileReader.ReadInt32();
+                        frame.pad4 = fileReader.ReadInt32();
 
-                        // read compressed data
-                        int compressedDataLength = Cell.DataSize - 24 - (Cell.SizeX * 4);   // DataSize minus header minus offset table
-                        Cell.compressedData = new List<byte>();                        
-                        
-                        for (int i = 0; i < compressedDataLength; i++)
-                        {
-                            Cell.compressedData.Add(fileReader.ReadByte());
-                        }
-
-                        // uncompress data
-                        Cell.uncompressImage();
+                        this.Frames.Add(frame);
                     }
 
-                    // Create bitmap from cell image
-                    Cell.createBitmap(palette /*, frame.Flip */);
+                    // Read the cells
+                    fileReader.BaseStream.Seek(160 + this.numActions * 156 + this.Nseqs * 144 + this.Nframes * 32, SeekOrigin.Begin);
 
-                    this.Cells.Add(Cell);
-                }
-
-                fileReader.Close();
-                fileReader.Dispose();
-
-                // Assign cell index to each frame by matching to cell addresses
-                for (int f = 0; f < this.Nframes; f++)
-                {
                     for (int c = 0; c < this.Ncells; c++)
                     {
-                        if (this.Frames[f].CellAddress == this.Cells[c].address)
+                        Cell Cell = new Cell();
+                        Cell.address = (int)fileReader.BaseStream.Position;
+                        Cell.SizeX = fileReader.ReadInt32();
+                        Cell.SizeY = fileReader.ReadInt32();
+                        Cell.Compressed = fileReader.ReadInt32();
+                        Cell.DataSize = fileReader.ReadInt32();
+                        Cell.ColOffs = fileReader.ReadInt32();
+                        Cell.pad1 = fileReader.ReadInt32();
+
+                        Cell.Pixels = new short[Cell.SizeX, Cell.SizeY];
+
+                        // Read the image data
+                        if (Cell.Compressed == 0)
                         {
-                            this.Frames[f].CellIndex = c;
-                            break;
+                            // uncompressed
+                            for (int x = 0; x < Cell.SizeX; x++)
+                            {
+                                for (int y = 0; y < Cell.SizeY; y++)
+                                {
+                                    Cell.Pixels[x, y] = fileReader.ReadByte();
+                                }
+                            }
+                        }
+                        else if (Cell.Compressed == 1)
+                        {
+                            // read column offsets
+                            Cell.columnOffsets = new int[Cell.SizeX];
+                            for (int x = 0; x < Cell.SizeX; x++)
+                            {
+                                Cell.columnOffsets[x] = fileReader.ReadInt32();
+                            }
+
+                            // read compressed data
+                            int compressedDataLength = Cell.DataSize - 24 - (Cell.SizeX * 4);   // DataSize minus header minus offset table
+                            Cell.compressedData = new List<byte>();
+
+                            for (int i = 0; i < compressedDataLength; i++)
+                            {
+                                Cell.compressedData.Add(fileReader.ReadByte());
+                            }
+
+                            // uncompress data
+                            Cell.uncompressImage();
+                        }
+
+                        // Create bitmap from cell image
+                        Cell.createBitmap(palette /*, frame.Flip */);
+
+                        this.Cells.Add(Cell);
+                    }
+
+                    // Assign cell index to each frame by matching to cell addresses
+                    for (int f = 0; f < this.Nframes; f++)
+                    {
+                        for (int c = 0; c < this.Ncells; c++)
+                        {
+                            if (this.Frames[f].CellAddress == this.Cells[c].address)
+                            {
+                                this.Frames[f].CellIndex = c;
+                                break;
+                            }
                         }
                     }
                 }
             }
-            catch (IOException)
+            catch (IOException e)
             {
+                MessageBox.Show($"IOException {e.Message}");
                 return false;
             }
 
@@ -227,28 +226,49 @@ namespace WAX_converter
 
         public bool exportToPNG(string filename)
         {
+            string dir = Path.GetDirectoryName(filename);
+            string baseFilename = Path.GetFileNameWithoutExtension(filename);
+
+            // Work out logic type
+            int logicType = 0;
+            switch(this.Actions.Count)
+            {
+                case 1:
+                    logicType = 0;  // anim
+                    break;
+                case 2:
+                    logicType = 1;  // scenery
+                    break;
+                case 4:
+                    logicType = 4;  // remote
+                    break;
+                case 13:
+                    logicType = 2;  // enemy
+                    break;
+                case 14:
+                    logicType = 3;  // dark trooper
+                    break;
+            }
+
             try
             {
-                string dir = Path.GetDirectoryName(filename);
-                string baseFilename = Path.GetFileNameWithoutExtension(filename);
+                /* save images in subdirectory */
+                Directory.CreateDirectory(dir + "/" + baseFilename);
 
                 for (int i = 0; i < this.Ncells; i++)
                 {
-                    string leadingZeroes = "";
-                    if (i < 10)
-                    {
-                        leadingZeroes = "00";
-                    }
-                    else if (i >= 10 && i < 100)
-                    {
-                        leadingZeroes = "0";
-                    }
-
-                    string saveName = dir + "/" + baseFilename + leadingZeroes + i + ".PNG";
+                    string saveName = dir + "/" + baseFilename + "/" + i + ".PNG";
                     this.Cells[i].bitmap.Save(saveName, ImageFormat.Png);
                 } 
             }
-            catch (IOException)
+            catch (IOException e)
+            {
+                MessageBox.Show($"IOException {e.Message}");
+                return false;
+            }
+
+            // Save a project file
+            if (!WaxProject.Save($"{dir}/{baseFilename}.wproj", logicType, this.Actions, this.Sequences, this.Frames, this.Cells.Count))
             {
                 return false;
             }
@@ -256,121 +276,132 @@ namespace WAX_converter
             return true;
         }
 
+        /*
+        string leadingZeroes = "";
+        if (i < 10)
+        {
+            leadingZeroes = "00";
+        }
+        else if (i >= 10 && i < 100)
+        {
+            leadingZeroes = "0";
+        }
+        */
+
         public bool save(string filename, bool compress)
         {
             try
             {
-                BinaryWriter fileWriter = new BinaryWriter(File.Open(filename, FileMode.Create));
-
-                // write the header
-                fileWriter.Write(this.Version);
-                fileWriter.Write(this.Nseqs);
-                fileWriter.Write(this.Nframes);
-                fileWriter.Write(this.Ncells);
-                fileWriter.Write(this.Xscale);
-                fileWriter.Write(this.Yscale);
-                fileWriter.Write(this.XtraLight);
-                fileWriter.Write(this.pad4);
-
-                for (int a = 0; a < 32; a++)
+                using (BinaryWriter fileWriter = new BinaryWriter(File.Open(filename, FileMode.Create)))
                 {
-                    fileWriter.Write(this.actionAddresses[a]);
-                }
+                    // write the header
+                    fileWriter.Write(this.Version);
+                    fileWriter.Write(this.Nseqs);
+                    fileWriter.Write(this.Nframes);
+                    fileWriter.Write(this.Ncells);
+                    fileWriter.Write(this.Xscale);
+                    fileWriter.Write(this.Yscale);
+                    fileWriter.Write(this.XtraLight);
+                    fileWriter.Write(this.pad4);
 
-                // write the actions
-                for (int a = 0; a < this.numActions; a++)
-                {
-                    fileWriter.Write(this.Actions[a].Wwidth);
-                    fileWriter.Write(this.Actions[a].Wheight);
-                    fileWriter.Write(this.Actions[a].FrameRate);
-                    fileWriter.Write(this.Actions[a].Nframes);
-                    fileWriter.Write(this.Actions[a].pad2);
-                    fileWriter.Write(this.Actions[a].pad3);
-                    fileWriter.Write(this.Actions[a].pad4);
-
-                    for (int v = 0; v < 32; v++)
+                    for (int a = 0; a < 32; a++)
                     {
-                        fileWriter.Write(this.Actions[a].viewAddresses[v]);
+                        fileWriter.Write(this.actionAddresses[a]);
                     }
-                }
 
-                // write the sequences
-                for (int s=0; s < this.Nseqs; s++)
-                {
-                    fileWriter.Write(this.Sequences[s].pad1);
-                    fileWriter.Write(this.Sequences[s].pad2); 
-                    fileWriter.Write(this.Sequences[s].pad3);
-                    fileWriter.Write(this.Sequences[s].pad4);
-
-                    for (int f = 0; f < 32; f++)
+                    // write the actions
+                    for (int a = 0; a < this.numActions; a++)
                     {
-                        fileWriter.Write(this.Sequences[s].frameAddresses[f]);
-                    }
-                }
+                        fileWriter.Write(this.Actions[a].Wwidth);
+                        fileWriter.Write(this.Actions[a].Wheight);
+                        fileWriter.Write(this.Actions[a].FrameRate);
+                        fileWriter.Write(this.Actions[a].Nframes);
+                        fileWriter.Write(this.Actions[a].pad2);
+                        fileWriter.Write(this.Actions[a].pad3);
+                        fileWriter.Write(this.Actions[a].pad4);
 
-                // write the frames
-                for (int f = 0; f < this.Nframes; f++)
-                {
-                    fileWriter.Write(this.Frames[f].InsertX);
-                    fileWriter.Write(this.Frames[f].InsertY);
-                    fileWriter.Write(this.Frames[f].Flip);
-                    fileWriter.Write(this.Frames[f].CellAddress);
-                    fileWriter.Write(this.Frames[f].UnitWidth);
-                    fileWriter.Write(this.Frames[f].UnitHeight);
-                    fileWriter.Write(this.Frames[f].pad3);
-                    fileWriter.Write(this.Frames[f].pad4);
-                }
-
-                // write the cells
-                for (int c = 0; c < this.Ncells; c++)
-                {
-                    fileWriter.Write(this.Cells[c].SizeX);
-                    fileWriter.Write(this.Cells[c].SizeY);
-                    fileWriter.Write(this.Cells[c].Compressed);
-                    fileWriter.Write(this.Cells[c].DataSize);
-                    fileWriter.Write(this.Cells[c].ColOffs);
-                    fileWriter.Write(this.Cells[c].pad1);
-
-
-                    if (compress)
-                    {
-                        foreach (int i in this.Cells[c].columnOffsets)
+                        for (int v = 0; v < 32; v++)
                         {
-                            fileWriter.Write(i);
-                        }
-
-                        foreach (byte b in this.Cells[c].compressedData)
-                        {
-                            fileWriter.Write(b);
+                            fileWriter.Write(this.Actions[a].viewAddresses[v]);
                         }
                     }
-                    else    // uncompressed
+
+                    // write the sequences
+                    for (int s = 0; s < this.Nseqs; s++)
                     {
-                        for (int x = 0; x < this.Cells[c].SizeX; x++)
+                        fileWriter.Write(this.Sequences[s].pad1);
+                        fileWriter.Write(this.Sequences[s].pad2);
+                        fileWriter.Write(this.Sequences[s].pad3);
+                        fileWriter.Write(this.Sequences[s].pad4);
+
+                        for (int f = 0; f < 32; f++)
                         {
-                            for (int y = 0; y < this.Cells[c].SizeY; y++)
+                            fileWriter.Write(this.Sequences[s].frameAddresses[f]);
+                        }
+                    }
+
+                    // write the frames
+                    for (int f = 0; f < this.Nframes; f++)
+                    {
+                        fileWriter.Write(this.Frames[f].InsertX);
+                        fileWriter.Write(this.Frames[f].InsertY);
+                        fileWriter.Write(this.Frames[f].Flip);
+                        fileWriter.Write(this.Frames[f].CellAddress);
+                        fileWriter.Write(this.Frames[f].UnitWidth);
+                        fileWriter.Write(this.Frames[f].UnitHeight);
+                        fileWriter.Write(this.Frames[f].pad3);
+                        fileWriter.Write(this.Frames[f].pad4);
+                    }
+
+                    // write the cells
+                    for (int c = 0; c < this.Ncells; c++)
+                    {
+                        fileWriter.Write(this.Cells[c].SizeX);
+                        fileWriter.Write(this.Cells[c].SizeY);
+                        fileWriter.Write(this.Cells[c].Compressed);
+                        fileWriter.Write(this.Cells[c].DataSize);
+                        fileWriter.Write(this.Cells[c].ColOffs);
+                        fileWriter.Write(this.Cells[c].pad1);
+
+
+                        if (compress)
+                        {
+                            foreach (int i in this.Cells[c].columnOffsets)
                             {
-                                byte b;
-                                if (this.Cells[c].Pixels[x, y] == -1)
-                                {
-                                    b = 0;  // transparent = index 0
-                                } 
-                                else
-                                {
-                                    b = (byte)this.Cells[c].Pixels[x, y];
-                                }
-                                
+                                fileWriter.Write(i);
+                            }
+
+                            foreach (byte b in this.Cells[c].compressedData)
+                            {
                                 fileWriter.Write(b);
+                            }
+                        }
+                        else    // uncompressed
+                        {
+                            for (int x = 0; x < this.Cells[c].SizeX; x++)
+                            {
+                                for (int y = 0; y < this.Cells[c].SizeY; y++)
+                                {
+                                    byte b;
+                                    if (this.Cells[c].Pixels[x, y] == -1)
+                                    {
+                                        b = 0;  // transparent = index 0
+                                    }
+                                    else
+                                    {
+                                        b = (byte)this.Cells[c].Pixels[x, y];
+                                    }
+
+                                    fileWriter.Write(b);
+                                }
                             }
                         }
                     }
                 }
-
-                fileWriter.Close();
-                fileWriter.Dispose();
             }
-            catch (IOException)
+            catch (IOException e)
             {
+                MessageBox.Show($"IOException {e.Message}");
                 return false;
             }
 
@@ -387,80 +418,79 @@ namespace WAX_converter
 
             try
             {
-                FMEReader = new BinaryReader(File.Open(filename, FileMode.Open));
-                Frame frame = new Frame();
-                frame.InsertX = FMEReader.ReadInt32();
-                frame.InsertY = FMEReader.ReadInt32();
-                frame.Flip = FMEReader.ReadInt32();
-                frame.CellAddress = FMEReader.ReadInt32();
-                frame.UnitWidth = FMEReader.ReadInt32();
-                frame.UnitHeight = FMEReader.ReadInt32();
-                frame.pad3 = FMEReader.ReadInt32();
-                frame.pad4 = FMEReader.ReadInt32();
-                this.Frames.Add(frame);
-
-                Cell Cell = new Cell();
-                Cell.SizeX = FMEReader.ReadInt32();
-                Cell.SizeY = FMEReader.ReadInt32();
-                Cell.Compressed = FMEReader.ReadInt32();
-                Cell.DataSize = FMEReader.ReadInt32();
-                Cell.ColOffs = FMEReader.ReadInt32();
-                Cell.pad1 = FMEReader.ReadInt32();
-
-                Cell.Pixels = new short[Cell.SizeX, Cell.SizeY];
-
-                // Read the image data
-                if (Cell.Compressed == 0)
+                using (FMEReader = new BinaryReader(File.Open(filename, FileMode.Open)))
                 {
-                    // uncompressed
-                    for (int x = 0; x < Cell.SizeX; x++)
+                    Frame frame = new Frame();
+                    frame.InsertX = FMEReader.ReadInt32();
+                    frame.InsertY = FMEReader.ReadInt32();
+                    frame.Flip = FMEReader.ReadInt32();
+                    frame.CellAddress = FMEReader.ReadInt32();
+                    frame.UnitWidth = FMEReader.ReadInt32();
+                    frame.UnitHeight = FMEReader.ReadInt32();
+                    frame.pad3 = FMEReader.ReadInt32();
+                    frame.pad4 = FMEReader.ReadInt32();
+                    this.Frames.Add(frame);
+
+                    Cell Cell = new Cell();
+                    Cell.SizeX = FMEReader.ReadInt32();
+                    Cell.SizeY = FMEReader.ReadInt32();
+                    Cell.Compressed = FMEReader.ReadInt32();
+                    Cell.DataSize = FMEReader.ReadInt32();
+                    Cell.ColOffs = FMEReader.ReadInt32();
+                    Cell.pad1 = FMEReader.ReadInt32();
+
+                    Cell.Pixels = new short[Cell.SizeX, Cell.SizeY];
+
+                    // Read the image data
+                    if (Cell.Compressed == 0)
                     {
-                        for (int y = 0; y < Cell.SizeY; y++)
+                        // uncompressed
+                        for (int x = 0; x < Cell.SizeX; x++)
                         {
-                            Cell.Pixels[x, y] = FMEReader.ReadByte();
+                            for (int y = 0; y < Cell.SizeY; y++)
+                            {
+                                Cell.Pixels[x, y] = FMEReader.ReadByte();
+                            }
                         }
                     }
-                }
-                else if (Cell.Compressed == 1)
-                {
-                    // read column offsets
-                    Cell.columnOffsets = new int[Cell.SizeX];
-                    for (int x = 0; x < Cell.SizeX; x++)
+                    else if (Cell.Compressed == 1)
                     {
-                        Cell.columnOffsets[x] = FMEReader.ReadInt32();
+                        // read column offsets
+                        Cell.columnOffsets = new int[Cell.SizeX];
+                        for (int x = 0; x < Cell.SizeX; x++)
+                        {
+                            Cell.columnOffsets[x] = FMEReader.ReadInt32();
+                        }
+
+                        // read compressed data
+                        int compressedDataLength = Cell.DataSize - 24 - (Cell.SizeX * 4);   // DataSize minus header minus offset table
+                        Cell.compressedData = new List<byte>();
+
+                        for (int i = 0; i < compressedDataLength; i++)
+                        {
+                            Cell.compressedData.Add(FMEReader.ReadByte());
+                        }
+
+                        // uncompress data
+                        Cell.uncompressImage();
                     }
 
-                    // read compressed data
-                    int compressedDataLength = Cell.DataSize - 24 - (Cell.SizeX * 4);   // DataSize minus header minus offset table
-                    Cell.compressedData = new List<byte>();
+                    // Create bitmap from cell image
+                    Cell.createBitmap(palette /*, frame.Flip */);
 
-                    for (int i = 0; i < compressedDataLength; i++)
-                    {
-                        Cell.compressedData.Add(FMEReader.ReadByte());
-                    }
-
-                    // uncompress data
-                    Cell.uncompressImage();
+                    this.Cells.Add(Cell);
                 }
-
-                // Create bitmap from cell image
-                Cell.createBitmap(palette /*, frame.Flip */);
-
-                this.Cells.Add(Cell);
-
-                FMEReader.Close();
-                FMEReader.Dispose();
             }
-            catch (IOException)
+            catch (IOException e)
             {
-                FMEReader.Dispose();
+                MessageBox.Show($"IOException {e.Message}");
                 return false;
             }
 
             return true;
         }
-
     }
+
 
 
     public class Action

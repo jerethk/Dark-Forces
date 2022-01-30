@@ -39,7 +39,7 @@ namespace WAX_converter
             }
             else if (e.ClickedItem == MenuSaveBMP)
             {
-                saveBMPDialog.ShowDialog();
+                exportDialog.ShowDialog();
             }
             else if (e.ClickedItem == MenuOpenFme)
             {
@@ -95,7 +95,7 @@ namespace WAX_converter
             if (tryOpenWax.LoadFromFile(openWaxDialog.FileName, palette))
             {
                 this.wax = tryOpenWax;
-                saveBMPDialog.FileName = Path.GetFileNameWithoutExtension(openWaxDialog.FileName);
+                exportDialog.FileName = Path.GetFileNameWithoutExtension(openWaxDialog.FileName);
 
                 // remove event handlers (to prevent exceptions when resetting values)
                 this.ActionNumber.ValueChanged -= this.ActionNumber_ValueChanged;
@@ -383,15 +383,15 @@ namespace WAX_converter
             MenuSaveBMP.Enabled = false;
         }
 
-        private void saveBMPDialog_FileOk(object sender, CancelEventArgs e)
+        private void exportDialog_FileOk(object sender, CancelEventArgs e)
         {
-            if (wax.exportToPNG(saveBMPDialog.FileName))
+            if (wax.exportToPNG(exportDialog.FileName))
             {
-                MessageBox.Show("Successfully saved PNGs.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Successfully exported images to PNGs, and created a project file.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show("Error saving PNGs.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error exporting.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -415,7 +415,7 @@ namespace WAX_converter
             if (tryOpenFme.LoadFromFME(openFmeDialog.FileName, palette))
             {
                 this.wax = tryOpenFme;
-                saveBMPDialog.FileName = Path.GetFileNameWithoutExtension(openFmeDialog.FileName);
+                exportDialog.FileName = Path.GetFileNameWithoutExtension(openFmeDialog.FileName);
 
                 // remove event handlers (to prevent exceptions when resetting values)
                 this.ActionNumber.ValueChanged -= this.ActionNumber_ValueChanged;

@@ -98,6 +98,14 @@ namespace WAX_converter
             }
         }
 
+        private void checkBoxCommonColours_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxCommonColours.Checked)
+            {
+                MessageBox.Show("Only common palette colours (up to index 207) will be used for colour matching.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void buttonTransparent_Click(object sender, EventArgs e)
         {
             Bitmap img;
@@ -147,7 +155,6 @@ namespace WAX_converter
                 listboxImages.SelectedIndex = listboxImages.Items.Count - 1;
                 labelNCells.Text = "n = " + ImageList.Count;
                 buttonAddFrame.Enabled = true;
-                if (SequenceList.Count == 0) buttonRemoveFrame.Enabled = true;
             }
             catch (Exception)
             {
@@ -158,28 +165,56 @@ namespace WAX_converter
 
         private void ButtonRemoveImage_Click(object sender, EventArgs e)
         {
-            if (ImageList.Count > 0)
+            int index = listboxImages.SelectedIndex;
+            
+            if (ImageList.Count > 0 && index >= 0)
             {
-                int index = listboxImages.SelectedIndex;
-
-                if (index > 0)
+                // Check if cell is already used with any frames
+                bool isUsed = false;
+                foreach (Frame f in FrameList)
                 {
-                    listboxImages.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
+                    if (f.CellIndex == index)
+                    {
+                        isUsed = true;
+                        break;
+                    }
                 }
 
-                ImageList.RemoveAt(index);
-                listboxImages.Items.RemoveAt(listboxImages.Items.Count - 1);
-                labelNCells.Text = "n = " + ImageList.Count;
+                if (isUsed)
+                {
+                    MessageBox.Show("The selected cell has been assigned to a frame.", "Cannot remove", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                else
+                {
+                    // Prompt for confirmation first
+                    var answer = MessageBox.Show("Are you sure you want to delete this cell?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (answer == DialogResult.Yes)
+                    {
+                        if (index > 0)
+                        {
+                            listboxImages.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
+                        }
 
-            }
+                        ImageList.RemoveAt(index);
+                        listboxImages.Items.RemoveAt(listboxImages.Items.Count - 1);
+                        labelNCells.Text = "n = " + ImageList.Count;
 
-            if (ImageList.Count == 0)
-            {
-                displayBox2.Image = null;
-            }
-            else
-            {
-                displayBox2.Image = ImageList[listboxImages.SelectedIndex];
+                        // Re-index frames
+                        foreach (Frame f in FrameList)
+                        {
+                            if (f.CellIndex > index) f.CellIndex -= 1;
+                        }
+
+                        if (ImageList.Count == 0)
+                        {
+                            displayBox2.Image = null;
+                        }
+                        else
+                        {
+                            displayBox2.Image = ImageList[listboxImages.SelectedIndex];
+                        }
+                    }
+                }
             }
         }
 
@@ -275,15 +310,15 @@ namespace WAX_converter
                 labelNFrames.Text = "n = " + FrameList.Count;
             }
 
-            // once Frames have been added, disable ability to move & remove cells
+            // once Frames have been added, disable ability to move cells
             if (FrameList.Count == 0)
             {
                 ButtonMoveUp.Enabled = true;
                 ButtonMoveDown.Enabled = true;
-                ButtonRemoveImage.Enabled = true;
             }
 
             ButtonAddImage.Enabled = true;
+            ButtonRemoveImage.Enabled = true;
             panel1.Enabled = true;
             panel3.Enabled = true;
             panel5.Enabled = true;
@@ -299,24 +334,60 @@ namespace WAX_converter
 
             if (FrameList.Count > 0 && index >= 0)
             {
-                if (index > 0)
+                // Check if selected frame is used in any sequences
+                bool isUsed = false;
+                foreach (Sequence s in SequenceList)
                 {
-                    listboxFrames.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
+                    for (int f = 0; f < 32; f++)
+                    {
+                        if (s.frameIndexes[f] == index)
+                        {
+                            isUsed = true;
+                            break;
+                        }
+
+                        if (isUsed) break;
+                    }
                 }
 
-                FrameList.RemoveAt(index);
-                listboxFrames.Items.RemoveAt(listboxFrames.Items.Count - 1);
-                labelNFrames.Text = "n = " + FrameList.Count;
-            }
+                if (isUsed)
+                {
+                    MessageBox.Show("The selected frame is used in a Sequence.", "Cannot remove", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                else
+                {
+                    // Prompt for confirmation 
+                    var answer = MessageBox.Show("Are you sure you want to delete this frame?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (answer == DialogResult.Yes)
+                    {
+                        if (index > 0)
+                        {
+                            listboxFrames.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
+                        }
 
-            if (FrameList.Count == 0)
-            {
-                ButtonMoveUp.Enabled = true;
-                ButtonMoveDown.Enabled = true;
-                ButtonRemoveImage.Enabled = true;
-                InsertX.Enabled = false;
-                InsertY.Enabled = false;
-                checkBoxFlip.Enabled = false;
+                        FrameList.RemoveAt(index);
+                        listboxFrames.Items.RemoveAt(listboxFrames.Items.Count - 1);
+                        labelNFrames.Text = "n = " + FrameList.Count;
+
+                        // Re-index frame references in sequences
+                        foreach (Sequence s in SequenceList)
+                        {
+                            for (int f = 0; f < 32; f++)
+                            {
+                                if (s.frameIndexes[f] > index) s.frameIndexes[f] -= 1;
+                            }
+                        }
+
+                        if (FrameList.Count == 0)
+                        {
+                            ButtonMoveUp.Enabled = true;
+                            ButtonMoveDown.Enabled = true;
+                            InsertX.Enabled = false;
+                            InsertY.Enabled = false;
+                            checkBoxFlip.Enabled = false;
+                        }
+                    }
+                }
             }
         }
 
@@ -365,9 +436,8 @@ namespace WAX_converter
                 listboxSeqs.SelectedIndex = listboxSeqs.Items.Count - 1;
 
                 listboxSeqFrames.Enabled = true;
-                buttonSetFrame.Enabled = true;
+                buttonSetFrames.Enabled = true;
                 buttonClearFrame.Enabled = true;
-                buttonRemoveFrame.Enabled = false;
                 labelNSeqs.Text = "n = " + SequenceList.Count;
 
                 dataGridViews.Enabled = true;
@@ -384,36 +454,59 @@ namespace WAX_converter
 
             if (SequenceList.Count > 1 && index >= 0)
             {
-                DialogResult answer = MessageBox.Show("The entire selected sequence will be deleted. Are you sure?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (answer == DialogResult.Yes)
+                // Check if used
+                bool isUsed = false;
+                foreach (Action a in ActionList)
                 {
-                    if (index > 0)
+                    for (int v = 0; v < 32; v++)
                     {
-                        listboxSeqs.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
-                    }
-
-                    SequenceList.RemoveAt(index);
-                    listboxSeqs.Items.RemoveAt(listboxSeqs.Items.Count - 1);
-
-                    labelNSeqs.Text = "n = " + SequenceList.Count;
-
-                    // Go through all the actions and re-index every sequence after the removed sequence, then update the datagrid
-                    for (int a = 0; a < 14; a++)
-                    {
-                        for (int v = 0; v < 32; v++)
+                        if (a.seqIndexes[v] == index)
                         {
-                            int value = ActionList[a].seqIndexes[v];
-                            if (value > index || value >= SequenceList.Count)
+                            isUsed = true;
+                            break;
+                        }
+
+                        if (isUsed) break;
+                    }
+                }
+
+                if (isUsed)
+                {
+                    MessageBox.Show("The selected sequence has been assigned to an action.", "Cannot remove", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                else
+                {
+                    // Confirm
+                    var answer = MessageBox.Show("The entire selected sequence will be deleted. Are you sure?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    
+                    if (answer == DialogResult.Yes)
+                    {
+                        if (index > 0)
+                        {
+                            listboxSeqs.SelectedIndex -= 1;       // move the selection up 1 unless at position 0
+                        }
+
+                        SequenceList.RemoveAt(index);
+                        listboxSeqs.Items.RemoveAt(listboxSeqs.Items.Count - 1);
+                        labelNSeqs.Text = "n = " + SequenceList.Count;
+
+                        // Go through the actions and re-index every sequence after the removed sequence, then update the datagrid
+                        foreach (Action a in ActionList)
+                        {
+                            for (int v = 0; v < 32; v++)
                             {
-                                ActionList[a].seqIndexes[v] -= 1;
+                                int value = a.seqIndexes[v];
+                                if (value > index || value >= SequenceList.Count)
+                                {
+                                    a.seqIndexes[v] -= 1;
+                                }
                             }
                         }
-                    }
 
-                    for (int i = 0; i < 32; i++)
-                    {
-                        dataGridViews.Rows[i].Cells[1].Value = ActionList[comboBoxAction.SelectedIndex].seqIndexes[i];
+                        for (int i = 0; i < 32; i++)
+                        {
+                            dataGridViews.Rows[i].Cells[1].Value = ActionList[comboBoxAction.SelectedIndex].seqIndexes[i];
+                        }
                     }
                 }
             }
@@ -435,6 +528,17 @@ namespace WAX_converter
 
         private void buttonSetFrame_Click(object sender, EventArgs e)
         {
+            int sequenceNumber = listboxSeqs.SelectedIndex;
+
+            if (sequenceNumber >= 0 && FrameList.Count > 0)
+            {
+                SequenceBuilderWindow SeqWindow = new SequenceBuilderWindow(this.ImageList, this.FrameList, this.SequenceList[sequenceNumber]);
+                SeqWindow.Text = $"Editing Sequence {sequenceNumber}";
+                SeqWindow.ShowDialog();
+                listboxSeqFrames.DataSource = new BindingSource(SequenceList[listboxSeqs.SelectedIndex].frameIndexes, "");
+            }
+
+            /*
             if (listboxSeqs.SelectedIndex >= 0)
             {
                 MessageBox.Show("Select the frames to assign to this sequence, then press DONE. Multiselect using CTRL and SHIFT keys. To cancel, press DONE with no frames selected.");
@@ -451,11 +555,13 @@ namespace WAX_converter
                 panel5.Enabled = false;
                 panel6.Enabled = false;
                 panel7.Enabled = false;
-            }
+            } */
         }
 
         private void btnDoneSettingFrames_Click(object sender, EventArgs e)
         {
+            // NO LONGER USED
+
             int nFrames = listboxFrames.SelectedItems.Count;
             
             if (nFrames > 0)
@@ -475,8 +581,7 @@ namespace WAX_converter
                     SequenceList[selectedSequence].frameIndexes[f] = -1;
                 }
 
-                listboxSeqFrames.DataSource = new int[32];   // for some reason, need to do this to update the listbox!
-                listboxSeqFrames.DataSource = SequenceList[listboxSeqs.SelectedIndex].frameIndexes;
+                listboxSeqFrames.DataSource = new BindingSource(SequenceList[listboxSeqs.SelectedIndex].frameIndexes, "");
                 listboxSeqFrames.SelectedIndex = 0;
             }
 
@@ -484,7 +589,7 @@ namespace WAX_converter
             listboxFrames.SelectionMode = SelectionMode.One;
 
             buttonAddFrame.Enabled = true;
-            buttonRemoveFrame.Enabled = false;
+            buttonRemoveFrame.Enabled = true;
             InsertX.Enabled = true;
             InsertY.Enabled = true;
             checkBoxFlip.Enabled = true;
@@ -497,6 +602,8 @@ namespace WAX_converter
 
         private void buttonClearFrame_Click(object sender, EventArgs e)
         {
+            // NO LONGER USED
+
             int selectedSequence = listboxSeqs.SelectedIndex;
 
             if (selectedSequence >= 0)
@@ -506,8 +613,7 @@ namespace WAX_converter
                     if (SequenceList[selectedSequence].frameIndexes[i] != -1)
                     {
                         SequenceList[selectedSequence].frameIndexes[i] = -1;
-                        listboxSeqFrames.DataSource = new int[32];   // for some reason, need to do this to update the listbox!
-                        listboxSeqFrames.DataSource = SequenceList[listboxSeqs.SelectedIndex].frameIndexes;
+                        listboxSeqFrames.DataSource = new BindingSource(SequenceList[listboxSeqs.SelectedIndex].frameIndexes, "");
                         break;
                     }
                 }
@@ -690,7 +796,7 @@ namespace WAX_converter
 
         private void saveWaxDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Waxfile newWax = WaxBuilder.BuildWax(comboBoxLogic.SelectedIndex, ActionList, SequenceList, FrameList, ImageList, palette, transparentColour, checkBoxIlluminated.Checked, checkBoxCompress.Checked);
+            Waxfile newWax = WaxBuilder.BuildWax(comboBoxLogic.SelectedIndex, ActionList, SequenceList, FrameList, ImageList, palette, transparentColour, checkBoxIlluminated.Checked, checkBoxCommonColours.Checked, checkBoxCompress.Checked);
 
             if (newWax.save(saveWaxDialog.FileName, checkBoxCompress.Checked))
             {
@@ -715,10 +821,9 @@ namespace WAX_converter
         private void saveWIPDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
             bool success = true;
-            string FileNameNoExt = Path.GetFileNameWithoutExtension(saveWIPDialog.FileName);
+            string FileNameNoExtension = Path.GetFileNameWithoutExtension(saveWIPDialog.FileName);
             string Dir = Path.GetDirectoryName(saveWIPDialog.FileName);
-            string cellImageDirectory = Dir + "/" + FileNameNoExt;
-            StreamWriter writer = null;
+            string cellImageDirectory = Dir + "/" + FileNameNoExtension;
 
             try
             {
@@ -730,64 +835,21 @@ namespace WAX_converter
                     ImageList[i].Save(imageSavePath, System.Drawing.Imaging.ImageFormat.Png);
                 }
 
-                // save rest of stuff in Text file
-                writer = new StreamWriter(saveWIPDialog.FileName, false);  // overwrite
-                writer.WriteLine("# WAX work-in-progress file.");
-                writer.WriteLine("# Be very careful if you edit this file manually.");
-                writer.WriteLine("");
-
-                writer.WriteLine($"Cells {ImageList.Count}");
-                writer.WriteLine("");
-
-                writer.WriteLine($"Frames {FrameList.Count}");
-                for (int f = 0; f < FrameList.Count; f++)
+                // save project file
+                if (!WaxProject.Save(saveWIPDialog.FileName, comboBoxLogic.SelectedIndex, ActionList, SequenceList, FrameList, ImageList.Count))
                 {
-                    writer.WriteLine($"{FrameList[f].CellIndex} {FrameList[f].InsertX} {FrameList[f].InsertY} {FrameList[f].Flip}");
+                    success = false;
                 }
-                writer.WriteLine("");
-
-                writer.WriteLine($"Sequences {SequenceList.Count}");
-                for (int s = 0; s < SequenceList.Count; s++)
-                {
-                    string str = "";
-                    for (int f = 0; f < 32; f++)
-                    {
-                        str += SequenceList[s].frameIndexes[f] + " ";
-                    }
-                    writer.WriteLine(str);
-                }
-                writer.WriteLine("");
-
-                writer.WriteLine($"Actions");
-                writer.WriteLine($"LogicType {comboBoxLogic.SelectedIndex}");
-
-                for (int a = 0; a < ActionList.Count; a++)
-                {
-                    writer.WriteLine($"{ActionList[a].Wwidth} {ActionList[a].Wheight} {ActionList[a].FrameRate}");
-
-                    string str = "";
-                    for (int v = 0; v < 32; v++)
-                    {
-                        str += ActionList[a].seqIndexes[v] + " ";
-                    }
-                    writer.WriteLine(str);
-                }
-                writer.WriteLine("");
-
-                writer.Close();
-                writer.Dispose();
             }
-            catch (IOException)
+            catch (IOException ex)
             {
                 success = false;
-                writer.Close();
-                writer.Dispose();
-                MessageBox.Show("Error saving WIP.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error saving project. Exception {ex} occurred.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             if (success)
             {
-                MessageBox.Show($"Work in progress saved as {Path.GetFileName(saveWIPDialog.FileName)}. Cell images have been saved in {FileNameNoExt}\\ subdirectory.", "WIP saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Project file saved as {Path.GetFileName(saveWIPDialog.FileName)}. Cell images have been saved in {FileNameNoExtension}\\ subdirectory.", "WIP saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -805,240 +867,75 @@ namespace WAX_converter
 
         private void openWIPDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            bool success = true;
-            
-            string FileNameNoExt = Path.GetFileNameWithoutExtension(openWIPDialog.FileName);
-            string Dir = Path.GetDirectoryName(openWIPDialog.FileName);
-            string cellImageDirectory = Dir + "/" + FileNameNoExt;
-            StreamReader fileReader = null;
-
-            int numCells = 0;
-            int numFrames = 0;
-            int numSeqs = 0;
-            int logicType = -1;
+            int logicType = 0;
             List<Frame> loadedFrames = new List<Frame>();
             List<Sequence> loadedSeqs = new List<Sequence>();
             List<Action> loadedActions = new List<Action>();
             List<Bitmap> loadedBitmaps = new List<Bitmap>();
 
-            try
+            if (!WaxProject.Load(openWIPDialog.FileName, out logicType, loadedActions, loadedSeqs, loadedFrames, loadedBitmaps))
             {
-                // Read from WWIP text file
-                fileReader = new StreamReader(openWIPDialog.FileName);
-                string[] nextLine = new string[0];
-
-                // cells
-                bool foundCellInfo = false; 
-                while (!foundCellInfo)
-                {
-                    nextLine = getNextLine(fileReader);
-                    if (nextLine[0] == "Cells") foundCellInfo = true;
-                }
-                numCells = Int32.Parse(nextLine[1]);
-
-                // check the images exist; abort if they don't
-                for (int i = 0; i < numCells; i++)
-                {
-                    if (!File.Exists(cellImageDirectory + "/" + i + ".png"))
-                    {
-                       success = false;
-                    }
-                }
-                
-                if (!success)
-                {
-                    MessageBox.Show("Error: Image file(s) not found.");
-                }
-                else
-                {
-                    // load the bitmaps
-                    for (int i = 0; i < numCells; i++)
-                    {
-                        Bitmap loadedBMP = new Bitmap(cellImageDirectory + "/" + i + ".png");
-                        loadedBitmaps.Add(loadedBMP);
-                    }
-
-                    // frames
-                    bool foundFrameInfo = false;
-                    while (!foundFrameInfo)
-                    {
-                        nextLine = getNextLine(fileReader);
-                        if (nextLine[0] == "Frames") foundFrameInfo = true;
-                    }
-                    numFrames = Int32.Parse(nextLine[1]);
-
-                    for (int f = 0; f < numFrames; f++)
-                    {
-                        nextLine = getNextLine(fileReader);
-
-                        Frame nextFrame = new Frame();
-                        nextFrame.CellIndex = Int32.Parse(nextLine[0]);
-                        nextFrame.InsertX = Int32.Parse(nextLine[1]);
-                        nextFrame.InsertY = Int32.Parse(nextLine[2]);
-                        nextFrame.Flip = Int32.Parse(nextLine[3]);
-                        loadedFrames.Add(nextFrame);
-                    }
-
-                    // Sequences
-                    bool foundSeqInfo = false;
-                    while (!foundSeqInfo)
-                    {
-                        nextLine = getNextLine(fileReader);
-                        if (nextLine[0] == "Sequences") foundSeqInfo = true;
-                    }
-                    numSeqs = Int32.Parse(nextLine[1]);
-
-                    for (int s = 0; s < numSeqs; s++)
-                    {
-                        nextLine = getNextLine(fileReader);
-
-                        Sequence nextSequence = new Sequence();
-                        for (int f = 0; f < 32; f++)
-                        {
-                            nextSequence.frameIndexes[f] = Int32.Parse(nextLine[f]);
-                        }
-                        loadedSeqs.Add(nextSequence);
-                    }
-
-                    // actions
-                    bool foundActionInfo = false;
-                    while (!foundActionInfo)
-                    {
-                        nextLine = getNextLine(fileReader);
-                        if (nextLine[0] == "Actions") foundActionInfo = true;
-                    }
-
-                    nextLine = getNextLine(fileReader);
-                    if (nextLine[0] == "LogicType")
-                    {
-                        logicType = Int32.Parse(nextLine[1]);
-                    }
-
-                    for (int a = 0; a < 14; a++)
-                    {
-                        Action nextAction = new Action();
-
-                        nextLine = getNextLine(fileReader);
-                        nextAction.Wwidth = Int32.Parse(nextLine[0]);
-                        nextAction.Wheight = Int32.Parse(nextLine[1]);
-                        nextAction.FrameRate = Int32.Parse(nextLine[2]);
-
-                        nextLine = getNextLine(fileReader);
-                        for (int v = 0; v < 32; v++)
-                        {
-                            nextAction.seqIndexes[v] = Int32.Parse(nextLine[v]);
-                        }
-                        loadedActions.Add(nextAction);
-                    }
-
-                    fileReader.Close();
-                    fileReader.Dispose();
-
-                    
-                    // If all successful, load everything into the UI
-                    ImageList = loadedBitmaps;
-                    FrameList = loadedFrames;
-                    SequenceList = loadedSeqs;
-                    ActionList = loadedActions;
-
-                    listboxImages.Items.Clear();
-                    for (int i = 0; i < ImageList.Count; i++)
-                    {
-                        listboxImages.Items.Add("Cell " + i);
-                    }
-                    ButtonAddImage.Enabled = true;
-                    ButtonRemoveImage.Enabled = false;
-                    ButtonMoveUp.Enabled = false;
-                    ButtonMoveDown.Enabled = false;
-
-                    listboxFrames.Items.Clear();
-                    for (int f = 0; f < FrameList.Count; f++)
-                    {
-                        listboxFrames.Items.Add(f.ToString());
-                    }
-                    if (FrameList.Count > 0)
-                    {
-                        listboxFrames.SelectedIndex = 0;
-                    }
-                    buttonAddFrame.Enabled = true;
-                    buttonRemoveFrame.Enabled = false;
-                    InsertX.Enabled = true;
-                    InsertY.Enabled = true;
-                    checkBoxFlip.Enabled = true;
-
-                    listboxSeqs.Items.Clear();
-                    for (int s = 0; s < SequenceList.Count; s++)
-                    {
-                        listboxSeqs.Items.Add(s.ToString());
-                    }
-                    if (SequenceList.Count > 0)
-                    {
-                        listboxSeqFrames.Enabled = true;
-                    }
-                    buttonAddSequence.Enabled = true;
-                    buttonRemoveSequence.Enabled = true;
-
-                    labelNCells.Text = $"n = {ImageList.Count}";
-                    labelNFrames.Text = $"n = {FrameList.Count}";
-                    labelNSeqs.Text = $"n = {SequenceList.Count}";
-                    comboBoxLogic.SelectedIndex = 0;    //
-                    comboBoxLogic.SelectedIndex = 1;    // changing this forces an update of the controls
-                    comboBoxLogic.SelectedIndex = logicType;
-                    dataGridViews.Enabled = true;
-                    buttonSetAllViews.Enabled = true;
-                    Wwidth.Enabled = true;
-                    Wheight.Enabled = true;
-                    FRate.Enabled = true;
-                    buttonCreateWAX.Enabled = true;
-                }
+                MessageBox.Show("Failed to load. The project file(s) may have been corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception)
+            else
             {
-                success = false;
-                fileReader.Close();
-                fileReader.Dispose();
-            }
+                // If load successful, load everything into the UI
+                ImageList = loadedBitmaps;
+                FrameList = loadedFrames;
+                SequenceList = loadedSeqs;
+                ActionList = loadedActions;
 
-            if (!success)
-            {
-                MessageBox.Show("Failed to load. The WIP file(s) may have been corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Nested method to get the next line of data as an array of strings; skips blank and comment lines
-            string[] getNextLine(StreamReader reader)
-            {
-                bool emptyLine = true;
-                string nextRawLine = "";
-
-                while (emptyLine)
+                listboxImages.Items.Clear();
+                for (int i = 0; i < ImageList.Count; i++)
                 {
-                    nextRawLine = reader.ReadLine();
-                    nextRawLine = nextRawLine.Trim();       // trim spaces from start and end
-
-                    if (nextRawLine == "")      // empty line so skip it
-                    {
-                        emptyLine = true;
-                    }
-                    else if (nextRawLine[0] == '#')    // comment line so skip it
-                    {
-                        emptyLine = true;
-                    }
-                    else
-                    {
-                        emptyLine = false;
-                    }
+                    listboxImages.Items.Add("Cell " + i);
                 }
+                ButtonAddImage.Enabled = true;
+                ButtonRemoveImage.Enabled = true;
+                ButtonMoveUp.Enabled = false;
+                ButtonMoveDown.Enabled = false;
 
-                string[] result = nextRawLine.Split();
-                return result;
+                listboxFrames.Items.Clear();
+                for (int f = 0; f < FrameList.Count; f++)
+                {
+                    listboxFrames.Items.Add(f.ToString());
+                }
+                if (FrameList.Count > 0)
+                {
+                    listboxFrames.SelectedIndex = 0;
+                }
+                buttonAddFrame.Enabled = true;
+                buttonRemoveFrame.Enabled = true;
+                InsertX.Enabled = true;
+                InsertY.Enabled = true;
+                checkBoxFlip.Enabled = true;
+
+                listboxSeqs.Items.Clear();
+                for (int s = 0; s < SequenceList.Count; s++)
+                {
+                    listboxSeqs.Items.Add(s.ToString());
+                }
+                if (SequenceList.Count > 0)
+                {
+                    listboxSeqFrames.Enabled = true;
+                }
+                buttonAddSequence.Enabled = true;
+                buttonRemoveSequence.Enabled = true;
+
+                labelNCells.Text = $"n = {ImageList.Count}";
+                labelNFrames.Text = $"n = {FrameList.Count}";
+                labelNSeqs.Text = $"n = {SequenceList.Count}";
+                comboBoxLogic.SelectedIndex = 0;    //
+                comboBoxLogic.SelectedIndex = 1;    // changing this forces an update of the controls
+                comboBoxLogic.SelectedIndex = logicType;
+                dataGridViews.Enabled = true;
+                buttonSetAllViews.Enabled = true;
+                Wwidth.Enabled = true;
+                Wheight.Enabled = true;
+                FRate.Enabled = true;
+                buttonCreateWAX.Enabled = true;
             }
         }
-
-        
-        // -----------
-
-
     }
-
 
 }

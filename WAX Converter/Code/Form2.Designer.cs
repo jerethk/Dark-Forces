@@ -38,6 +38,8 @@ namespace WAX_converter
             this.displayBox2 = new System.Windows.Forms.PictureBox();
             this.ButtonExit = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBoxCommonColours = new System.Windows.Forms.CheckBox();
+            this.btnHelp = new System.Windows.Forms.Button();
             this.checkBoxIlluminated = new System.Windows.Forms.CheckBox();
             this.buttonSaveWIP = new System.Windows.Forms.Button();
             this.buttonLoadWIP = new System.Windows.Forms.Button();
@@ -67,7 +69,7 @@ namespace WAX_converter
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
             this.buttonClearFrame = new System.Windows.Forms.Button();
-            this.buttonSetFrame = new System.Windows.Forms.Button();
+            this.buttonSetFrames = new System.Windows.Forms.Button();
             this.listboxSeqFrames = new System.Windows.Forms.ListBox();
             this.labelNSeqs = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -101,7 +103,6 @@ namespace WAX_converter
             this.saveWIPDialog = new System.Windows.Forms.SaveFileDialog();
             this.openWIPDialog = new System.Windows.Forms.OpenFileDialog();
             this.panel8 = new System.Windows.Forms.Panel();
-            this.btnHelp = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.displayBox2)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.transpColourBox)).BeginInit();
@@ -144,7 +145,7 @@ namespace WAX_converter
             // 
             this.ButtonPal.Location = new System.Drawing.Point(12, 12);
             this.ButtonPal.Name = "ButtonPal";
-            this.ButtonPal.Size = new System.Drawing.Size(75, 23);
+            this.ButtonPal.Size = new System.Drawing.Size(75, 30);
             this.ButtonPal.TabIndex = 3;
             this.ButtonPal.Text = "Load PAL";
             this.ButtonPal.UseVisualStyleBackColor = true;
@@ -178,7 +179,7 @@ namespace WAX_converter
             // 
             this.ButtonExit.Location = new System.Drawing.Point(731, 12);
             this.ButtonExit.Name = "ButtonExit";
-            this.ButtonExit.Size = new System.Drawing.Size(127, 23);
+            this.ButtonExit.Size = new System.Drawing.Size(127, 30);
             this.ButtonExit.TabIndex = 5;
             this.ButtonExit.Text = "Exit build window";
             this.ButtonExit.UseVisualStyleBackColor = true;
@@ -186,6 +187,7 @@ namespace WAX_converter
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.checkBoxCommonColours);
             this.panel1.Controls.Add(this.btnHelp);
             this.panel1.Controls.Add(this.checkBoxIlluminated);
             this.panel1.Controls.Add(this.buttonSaveWIP);
@@ -197,13 +199,35 @@ namespace WAX_converter
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(944, 47);
+            this.panel1.Size = new System.Drawing.Size(944, 65);
             this.panel1.TabIndex = 6;
+            // 
+            // checkBoxCommonColours
+            // 
+            this.checkBoxCommonColours.AutoSize = true;
+            this.checkBoxCommonColours.Location = new System.Drawing.Point(102, 36);
+            this.checkBoxCommonColours.Name = "checkBoxCommonColours";
+            this.checkBoxCommonColours.Size = new System.Drawing.Size(145, 19);
+            this.checkBoxCommonColours.TabIndex = 14;
+            this.checkBoxCommonColours.Text = "Common colours only";
+            this.checkBoxCommonColours.UseVisualStyleBackColor = true;
+            this.checkBoxCommonColours.CheckedChanged += new System.EventHandler(this.checkBoxCommonColours_CheckedChanged);
+            // 
+            // btnHelp
+            // 
+            this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnHelp.Location = new System.Drawing.Point(878, 12);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(31, 30);
+            this.btnHelp.TabIndex = 13;
+            this.btnHelp.Text = "?";
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // checkBoxIlluminated
             // 
             this.checkBoxIlluminated.AutoSize = true;
-            this.checkBoxIlluminated.Location = new System.Drawing.Point(102, 15);
+            this.checkBoxIlluminated.Location = new System.Drawing.Point(102, 12);
             this.checkBoxIlluminated.Name = "checkBoxIlluminated";
             this.checkBoxIlluminated.Size = new System.Drawing.Size(170, 19);
             this.checkBoxIlluminated.TabIndex = 12;
@@ -213,21 +237,23 @@ namespace WAX_converter
             // 
             // buttonSaveWIP
             // 
-            this.buttonSaveWIP.Location = new System.Drawing.Point(530, 12);
+            this.buttonSaveWIP.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.buttonSaveWIP.Location = new System.Drawing.Point(514, 12);
             this.buttonSaveWIP.Name = "buttonSaveWIP";
-            this.buttonSaveWIP.Size = new System.Drawing.Size(75, 23);
+            this.buttonSaveWIP.Size = new System.Drawing.Size(91, 30);
             this.buttonSaveWIP.TabIndex = 11;
-            this.buttonSaveWIP.Text = "Save WIP";
+            this.buttonSaveWIP.Text = "SAVE PROJECT";
             this.buttonSaveWIP.UseVisualStyleBackColor = true;
             this.buttonSaveWIP.Click += new System.EventHandler(this.buttonSaveWIP_Click);
             // 
             // buttonLoadWIP
             // 
+            this.buttonLoadWIP.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.buttonLoadWIP.Location = new System.Drawing.Point(611, 12);
             this.buttonLoadWIP.Name = "buttonLoadWIP";
-            this.buttonLoadWIP.Size = new System.Drawing.Size(75, 23);
+            this.buttonLoadWIP.Size = new System.Drawing.Size(92, 30);
             this.buttonLoadWIP.TabIndex = 10;
-            this.buttonLoadWIP.Text = "Load WIP";
+            this.buttonLoadWIP.Text = "LOAD PROJECT";
             this.buttonLoadWIP.UseVisualStyleBackColor = true;
             this.buttonLoadWIP.Click += new System.EventHandler(this.buttonLoadWIP_Click);
             // 
@@ -235,7 +261,7 @@ namespace WAX_converter
             // 
             this.transpColourBox.Location = new System.Drawing.Point(437, 12);
             this.transpColourBox.Name = "transpColourBox";
-            this.transpColourBox.Size = new System.Drawing.Size(23, 23);
+            this.transpColourBox.Size = new System.Drawing.Size(30, 30);
             this.transpColourBox.TabIndex = 9;
             this.transpColourBox.TabStop = false;
             // 
@@ -243,7 +269,7 @@ namespace WAX_converter
             // 
             this.buttonTransparent.Location = new System.Drawing.Point(314, 12);
             this.buttonTransparent.Name = "buttonTransparent";
-            this.buttonTransparent.Size = new System.Drawing.Size(117, 23);
+            this.buttonTransparent.Size = new System.Drawing.Size(117, 30);
             this.buttonTransparent.TabIndex = 8;
             this.buttonTransparent.Text = "Transparent colour";
             this.buttonTransparent.UseVisualStyleBackColor = true;
@@ -263,9 +289,9 @@ namespace WAX_converter
             this.panel2.Controls.Add(this.listboxImages);
             this.panel2.Controls.Add(this.displayBox2);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 47);
+            this.panel2.Location = new System.Drawing.Point(0, 65);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(388, 737);
+            this.panel2.Size = new System.Drawing.Size(388, 739);
             this.panel2.TabIndex = 7;
             // 
             // btnDoneAddingFrames
@@ -459,7 +485,6 @@ namespace WAX_converter
             // 
             // buttonRemoveFrame
             // 
-            this.buttonRemoveFrame.Enabled = false;
             this.buttonRemoveFrame.Location = new System.Drawing.Point(87, 72);
             this.buttonRemoveFrame.Name = "buttonRemoveFrame";
             this.buttonRemoveFrame.Size = new System.Drawing.Size(132, 23);
@@ -470,7 +495,6 @@ namespace WAX_converter
             // 
             // buttonAddFrame
             // 
-            this.buttonAddFrame.Enabled = false;
             this.buttonAddFrame.Location = new System.Drawing.Point(87, 43);
             this.buttonAddFrame.Name = "buttonAddFrame";
             this.buttonAddFrame.Size = new System.Drawing.Size(132, 23);
@@ -506,14 +530,14 @@ namespace WAX_converter
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(265, 737);
+            this.panel4.Size = new System.Drawing.Size(265, 739);
             this.panel4.TabIndex = 9;
             // 
             // panel5
             // 
             this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel5.Controls.Add(this.buttonClearFrame);
-            this.panel5.Controls.Add(this.buttonSetFrame);
+            this.panel5.Controls.Add(this.buttonSetFrames);
             this.panel5.Controls.Add(this.listboxSeqFrames);
             this.panel5.Controls.Add(this.labelNSeqs);
             this.panel5.Controls.Add(this.label6);
@@ -524,40 +548,40 @@ namespace WAX_converter
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel5.Location = new System.Drawing.Point(0, 327);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(265, 410);
+            this.panel5.Size = new System.Drawing.Size(265, 412);
             this.panel5.TabIndex = 9;
             // 
             // buttonClearFrame
             // 
             this.buttonClearFrame.Enabled = false;
-            this.buttonClearFrame.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.buttonClearFrame.Location = new System.Drawing.Point(87, 304);
+            this.buttonClearFrame.Font = new System.Drawing.Font("Segoe UI", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.buttonClearFrame.Location = new System.Drawing.Point(113, 341);
             this.buttonClearFrame.Name = "buttonClearFrame";
             this.buttonClearFrame.Size = new System.Drawing.Size(132, 27);
             this.buttonClearFrame.TabIndex = 19;
-            this.buttonClearFrame.Text = "Clear Last Frame";
+            this.buttonClearFrame.Text = "Clear Last Frame (defunct)";
             this.buttonClearFrame.UseVisualStyleBackColor = true;
+            this.buttonClearFrame.Visible = false;
             this.buttonClearFrame.Click += new System.EventHandler(this.buttonClearFrame_Click);
             // 
-            // buttonSetFrame
+            // buttonSetFrames
             // 
-            this.buttonSetFrame.Enabled = false;
-            this.buttonSetFrame.Location = new System.Drawing.Point(87, 271);
-            this.buttonSetFrame.Name = "buttonSetFrame";
-            this.buttonSetFrame.Size = new System.Drawing.Size(132, 27);
-            this.buttonSetFrame.TabIndex = 18;
-            this.buttonSetFrame.Text = "CHOOSE FRAMES";
-            this.buttonSetFrame.UseVisualStyleBackColor = true;
-            this.buttonSetFrame.Click += new System.EventHandler(this.buttonSetFrame_Click);
+            this.buttonSetFrames.Location = new System.Drawing.Point(87, 71);
+            this.buttonSetFrames.Name = "buttonSetFrames";
+            this.buttonSetFrames.Size = new System.Drawing.Size(132, 27);
+            this.buttonSetFrames.TabIndex = 18;
+            this.buttonSetFrames.Text = "Edit Sequence";
+            this.buttonSetFrames.UseVisualStyleBackColor = true;
+            this.buttonSetFrames.Click += new System.EventHandler(this.buttonSetFrame_Click);
             // 
             // listboxSeqFrames
             // 
             this.listboxSeqFrames.Enabled = false;
             this.listboxSeqFrames.FormattingEnabled = true;
             this.listboxSeqFrames.ItemHeight = 15;
-            this.listboxSeqFrames.Location = new System.Drawing.Point(87, 130);
+            this.listboxSeqFrames.Location = new System.Drawing.Point(87, 177);
             this.listboxSeqFrames.Name = "listboxSeqFrames";
-            this.listboxSeqFrames.Size = new System.Drawing.Size(132, 124);
+            this.listboxSeqFrames.Size = new System.Drawing.Size(132, 154);
             this.listboxSeqFrames.TabIndex = 17;
             this.listboxSeqFrames.SelectedIndexChanged += new System.EventHandler(this.listboxSeqFrames_SelectedIndexChanged);
             // 
@@ -573,7 +597,7 @@ namespace WAX_converter
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(87, 112);
+            this.label6.Location = new System.Drawing.Point(87, 159);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(94, 15);
             this.label6.TabIndex = 16;
@@ -601,8 +625,7 @@ namespace WAX_converter
             // 
             // buttonRemoveSequence
             // 
-            this.buttonRemoveSequence.Enabled = false;
-            this.buttonRemoveSequence.Location = new System.Drawing.Point(87, 71);
+            this.buttonRemoveSequence.Location = new System.Drawing.Point(87, 104);
             this.buttonRemoveSequence.Name = "buttonRemoveSequence";
             this.buttonRemoveSequence.Size = new System.Drawing.Size(132, 23);
             this.buttonRemoveSequence.TabIndex = 14;
@@ -612,7 +635,6 @@ namespace WAX_converter
             // 
             // buttonAddSequence
             // 
-            this.buttonAddSequence.Enabled = false;
             this.buttonAddSequence.Location = new System.Drawing.Point(87, 42);
             this.buttonAddSequence.Name = "buttonAddSequence";
             this.buttonAddSequence.Size = new System.Drawing.Size(132, 23);
@@ -845,7 +867,7 @@ namespace WAX_converter
             this.panel7.Dock = System.Windows.Forms.DockStyle.Right;
             this.panel7.Location = new System.Drawing.Point(265, 0);
             this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(291, 737);
+            this.panel7.Size = new System.Drawing.Size(291, 739);
             this.panel7.TabIndex = 11;
             // 
             // checkBoxCompress
@@ -904,15 +926,16 @@ namespace WAX_converter
             // 
             // saveWIPDialog
             // 
-            this.saveWIPDialog.DefaultExt = "wwip";
-            this.saveWIPDialog.Filter = "WAX work-in-progress|*.WWIP";
-            this.saveWIPDialog.Title = "Save WAX work-in-progress";
+            this.saveWIPDialog.DefaultExt = "wproj";
+            this.saveWIPDialog.Filter = "WAX project file|*.wproj";
+            this.saveWIPDialog.Title = "Save WAX project";
             this.saveWIPDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveWIPDialog_FileOk);
             // 
             // openWIPDialog
             // 
-            this.openWIPDialog.Filter = "WAX work-in-progress file|*.WWIP";
-            this.openWIPDialog.Title = "Open WAX work-in-progress";
+            this.openWIPDialog.DefaultExt = "wproj";
+            this.openWIPDialog.Filter = "WAX project file|*.wproj";
+            this.openWIPDialog.Title = "Open WAX project";
             this.openWIPDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openWIPDialog_FileOk);
             // 
             // panel8
@@ -920,31 +943,20 @@ namespace WAX_converter
             this.panel8.Controls.Add(this.panel4);
             this.panel8.Controls.Add(this.panel7);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel8.Location = new System.Drawing.Point(388, 47);
+            this.panel8.Location = new System.Drawing.Point(388, 65);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(556, 737);
+            this.panel8.Size = new System.Drawing.Size(556, 739);
             this.panel8.TabIndex = 0;
-            // 
-            // btnHelp
-            // 
-            this.btnHelp.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnHelp.Location = new System.Drawing.Point(875, 12);
-            this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(31, 22);
-            this.btnHelp.TabIndex = 13;
-            this.btnHelp.Text = "?";
-            this.btnHelp.UseVisualStyleBackColor = true;
-            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // BuildWindow
             // 
-            this.ClientSize = new System.Drawing.Size(944, 784);
+            this.ClientSize = new System.Drawing.Size(944, 804);
             this.ControlBox = false;
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel8);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(960, 800);
+            this.MinimumSize = new System.Drawing.Size(960, 820);
             this.Name = "BuildWindow";
             this.Text = "Build WAX";
             this.Shown += new System.EventHandler(this.BuildWindow_Shown);
@@ -1012,7 +1024,7 @@ namespace WAX_converter
         private System.Windows.Forms.Label labelNSeqs;
         private System.Windows.Forms.ListBox listboxSeqFrames;
         private System.Windows.Forms.Button buttonClearFrame;
-        private System.Windows.Forms.Button buttonSetFrame;
+        private System.Windows.Forms.Button buttonSetFrames;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBoxLogic;
@@ -1046,5 +1058,6 @@ namespace WAX_converter
         private System.Windows.Forms.Button btnDoneAddingFrames;
         private System.Windows.Forms.Button btnDoneSettingFrames;
         private System.Windows.Forms.Button btnHelp;
+        private System.Windows.Forms.CheckBox checkBoxCommonColours;
     }
 }

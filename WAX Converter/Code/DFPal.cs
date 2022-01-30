@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace WAX_converter
 {
@@ -37,20 +38,20 @@ namespace WAX_converter
             // Load Palette (PAL) file
             try
             {
-                BinaryReader fileReader = new BinaryReader(palFile.Open(FileMode.Open));
-                for (int i = 0; i < 256; i++)
+                using (BinaryReader fileReader = new BinaryReader(palFile.Open(FileMode.Open)))
                 {
-                    // note - DF pal colour range is from 0 to 63, so multiply by 4
-                    this.Colours[i].R = (fileReader.ReadByte() * 4);
-                    this.Colours[i].G = (fileReader.ReadByte() * 4);
-                    this.Colours[i].B = (fileReader.ReadByte() * 4);
+                    for (int i = 0; i < 256; i++)
+                    {
+                        // note - DF pal colour range is from 0 to 63, so multiply by 4
+                        this.Colours[i].R = (fileReader.ReadByte() * 4);
+                        this.Colours[i].G = (fileReader.ReadByte() * 4);
+                        this.Colours[i].B = (fileReader.ReadByte() * 4);
+                    }
                 }
-
-                fileReader.Close();
-                fileReader.Dispose();
             }
-            catch (IOException)
+            catch (IOException e)
             {
+                MessageBox.Show($"IOException {e.Message}");
                 return false;
             }
 

@@ -80,7 +80,7 @@ namespace WAX_converter
             this.FrameNumber = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.openPalDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveBMPDialog = new System.Windows.Forms.SaveFileDialog();
+            this.exportDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFmeDialog = new System.Windows.Forms.OpenFileDialog();
             this.panel2.SuspendLayout();
             this.RadioGroup.SuspendLayout();
@@ -592,12 +592,11 @@ namespace WAX_converter
             this.openPalDialog.Title = "Open PAL";
             this.openPalDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openPalDialog_FileOk);
             // 
-            // saveBMPDialog
+            // exportDialog
             // 
-            this.saveBMPDialog.AddExtension = false;
-            this.saveBMPDialog.DefaultExt = "PNG";
-            this.saveBMPDialog.Filter = "PNG files|*.png";
-            this.saveBMPDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.saveBMPDialog_FileOk);
+            this.exportDialog.AddExtension = false;
+            this.exportDialog.Title = "Export name";
+            this.exportDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.exportDialog_FileOk);
             // 
             // openFmeDialog
             // 
@@ -619,7 +618,7 @@ namespace WAX_converter
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(960, 720);
             this.Name = "MainWindow";
-            this.Text = "WAX Converter (version 0.92 - beta)";
+            this.Text = "WAX Converter (version 1.0)";
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.RadioGroup.ResumeLayout(false);
@@ -683,7 +682,7 @@ namespace WAX_converter
         private System.Windows.Forms.NumericUpDown SeqNumber;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.SaveFileDialog saveBMPDialog;
+        private System.Windows.Forms.SaveFileDialog exportDialog;
         private System.Windows.Forms.Button SeqNextFrame;
         private System.Windows.Forms.Button SeqPrevFrame;
         private System.Windows.Forms.ToolStripMenuItem MenuBuildWax;

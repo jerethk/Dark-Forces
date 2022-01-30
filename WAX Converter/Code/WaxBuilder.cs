@@ -9,7 +9,7 @@ namespace WAX_converter
     // A static class containing static methods used to create a new WAX file //
     public static class WaxBuilder
     {
-        public static Waxfile BuildWax(int LogicType, List<Action> SourceActionList, List<Sequence> SourceSequenceList, List<Frame> SourceFrameList, List<Bitmap> SourceImageList, DFPal palette, Color transparentColour, bool includeIlluminatedColours, bool compress)
+        public static Waxfile BuildWax(int LogicType, List<Action> SourceActionList, List<Sequence> SourceSequenceList, List<Frame> SourceFrameList, List<Bitmap> SourceImageList, DFPal palette, Color transparentColour, bool includeIlluminatedColours, bool onlyCommonColours, bool compress)
         {
             ProgressBarWindow progressMeter = new ProgressBarWindow();
             progressMeter.Show();
@@ -92,7 +92,7 @@ namespace WAX_converter
                 newCell.ColOffs = 0;    // always zero
 
                 newCell.Pixels = new short[newCell.SizeX, newCell.SizeY];
-                newCell.createCellImage(SourceImageList[i], palette, transparentColour, includeIlluminatedColours);       // result is stored in the cell object's Pixels property
+                newCell.createCellImage(SourceImageList[i], palette, transparentColour, includeIlluminatedColours, onlyCommonColours);       // result is stored in the cell object's Pixels property
 
                 if (compress)
                 {
@@ -140,7 +140,7 @@ namespace WAX_converter
             return newWax;
         }
         
-        public static short matchPixeltoPal(Color pixelColour, DFPal palette, bool includeIlluminatedColours)
+        public static short matchPixeltoPal(Color pixelColour, DFPal palette, bool includeIlluminatedColours, bool onlyCommonColours)
         {
             // Color quantizes to the DF PAL using Euclidean distance technique
             int sourceRed = pixelColour.R;
@@ -148,6 +148,7 @@ namespace WAX_converter
             int sourceBlue = pixelColour.B;
 
             short startColour;
+
             if (includeIlluminatedColours)
             {
                 startColour = 1;        // first 32 colours are always bright / illuminated
@@ -169,6 +170,8 @@ namespace WAX_converter
 
             for (short i = startColour; i < 256; i++)    
             {
+                if (onlyCommonColours && i >= 208 && i <= 254) continue;    // colours 208-254 are different in different PALs
+                
                 int deltaRed = sourceRed - palette.Colours[i].R;
                 int deltaGreen = sourceGreen - palette.Colours[i].G;
                 int deltaBlue = sourceBlue - palette.Colours[i].B;

@@ -91,7 +91,7 @@ namespace WAX_converter
             this.bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY); // need to flip it upside down, because wax stores image data from bottom to top
         }
 
-        public void createCellImage(Bitmap bitmap, DFPal palette, Color transparentColour, bool includeIlluminatedColours)
+        public void createCellImage(Bitmap bitmap, DFPal palette, Color transparentColour, bool includeIlluminatedColours, bool onlyCommonColours)
         {
             
             // flip upside down
@@ -107,7 +107,7 @@ namespace WAX_converter
                     }
                     else
                     {
-                        short colourIndex = WaxBuilder.matchPixeltoPal(bitmap.GetPixel(x, y), palette, includeIlluminatedColours);
+                        short colourIndex = WaxBuilder.matchPixeltoPal(bitmap.GetPixel(x, y), palette, includeIlluminatedColours, onlyCommonColours);
                         this.Pixels[x, y] = colourIndex;
                     }
                 }
