@@ -3,12 +3,16 @@ import bmesh
 
 
 def load_3do(context, filepath):
-    objects = read_3do(filepath)
+    model = read_3do(filepath)
     
-    if not len(objects):
+    if not len(model[1]):
         return
     
-    for object in objects:
+    materials_table = []
+    for texture in model[0]:
+        materials_table.append(bpy.data.materials.new(texture))
+    
+    for object in model[1]:
         new_bmesh = bmesh.new()
         uv_layer = new_bmesh.loops.layers.uv.new()
 
@@ -53,6 +57,9 @@ def load_3do(context, filepath):
                 newobj.data.uv_layers[0].data[loop_index].uv = tx_vert
                 tvert_counter -= 1
 
+        if object['texture'] != -1:
+            newobj.data.materials.append(materials_table[object['texture']])
+        
         bpy.context.collection.objects.link(newobj)
         
     return {'FINISHED'}
@@ -83,8 +90,26 @@ def read_3do(filename):
             num_objects = int(lines[current_line][1])
             break
 
+    # Texture table
+    num_textures = 0
+    textures = []
+    while current_line < len(lines):
+        if lines[current_line][0].upper() != "TEXTURES":
+            current_line += 1
+        else:
+            num_textures = int(lines[current_line][1])
+            break
+
+    for tex in range(num_textures):
+        current_line += 1
+        if lines[current_line][0].rstrip(":").upper() == "TEXTURE":
+            textures.append(lines[current_line][1])
+
     # Parse the objects
     for obj in range(num_objects):
+        if current_line + 2 >= len(lines):  # this deals with _8x32.3DO (more objects declared in header than exist)
+            break
+
         this_object = dict()
 
         # Object name
@@ -95,6 +120,11 @@ def read_3do(filename):
             else:
                 this_object['name'] = lines[current_line][1].strip("\"")
                 break
+
+        # Texture
+        current_line += 1
+        if lines[current_line][0].upper() == "TEXTURE":
+            this_object['texture'] = int(lines[current_line][1])
 
         # Parse vertices
         current_line += 1
@@ -110,9 +140,9 @@ def read_3do(filename):
             current_line += 1
             vertex = lines[current_line]
 
-            if int(vertex[0].rstrip(":")) != v:
-                print("Error at object \"", this_object['name'], "\" vertex", v)
-                return
+#            if int(vertex[0].rstrip(":")) != v:
+#                print("Error at object \"", this_object['name'], "\" vertex", v)
+#                return
 
             this_object['vertices'].append((
                 float(vertex[1]),
@@ -137,9 +167,9 @@ def read_3do(filename):
             this_polygon = dict()
             poly = lines[current_line]
 
-            if int(poly[0].rstrip(":")) != p:
-                print("Error at object \"", this_object['name'], "\" polygon", p)
-                return
+#            if int(poly[0].rstrip(":")) != p:
+#                print("Error at object \"", this_object['name'], "\" polygon", p)
+#                return
 
             this_polygon['vertices'] = []
             for pv in range(n_polyverts):
@@ -152,30 +182,28 @@ def read_3do(filename):
         # Look for texture data
         this_object['tex_vertices'] = []
         this_object['tex_polygons'] = []
-        current_line += 1
-        if current_line >= len(lines):  # reached end of file
+        if current_line + 2 >= len(lines):  # reached end of file
             objects.append(this_object)
             break
 
-        if lines[current_line][0].upper() == "OBJECT":      # there is no texture data; continue to the next object (back up one line)
-            current_line -= 1
+        if lines[current_line + 1][0].upper() == "OBJECT":      # there is no texture data; continue to the next object
             objects.append(this_object)
             continue
 
-        if len(lines[current_line]) != 3 or (lines[current_line][0].upper() != 'TEXTURE' and lines[current_line][1].upper() != 'VERTICES'):
-            current_line -= 1
+        if len(lines[current_line + 1]) != 3 or (lines[current_line + 1][0].upper() != 'TEXTURE' and lines[current_line + 1][1].upper() != 'VERTICES'):
             objects.append(this_object)
             continue
 
         # Parse texture vertices
+        current_line += 1         
         num_tx_verts = int(lines[current_line][2])
         for tv in range(num_tx_verts):
             current_line += 1
             tex_vertex = lines[current_line]
 
-            if int(tex_vertex[0].rstrip(":")) != tv:
-                print("Error at object \"", this_object['name'], "\" texture vertex", tv)
-                return
+#            if int(tex_vertex[0].rstrip(":")) != tv:
+#                print("Error at object \"", this_object['name'], "\" texture vertex", tv)
+#                return
 
             this_object['tex_vertices'].append((
                 float(tex_vertex[1]),
@@ -193,9 +221,9 @@ def read_3do(filename):
             current_line += 1
             tex_poly = lines[current_line]
 
-            if int(tex_poly[0].rstrip(":")) != tp:
-                print("Error at object \"", this_object['name'], "\" texture polygon", tp)
-                return
+#            if int(tex_poly[0].rstrip(":")) != tp:
+#                print("Error at object \"", this_object['name'], "\" texture polygon", tp)
+#                return
 
             this_tex_poly = []
             for pv in range(n_polyverts):
@@ -204,8 +232,7 @@ def read_3do(filename):
             this_object['tex_polygons'].append(this_tex_poly)
 
         objects.append(this_object)
-
-    return objects
+    return (textures, objects)
 
 
 # returns a line as a list of strings, removing comments
