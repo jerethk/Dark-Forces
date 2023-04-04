@@ -132,45 +132,22 @@ def parse_lev(lines):
             else:
                 if len(lines[current_line]) > 1:
                     this_sector['name'] = lines[current_line][1]
-
-                current_line += 1
                 break
 
-        while current_line < len(lines):
-            if not (lines[current_line][0].upper() == "FLOOR" and lines[current_line][1].upper() == "ALTITUDE"):
-                current_line += 1
-            else:
-                this_sector['floor_alt'] = -float(lines[current_line][2])
-                current_line += 1
-                break
+        current_line += 3
+        this_sector['floor_alt'] = -float(lines[current_line][2])
 
-        while current_line < len(lines):
-            if not (lines[current_line][0].upper() == "CEILING" and lines[current_line][1].upper() == "ALTITUDE"):
-                current_line += 1
-            else:
-                this_sector['ceiling_alt'] = -float(lines[current_line][2])
-                current_line += 1
-                break
+        current_line += 2
+        this_sector['ceiling_alt'] = -float(lines[current_line][2])
 
-        while current_line < len(lines):
-            if lines[current_line][0].upper() != "FLAGS":
-                current_line += 1
-            else:
-                this_sector['flags'] = (int(lines[current_line][1]), int(lines[current_line][2]), int(lines[current_line][3]))
-                current_line += 1
-                break
+        current_line += 2
+        this_sector['flags'] = (int(lines[current_line][1]), int(lines[current_line][2]), int(lines[current_line][3]))
 
-        while current_line < len(lines):
-            if lines[current_line][0].upper() != "LAYER":
-                current_line += 1
-            else:
-                layer = int(lines[current_line][1])
-                this_sector['layer'] = layer
-
-                if layer not in level['layers_used']:
-                    level['layers_used'].add(layer)
-
-                break
+        current_line += 1
+        layer = int(lines[current_line][1])
+        this_sector['layer'] = layer
+        if layer not in level['layers_used']:
+            level['layers_used'].add(layer)
 
         # VERTICES
         current_line += 1
