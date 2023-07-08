@@ -10,7 +10,9 @@ def load_3do(context, filepath):
     
     materials_table = []
     for texture in model[0]:
-        materials_table.append(bpy.data.materials.new(texture))
+        new_mat = bpy.data.materials.new(texture)
+        new_mat.use_nodes = True
+        materials_table.append(new_mat)
     
     for object in model[1]:
         new_bmesh = bmesh.new()
