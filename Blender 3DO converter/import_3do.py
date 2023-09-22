@@ -10,7 +10,7 @@ def load_3do(context, filepath):
     
     materials_table = []
     for texture in model[0]:
-        new_mat = bpy.data.materials.new(texture)
+        new_mat = bpy.data.materials.new(texture.split('.')[0])
         new_mat.use_nodes = True
         materials_table.append(new_mat)
     
@@ -175,7 +175,9 @@ def read_3do(filename):
 
             this_polygon['vertices'] = []
             for pv in range(n_polyverts):
-                this_polygon['vertices'].append(int(poly[pv + 1]))
+                v = int(poly[pv + 1])
+                if v not in this_polygon['vertices']:   # prevent adding duplicate vertices
+                    this_polygon['vertices'].append(v)
 
             this_polygon['colour'] = int(poly[n_polyverts + 1])
             this_polygon['shading'] = poly[n_polyverts + 2]
@@ -229,7 +231,9 @@ def read_3do(filename):
 
             this_tex_poly = []
             for pv in range(n_polyverts):
-                this_tex_poly.append(int(tex_poly[pv + 1]))
+                tv = int(tex_poly[pv + 1])
+                if tv not in this_tex_poly:     # prevent adding duplicate vertices
+                    this_tex_poly.append(tv)
 
             this_object['tex_polygons'].append(this_tex_poly)
 
