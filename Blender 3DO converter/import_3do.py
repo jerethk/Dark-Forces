@@ -32,8 +32,21 @@ def load_3do(context, filepath):
             try:
                 newface = new_bmesh.faces.new(polygon_verts)
             except:
-                print("unable to create polygon", p_counter)
-                failed_polygons.append(p_counter)
+                # try with a copy of the vertices - in case it failed due to a "double sided" polygon
+                polygon_verts_b = []
+                for pv in p['vertices']:
+                    pv_x = vertices[pv].co[0]
+                    pv_y = vertices[pv].co[1]
+                    pv_z = vertices[pv].co[2]
+                    
+                    vert_copy = new_bmesh.verts.new((pv_x, pv_y, pv_z))
+                    polygon_verts_b.insert(0, vert_copy)
+                    
+                try:
+                    newface = new_bmesh.faces.new(polygon_verts_b)    
+                except:        
+                    print("unable to create polygon", p_counter)
+                    failed_polygons.append(p_counter)
 
             p_counter += 1
                 
