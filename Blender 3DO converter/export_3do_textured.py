@@ -80,13 +80,24 @@ for obj in bpy.data.objects:
                 # Texture data for polygon
                 tp_verts = []
                 for l in p.loop_indices:
-                    this_object['tex_vertices'].append((
-                        mesh_copy.uv_layers[0].data[l].uv[0],
-                        mesh_copy.uv_layers[0].data[l].uv[1]
-                    ))
-                    tp_verts.insert(0, tvert_counter)  # reverse order
-                    tvert_counter += 1
+                    existing_tv = -1
                     
+                    # Search for an existing texture vertex that matches; if there is none, a new one will be added
+                    for tv in range(len(this_object['tex_vertices'])):
+                        if mesh_copy.uv_layers[0].data[l].uv[0] == this_object['tex_vertices'][tv][0] and mesh_copy.uv_layers[0].data[l].uv[1] == this_object['tex_vertices'][tv][1]:
+                            existing_tv = tv
+                            break
+                            
+                    if existing_tv >= 0:
+                        tp_verts.insert(0, existing_tv)     # reverse order                        
+                    else:
+                        this_object['tex_vertices'].append((
+                            mesh_copy.uv_layers[0].data[l].uv[0],
+                            mesh_copy.uv_layers[0].data[l].uv[1]
+                        ))
+                        tp_verts.insert(0, tvert_counter)       # reverse order
+                        tvert_counter += 1
+                        
                 this_object['tex_polygons'].append(tp_verts)
             
         this_object['texture'] = mat_index + first_texture_index
@@ -95,7 +106,6 @@ for obj in bpy.data.objects:
 
     bpy.data.meshes.remove(mesh_copy)
     first_texture_index += len(this_obj_textures)
-
 
 
 # FUNCTION TO WRITE 3DO FILE

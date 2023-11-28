@@ -3,6 +3,9 @@ import bmesh
 import struct
 
 def create_objects(model):
+    materials_names = []    # strings
+    materials_table = []    # materials
+    
     for surface in model['surfaces']:
         new_bmesh = bmesh.new()
         uv_layer = new_bmesh.loops.layers.uv.new()
@@ -42,8 +45,22 @@ def create_objects(model):
                 newobj.data.uv_layers[0].data[loop_index].uv = [st[0], (1 - st[1])]   # V coordinate is inverse of T coordinate
                 tvert_counter -= 1
 
-        newobj.data.materials.append(bpy.data.materials.new("texture"))
-
+        # Make a material for each shader; check first to see if it already exists
+        for s in range(surface['num_shaders']):
+            mat_name = surface['shaders'][s]['name']
+            
+            if mat_name in materials_names:
+                index = materials_names.index(mat_name)
+                existing_mat = materials_table[index]
+                newobj.data.materials.append(existing_mat)
+            else:
+                new_mat = bpy.data.materials.new(mat_name)
+                new_mat.use_nodes = True
+                # new_mat.node_tree.nodes.new('ShaderNodeTexImage')
+                materials_names.append(mat_name)
+                materials_table.append(new_mat)
+                newobj.data.materials.append(new_mat)
+                
         bpy.context.collection.objects.link(newobj)
 
 
@@ -57,7 +74,7 @@ def read_md3(context, filepath):
             return
 
         model['version'] = file.read(4)
-        model['name'] = bin_to_string(file.read(64))
+        model['name'] = bytes_to_string(file.read(64))
         model['flags'] = file.read(4)
 
         model['num_frames'] = read_int32(file)
@@ -90,10 +107,10 @@ def read_float32(file):
     return struct.unpack('f', file.read(4))[0]
 
 
-def bin_to_string(bin):
+def bytes_to_string(bytes):
     result = ""
 
-    for i in bin:
+    for i in bytes:
         if i == 0:
             break
 
@@ -111,7 +128,7 @@ def read_surfaces(file, num_surfaces):
 
         surface_start = file.tell()
         surface['magic'] = file.read(4)
-        surface['name'] = bin_to_string(file.read(64))
+        surface['name'] = bytes_to_string(file.read(64))
         surface['flags'] = read_int32(file)
         surface['num_frames'] = read_int32(file)
         surface['num_shaders'] = read_int32(file)
@@ -132,7 +149,7 @@ def read_surfaces(file, num_surfaces):
         file.seek(surface_start + surface['ofs_shaders'])
         for shd in range(surface['num_shaders']):
             shader = dict()
-            shader['name'] = bin_to_string(file.read(64))
+            shader['name'] = bytes_to_string(file.read(64))
             shader['index'] = read_int32(file)
             surface['shaders'].append(shader)
 
@@ -164,8 +181,8 @@ def read_surfaces(file, num_surfaces):
             txv.append(read_float32(file))
             surface['sts'].append(txv)
 
-        file.seek(surface_start + surface['ofs_end'])
         surfaces.append(surface)
+        file.seek(surface_start + surface['ofs_end'])
 
     return surfaces
 
