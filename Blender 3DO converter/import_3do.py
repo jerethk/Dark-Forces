@@ -245,8 +245,7 @@ def read_3do(filename):
             this_tex_poly = []
             for pv in range(n_polyverts):
                 tv = int(tex_poly[pv + 1])
-                if tv not in this_tex_poly:     # prevent adding duplicate vertices
-                    this_tex_poly.append(tv)
+                this_tex_poly.append(tv)
 
             this_object['tex_polygons'].append(this_tex_poly)
 

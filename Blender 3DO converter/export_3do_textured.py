@@ -10,6 +10,9 @@ for obj in bpy.data.objects:
     if obj.type != 'MESH':
         continue
 
+    if obj.hide_get() == True:
+        continue
+
     mesh = obj.data
     
     # Materials / textures
