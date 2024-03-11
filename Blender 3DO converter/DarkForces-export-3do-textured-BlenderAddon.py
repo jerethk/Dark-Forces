@@ -1,3 +1,12 @@
+bl_info = {
+    "name": "Dark Forces 3DO Exporter",
+    "description": "Export Dark Forces 3DO models",
+    "author": "JerethK",
+    "blender": (3, 4, 0),
+    "category": "Import-Export",
+}
+
+
 import bpy
 import bmesh
 
@@ -142,7 +151,7 @@ def write_3do(context, filepath):
         file.write("\n")
         
         for o in objects:
-            file.write("#------------------------------------------------------------------\n")
+            file.write("#---------------------------------------------------------------------\n")
             file.write("OBJECT \"{}\" \n".format(o['name']))
             file.write("TEXTURE {} \n\n".format(o['texture']))
             
@@ -187,9 +196,9 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
 
-class ExportSomeData(Operator, ExportHelper):
+class Export3DO(Operator, ExportHelper):
     """This appears in the tooltip of the operator and in the generated docs"""
-    bl_idname = "export_test.some_data"  # important since its how bpy.ops.import_test.some_data is constructed
+    bl_idname = "export_.df3do"  # important since its how bpy.ops.import_test.some_data is constructed
     bl_label = "Export DF 3DO"
 
     # ExportHelper mixin class uses this
@@ -225,17 +234,17 @@ class ExportSomeData(Operator, ExportHelper):
 
 # Only needed if you want to add into a dynamic menu
 def menu_func_export(self, context):
-    self.layout.operator(ExportSomeData.bl_idname, text="Text Export Operator")
+    self.layout.operator(Export3DO.bl_idname, text="Dark Forces 3DO (.3do)")
 
 
 # Register and add to the "file selector" menu (required to use F3 search "Text Export Operator" for quick access).
 def register():
-    bpy.utils.register_class(ExportSomeData)
+    bpy.utils.register_class(Export3DO)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
-    bpy.utils.unregister_class(ExportSomeData)
+    bpy.utils.unregister_class(Export3DO)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 
@@ -243,4 +252,4 @@ if __name__ == "__main__":
     register()
 
     # test call
-    bpy.ops.export_test.some_data('INVOKE_DEFAULT')
+    bpy.ops.export_.df3do('INVOKE_DEFAULT')
