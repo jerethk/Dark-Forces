@@ -10,118 +10,121 @@ bl_info = {
 import bpy
 import bmesh
 
-# CREATE 3DO OBJECTS FROM BLENDER MESH OBJECTS
-objects = []
-textures = []
-first_texture_index = 0
+# CREATE 3DO DATA FROM BLENDER MESH OBJECTS
+def create_3do_data(data):
+    objects = []
+    textures = []
+    first_texture_index = 0
 
-for obj in bpy.data.objects:
-    if obj.type != 'MESH':
-        continue
+    for obj in data.objects:
+        if obj.type != 'MESH':
+            continue
 
-    if obj.hide_get() == True:
-        continue
+        if obj.hide_get() == True:
+            continue
 
-    mesh = obj.data
-    
-    # Materials / textures
-    this_obj_textures = []
-    for mat in mesh.materials:
-        this_obj_textures.append(mat.name)
+        mesh = obj.data
         
-    textures.append(this_obj_textures)
-    
-    # Vertices
-    mesh_vertices = []
-    for v in mesh.vertices:
-        mesh_vertices.append((
-            v.co[0],
-            v.co[1],
-            v.co[2]
-        ))
-
-    # Determine if polygons can be quads (all polygons have 4 vertices)
-    mesh_copy = mesh.copy()
-    is_quads = True
-    poly_type = 'QUADS'
-    for p in mesh.polygons:
-        if len(p.vertices) != 4:
-            is_quads = False
-            poly_type = 'TRIANGLES'
-            break
-        
-    # Triangulate mesh if not quads
-    if not is_quads:
-        bm = bmesh.new()
-        bm.from_mesh(mesh_copy)
-        bmesh.ops.triangulate(bm, faces=bm.faces)
-        bm.to_mesh(mesh_copy)
-        bm.free()
-        
-    # Now have to iterate through materials (textures) and make one object for the polygons which use each one
-    for mat_index in range(len(mesh.materials)):
-        this_object = dict()
-        this_object['name'] = "{}.{}".format(mesh.name, mat_index)
-        this_object['vertices'] = mesh_vertices
-        this_object['num_vertices'] = len(mesh.vertices)
-        this_object['poly_type'] = poly_type
-        this_object['polygons'] = []
-        this_object['tex_vertices'] = []
-        this_object['tex_polygons'] = []
-        
-        colour_counter = 0        # use this for coloring
-        tvert_counter = 0
-        for p in mesh_copy.polygons:
-            if p.material_index == mat_index:
-                this_poly = dict()
-                this_poly['vertices'] = []
-                for v in p.vertices:
-                    this_poly['vertices'].insert(0, v)  # vertex order is reversed in Blender (anti-clockwise)
-                    
-                this_poly['colour'] = 40 + colour_counter  # greys
-                this_poly['shading'] = "texture"
-                this_object['polygons'].append(this_poly)
-
-                colour_counter += 1
-                if colour_counter == 4:
-                    colour_counter = 0
-
-                if not len(mesh_copy.uv_layers):
-                    continue
-
-                # Texture data for polygon
-                tp_verts = []
-                for l in p.loop_indices:
-                    existing_tv = -1
-                    
-                    # Search for an existing texture vertex that matches; if there is none, a new one will be added
-                    for tv in range(len(this_object['tex_vertices'])):
-                        if mesh_copy.uv_layers[0].data[l].uv[0] == this_object['tex_vertices'][tv][0] and mesh_copy.uv_layers[0].data[l].uv[1] == this_object['tex_vertices'][tv][1]:
-                            existing_tv = tv
-                            break
-                            
-                    if existing_tv >= 0:
-                        tp_verts.insert(0, existing_tv)     # reverse order                        
-                    else:
-                        this_object['tex_vertices'].append((
-                            mesh_copy.uv_layers[0].data[l].uv[0],
-                            mesh_copy.uv_layers[0].data[l].uv[1]
-                        ))
-                        tp_verts.insert(0, tvert_counter)       # reverse order
-                        tvert_counter += 1
-                        
-                this_object['tex_polygons'].append(tp_verts)
+        # Materials / textures
+        this_obj_textures = []
+        for mat in mesh.materials:
+            this_obj_textures.append(mat.name)
             
-        this_object['texture'] = mat_index + first_texture_index
-        this_object['num_polygons'] = len(this_object['polygons'])
-        objects.append(this_object)
+        textures.append(this_obj_textures)
+        
+        # Vertices
+        mesh_vertices = []
+        for v in mesh.vertices:
+            mesh_vertices.append((
+                v.co[0],
+                v.co[1],
+                v.co[2]
+            ))
 
-    bpy.data.meshes.remove(mesh_copy)
-    first_texture_index += len(this_obj_textures)
+        # Determine if polygons can be quads (all polygons have 4 vertices)
+        mesh_copy = mesh.copy()
+        is_quads = True
+        poly_type = 'QUADS'
+        for p in mesh.polygons:
+            if len(p.vertices) != 4:
+                is_quads = False
+                poly_type = 'TRIANGLES'
+                break
+            
+        # Triangulate mesh if not quads
+        if not is_quads:
+            bm = bmesh.new()
+            bm.from_mesh(mesh_copy)
+            bmesh.ops.triangulate(bm, faces=bm.faces)
+            bm.to_mesh(mesh_copy)
+            bm.free()
+            
+        # Now have to iterate through materials (textures) and make one object for the polygons which use each one
+        for mat_index in range(len(mesh.materials)):
+            this_object = dict()
+            this_object['name'] = "{}.{}".format(mesh.name, mat_index)
+            this_object['vertices'] = mesh_vertices
+            this_object['num_vertices'] = len(mesh.vertices)
+            this_object['poly_type'] = poly_type
+            this_object['polygons'] = []
+            this_object['tex_vertices'] = []
+            this_object['tex_polygons'] = []
+            
+            colour_counter = 0        # use this for coloring
+            tvert_counter = 0
+            for p in mesh_copy.polygons:
+                if p.material_index == mat_index:
+                    this_poly = dict()
+                    this_poly['vertices'] = []
+                    for v in p.vertices:
+                        this_poly['vertices'].insert(0, v)  # vertex order is reversed in Blender (anti-clockwise)
+                        
+                    this_poly['colour'] = 40 + colour_counter  # greys
+                    this_poly['shading'] = "texture"
+                    this_object['polygons'].append(this_poly)
+
+                    colour_counter += 1
+                    if colour_counter == 4:
+                        colour_counter = 0
+
+                    if not len(mesh_copy.uv_layers):
+                        continue
+
+                    # Texture data for polygon
+                    tp_verts = []
+                    for l in p.loop_indices:
+                        existing_tv = -1
+                        
+                        # Search for an existing texture vertex that matches; if there is none, a new one will be added
+                        for tv in range(len(this_object['tex_vertices'])):
+                            if mesh_copy.uv_layers[0].data[l].uv[0] == this_object['tex_vertices'][tv][0] and mesh_copy.uv_layers[0].data[l].uv[1] == this_object['tex_vertices'][tv][1]:
+                                existing_tv = tv
+                                break
+                                
+                        if existing_tv >= 0:
+                            tp_verts.insert(0, existing_tv)     # reverse order                        
+                        else:
+                            this_object['tex_vertices'].append((
+                                mesh_copy.uv_layers[0].data[l].uv[0],
+                                mesh_copy.uv_layers[0].data[l].uv[1]
+                            ))
+                            tp_verts.insert(0, tvert_counter)       # reverse order
+                            tvert_counter += 1
+                            
+                    this_object['tex_polygons'].append(tp_verts)
+                
+            this_object['texture'] = mat_index + first_texture_index
+            this_object['num_polygons'] = len(this_object['polygons'])
+            objects.append(this_object)
+
+        data.meshes.remove(mesh_copy)
+        first_texture_index += len(this_obj_textures)
+        
+    return (objects, textures)
 
 
 # FUNCTION TO WRITE 3DO FILE
-def write_3do(context, filepath):
+def write_3do(context, filepath, objects, textures):
     # Calculate total vertices and polygons in 3DO
     total_vertices = 0
     total_polys = 0
@@ -229,7 +232,8 @@ class Export3DO(Operator, ExportHelper):
     )
 
     def execute(self, context):
-        return write_3do(context, self.filepath)
+        data = create_3do_data(context.blend_data)
+        return write_3do(context, self.filepath, data[0], data[1])
 
 
 # Only needed if you want to add into a dynamic menu
