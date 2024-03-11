@@ -1,3 +1,12 @@
+bl_info = {
+    "name": "Dark Forces 3DO Importer",
+    "description": "Import Dark Forces 3DO models",
+    "author": "JerethK",
+    "blender": (3, 4, 0),
+    "category": "Import-Export",
+}
+
+
 import bpy
 import bmesh
 
@@ -267,9 +276,9 @@ from bpy.props import StringProperty, BoolProperty, EnumProperty
 from bpy.types import Operator
 
 
-class ImportSomeData(Operator, ImportHelper):
+class Import3DO(Operator, ImportHelper):
     """This appears in the tooltip of the operator and in the generated docs"""
-    bl_idname = "import_test.some_data"  # important since its how bpy.ops.import_test.some_data is constructed
+    bl_idname = "import_.df3do"  
     bl_label = "Import 3DO"
 
     # ImportHelper mixin class uses this
@@ -305,17 +314,17 @@ class ImportSomeData(Operator, ImportHelper):
 
 # Only needed if you want to add into a dynamic menu.
 def menu_func_import(self, context):
-    self.layout.operator(ImportSomeData.bl_idname, text="Text Import Operator")
+    self.layout.operator(Import3DO.bl_idname, text="Dark Forces 3DO (.3do)")
 
 
 # Register and add to the "file selector" menu (required to use F3 search "Text Import Operator" for quick access).
 def register():
-    bpy.utils.register_class(ImportSomeData)
+    bpy.utils.register_class(Import3DO)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
 
 def unregister():
-    bpy.utils.unregister_class(ImportSomeData)
+    bpy.utils.unregister_class(Import3DO)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
 
 
@@ -323,4 +332,4 @@ if __name__ == "__main__":
     register()
 
     # test call
-    bpy.ops.import_test.some_data('INVOKE_DEFAULT')
+    bpy.ops.import_.df3do('INVOKE_DEFAULT')
