@@ -2,7 +2,8 @@ bl_info = {
     "name": "Dark Forces 3DO Exporter",
     "description": "Export Dark Forces 3DO models",
     "author": "JerethK",
-    "blender": (3, 4, 0),
+    "version": (1, 1),
+    "blender": (2, 83, 0),
     "category": "Import-Export",
 }
 
@@ -80,7 +81,7 @@ def create_3do_data(data):
                         this_poly['vertices'].insert(0, v)  # vertex order is reversed in Blender (anti-clockwise)
                         
                     this_poly['colour'] = 40 + colour_counter  # greys
-                    this_poly['shading'] = "texture"
+                    this_poly['shading'] = "GOURTEX" if p.use_smooth else "TEXTURE"
                     this_object['polygons'].append(this_poly)
 
                     colour_counter += 1

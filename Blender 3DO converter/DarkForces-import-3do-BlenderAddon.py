@@ -2,7 +2,8 @@ bl_info = {
     "name": "Dark Forces 3DO Importer",
     "description": "Import Dark Forces 3DO models",
     "author": "JerethK",
-    "blender": (3, 4, 0),
+    "version": (1, 1),
+    "blender": (2, 83, 0),
     "category": "Import-Export",
 }
 
@@ -40,6 +41,9 @@ def load_3do(context, filepath):
                 
             try:
                 newface = new_bmesh.faces.new(polygon_verts)
+                if p['shading'].lower() == "gouraud" or p['shading'].lower() == 'gourtex':
+                    newface.smooth = True
+                
             except:
                 # try with a copy of the vertices - in case it failed due to a "double sided" polygon
                 polygon_verts_b = []
@@ -53,6 +57,9 @@ def load_3do(context, filepath):
                     
                 try:
                     newface = new_bmesh.faces.new(polygon_verts_b)    
+                    if p['shading'].lower() == "gouraud" or p['shading'].lower() == 'gourtex':
+                        newface.smooth = True
+
                 except:        
                     print("unable to create polygon", p_counter)
                     failed_polygons.append(p_counter)
