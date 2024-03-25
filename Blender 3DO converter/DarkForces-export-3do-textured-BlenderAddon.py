@@ -200,7 +200,7 @@ from bpy.types import Operator
 
 
 class Export3DO(Operator, ExportHelper):
-    """This appears in the tooltip of the operator and in the generated docs"""
+    """Export meshes to a 3DO"""
     bl_idname = "export_.df3do"  # important since its how bpy.ops.import_test.some_data is constructed
     bl_label = "Export DF 3DO"
 
@@ -211,24 +211,6 @@ class Export3DO(Operator, ExportHelper):
         default="*.3DO",
         options={'HIDDEN'},
         maxlen=255,  # Max internal buffer length, longer would be clamped.
-    )
-
-    # List of operator properties, the attributes will be assigned
-    # to the class instance from the operator settings before calling.
-    use_setting: BoolProperty(
-        name="Example Boolean",
-        description="Example Tooltip",
-        default=True,
-    )
-
-    type: EnumProperty(
-        name="Example Enum",
-        description="Choose between two items",
-        items=(
-            ('OPT_A', "First Option", "Description one"),
-            ('OPT_B', "Second Option", "Description two"),
-        ),
-        default='OPT_A',
     )
 
     def execute(self, context):
